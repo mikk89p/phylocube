@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+      <span>PhyloCube</span>
+      <span class="example-spacer"></span>
+      <button mat-icon-button [mat-menu-trigger-for]="menu">
+          <mat-icon>more_vert</mat-icon>
+      </button>
+</mat-toolbar-row>
+
+</mat-toolbar>
+
+
+<mat-menu x-position="before" #menu="matMenu">
+  <button mat-menu-item routerLink="">Home</button>
+  <button mat-menu-item routerLink="about">About</button>
+</mat-menu>

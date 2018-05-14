@@ -1,0 +1,1 @@
+# Database structure and acquiring data from Gene3D, SUPERFAMILY and Pfam
