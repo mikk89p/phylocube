@@ -7,7 +7,7 @@
 "cellular_genomes": "UniprotKB reference proteomes 2017_08",
 "viral_genomes": "UniprotKB reference proteomes 2017_08",
 "domains_file": "../gene3d/gene3d_cath_ABEV.tsv",
-"assignments_file": "../gene3d/gene3d_data_raw.csv",
+"assignments_file": "../gene3d/gene3d_assignments.tsv",
 "description_file":"../gene3d/cath-b-newest-names.tsv"},
 "supfam":{"id": 2,
 "type": "supfam",
