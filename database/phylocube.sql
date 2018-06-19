@@ -2,7 +2,7 @@ CREATE TABLE resource (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   type VARCHAR(30) NOT NULL UNIQUE, /* gene3d, supfam, clan, pfam etc.. */
   name VARCHAR(30) NOT NULL, /* Pfam 31.0 etc.. */
-  description VARCHAR(250) NULL, 
+  description VARCHAR(500) NULL, 
   version VARCHAR(100) NOT NULL, /* SUPERFAMILY v1.75, Gene3D  V16.0  etc*/
   classification_version VARCHAR(100) NOT NULL,  /* SUPERFAMILY v1.75, CATH 4.2, Pfam 31.0 etc*/
   cellular_genomes VARCHAR(100) NOT NULL,  /* UniProt proteomes v2017 etc, SUPERFAMILY has assigned cellular and viral differently*/
@@ -36,9 +36,9 @@ CREATE TABLE summary (
 ALTER TABLE summary AUTO_INCREMENT = 1
 
 /* TODO assignmentsq table*/
-CREATE TABLE assignments (
+CREATE TABLE assignment (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  taxid SMALLINT UNSIGNED NOT NULL,
+  taxid MEDIUMINT UNSIGNED NOT NULL,
   protein_domain_id INT UNSIGNED NOT NULL,
   significance VARCHAR(150) NULL,
   PRIMARY KEY(id),
@@ -49,4 +49,10 @@ CREATE TABLE assignments (
 
 /* TODO taxonomy table*/
 
-/* TODO Pfam to clan table*/
+
+CREATE TABLE clan_membership (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  clan_acc VARCHAR(6) NOT NULL,
+  pfamA_acc VARCHAR(7) NOT NULL, 
+  PRIMARY KEY(id)
+)engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
