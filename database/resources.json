@@ -15,8 +15,8 @@
 "description": "SUPERFAMILY",
 "version":"SUPERFAMILY 1.75",
 "classification_version": "SCOP 1.75",
-"cellular_genomes": "",
-"viral_genomes": "",
-"domains_file": "",
-"assignments_file": "../gene3d/gene3d_cath_ABEV.tsv",
-"description_file":"gene3d/cath-b-newest-names.tsv"}}
+"cellular_genomes": "Uniprot complete proteomes 2014_01",
+"viral_genomes": "NCBI viral sequence collection (2014-08-20)",
+"domains_file": "../supfam/supfam_ABEV.tsv",
+"assignments_file": "../supfam/supfam_assignments.tsv",
+"description_file":"../supfam/supfam_description.tsv"}}
