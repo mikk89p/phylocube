@@ -132,20 +132,10 @@ def addFulltaxonomy(input):
 	printDict(result)
 
 def readFileToDictionaryMultipleValues(filePath, split, key_column,value_column):
-	try:
-		file = open(filePath, "r")
-	except:
-		print ("ERROR - Reading " + str(filePath))
-
-	dict = {}
-	while True :
-    
-		# Loe üks line failist
-		line = file.readline()
-
-		# Kontrolli, kas tegu on viimase reaga
-		if line == "" :
-			break
+	dictionary = {}
+	with open(filePath, 'r') as f:
+		content = f.readlines()
+	for line in content:
 
 		lineList = line.split("\n")
 		lineList = lineList[0].split(split)
@@ -153,7 +143,7 @@ def readFileToDictionaryMultipleValues(filePath, split, key_column,value_column)
 		value = []
 		if(is_number(key)):
 			key = int(key)
-			exists = dict.get(key)
+			exists = dictionary.get(key)
 			if(exists is not None):
 				new_value = (lineList[value_column]).strip()
 				exists.append(new_value)
@@ -161,27 +151,16 @@ def readFileToDictionaryMultipleValues(filePath, split, key_column,value_column)
 				val = (lineList[value_column]).strip()
 				
 				value.append(val)
-				dict[key] = value
+				dictionary[key] = value
 		
-	file.close()
-	return dict	
+	return dictionary	
 
 
 def readFileToDictionary(filePath, split, key_column,value_column):
-	try:
-		file = open(filePath, "r")
-	except:
-		print ("ERROR - Reading " + str(filePath))
-
-	dict = {}
-	while True :
-    
-		# Loe üks line failist
-		line = file.readline()
-
-		# Kontrolli, kas tegu on viimase reaga
-		if line == "" :
-			break
+	dictionary = {}
+	with open(filePath, 'r') as f:
+		content = f.readlines()
+	for line in content:
 
 		lineList = line.split("\n")
 		lineList = lineList[0].split(split)
@@ -189,10 +168,8 @@ def readFileToDictionary(filePath, split, key_column,value_column):
 		if(is_number(key)):
 			key = int(key)
 			value = (lineList[value_column]).strip()
-			dict[key] = value
-		
-	file.close()
-	return dict
+			dictionary[key] = value
+	return dictionary
 	
 
 def usage():
