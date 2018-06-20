@@ -13,14 +13,13 @@ CREATE TABLE resource (
 CREATE TABLE protein_domain (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   acc VARCHAR(30) NOT NULL UNIQUE, /* 54427, PF01812, 3.40.150.40,  CL0344 etc.. */
-  name VARCHAR(250) DEFAULT 'None',  /* NTP_transferase etc. Not all domains have names, especially in CATH */
   description VARCHAR(250) DEFAULT 'None',
   resource_id SMALLINT UNSIGNED NOT NULL,
   PRIMARY KEY(id),
   foreign key (resource_id) references resource (id) on delete cascade on update cascade
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
-/*ALTER TABLE protein_domain AUTO_INCREMENT = 1*/
+ALTER TABLE protein_domain AUTO_INCREMENT = 1
 
 CREATE TABLE summary (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -38,16 +37,24 @@ ALTER TABLE summary AUTO_INCREMENT = 1
 /* TODO assignmentsq table*/
 CREATE TABLE assignment (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  taxid MEDIUMINT UNSIGNED NOT NULL,
+  taxonomy_id MEDIUMINT UNSIGNED NOT NULL,
   protein_domain_id INT UNSIGNED NOT NULL,
   significance VARCHAR(150) NULL,
   PRIMARY KEY(id),
   foreign key (protein_domain_id) references protein_domain (id) on delete cascade on update cascade
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
-/*ALTER TABLE assignments AUTO_INCREMENT = 1*/
+ALTER TABLE assignments AUTO_INCREMENT = 1
 
-/* TODO taxonomy table*/
+CREATE TABLE taxonomy (
+  id INT UNSIGNED NOT NULL,
+	name VARCHAR(500) NOT NULL, 
+	rank VARCHAR(150) NULL, 
+	parent_id INT UNSIGNED NOT NULL,
+	full_taxonomy VARCHAR(1000) NOT NULL,
+	full_taxonomy_id VARCHAR(1000) NULL,
+  PRIMARY KEY(id)
+)engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE clan_membership (
@@ -56,3 +63,5 @@ CREATE TABLE clan_membership (
   pfamA_acc VARCHAR(7) NOT NULL, 
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE clan_membership AUTO_INCREMENT = 1
