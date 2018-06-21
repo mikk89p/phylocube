@@ -59,7 +59,7 @@ def usage():
 	print('-v, --verbose  \t print process steps')
 	print('-i, --input \t input file, a tsv file')
 	print('-t, --taxonomy \t ncbi taxonomy tsv file')
-	print('-d, --domain_only \t only domain: Bacteria, Archaea, Eukaryota or Virus is included')
+	print('-d, --domain_only \t only domain: Bacteria, Archaea, Eukaryota or Viruses is included')
 	
 def main():
 	try:
