@@ -5,7 +5,8 @@
   "main": "serverjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "debug": "nodemon --inspect server.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,11 @@
     "nodemon": "^1.17.5"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "node-exceptions": "^3.0.0",
+    "passport": "^0.4.0",
     "throw": "^1.1.0"
   }
 }

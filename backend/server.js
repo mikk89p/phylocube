@@ -1,13 +1,22 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const port = 3000;
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+
+//Config
+const port = process.env.PORT || 3000;
+
+//Init app
 app = express();
 
-//Models
-Resource = require('./api/models/resourceModel')
+//bodyParser
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: false }));
+
 
 //Routes
-var routes = require('./api/routes/resourceRoutes'); //importing route
+var routes = require('./api/v1/routes/resourceRoutes');
+var routes = require('./api/v1/routes/proteindomainRoutes');
 
 //Default
 app.route('/')
@@ -16,8 +25,8 @@ app.route('/')
 });
 
 
-
-
-
 routes(app); //register the route
 app.listen(port);
+
+//log to console to let us know it's working
+console.log('API server started on: ' + port);
