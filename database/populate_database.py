@@ -250,9 +250,30 @@ def insertAssignments(db,cursor,resource):
 				print("ERROR in insert into summary")
 				db.rollback()
 
+def insertClanMembership(db,cursor,resource):
+	membership_file = resources[resource]['membership_file']
+	with open(membership_file, 'r') as f:
+		content = f.readlines()
+	
+	values = []
+	for line in content:
+		line = line.strip() 
+		arr = line.split("\t")
+		clan = arr[0]
+		pfam = arr[1]
+		value = [clan,pfam]
+		values.append(value)
+	try:
+		cursor.executemany("INSERT INTO clan_membership (clan_acc,pfam_acc) VALUES (%s,%s)",values)
+		db.commit()
+	except:     
+		print("ERROR in insert into clan_membership")
+		db.rollback()
+
 
 def addIndex(db,cursor,resource):	
-	cursor.execute("CREATE INDEX assignment_index ON assignment (taxonomy_id, protein_domain_id)")
+	cursor.execute("CREATE INDEX assignment_taxid_index ON assignment (taxonomy_id)")
+	cursor.execute("CREATE INDEX assignment_domainid_index ON assignment (protein_domain_id)")
 	cursor.execute("CREATE INDEX taxonomy_name ON taxonomy (name)")
 	#ALTER TABLE assignment DROP INDEX assignment_index;
 
@@ -265,36 +286,34 @@ if __name__ == '__main__':
 	with open('resources.json') as f:
 		resources = json.load(f)
 
-	#insertTaxonomy(db,cursor,"taxonomy")
-	#loadResources = ["gene3d","supfam"]
-	loadResources = ["pfam"]
+	#initList = ["taxonomy","gene3d","supfam","pfam","clan"]
+	initList = ["clan"]
 
 	
-	for resource in loadResources:
-		print("Building " + str(resource) + " resource")
-		insertResource(db,cursor,resource)
-		print("Inserting" + str(resource) + " protein domains")
-		insertProteinDomain(db,cursor,resource)
-		print("Inserting" + str(resource) + " summary")
-		#insertSummary(db,cursor,resource)
-		print("Inserting" + str(resource) + " assignments (takes several minutes)")
-		#insertAssignments(db,cursor,resource)
+	for resource in initList:
+		if (resource == "taxonomy"):
+			insertTaxonomy(db,cursor,resource)
+		elif (resource == "pfam"):
+			insertClanMembership(db,cursor,resource)
+		else:
+			print("Building " + str(resource) + " resource")
+			insertResource(db,cursor,resource)
+			print("Inserting " + str(resource) + " protein domains")
+			insertProteinDomain(db,cursor,resource)
+			print("Inserting " + str(resource) + " summary")
+			insertSummary(db,cursor,resource)
+			print("Inserting " + str(resource) + " assignments (takes several minutes)")
+			insertAssignments(db,cursor,resource)
+		
+			
 	
 	print("Adding index to assignment and taxonomy table (takes several minutes)")
-	#addIndex(db,cursor,resource)
-
-	# Execute SQL select statement
-	cursor.execute("SELECT * FROM resource")
-	# Get the number of rows in the resultset
-	numrows = cursor.rowcount
-
-	# Get and display one row at a time
-	for x in range(0, numrows):
-		row = cursor.fetchone()
-		print row[0], "-->", row[1]
+	addIndex(db,cursor,resource)
 
 	# Close the connection
 	db.close()
+	print("Database connection closed")
+	print("Done")
 
 	
 	 
