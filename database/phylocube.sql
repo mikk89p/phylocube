@@ -51,7 +51,7 @@ CREATE TABLE taxonomy (
 	name VARCHAR(500) NOT NULL, 
 	rank VARCHAR(150) NULL, 
 	parent_id INT UNSIGNED NOT NULL,
-	full_taxonomy VARCHAR(1000) NOT NULL,
+	full_taxonomy VARCHAR(1000) NULL,
 	full_taxonomy_id VARCHAR(1000) NULL,
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
