@@ -60,7 +60,7 @@ CREATE TABLE taxonomy (
 CREATE TABLE clan_membership (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   clan_acc VARCHAR(6) NOT NULL,
-  pfamA_acc VARCHAR(7) NOT NULL, 
+  pfam_acc VARCHAR(7) NOT NULL, 
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
