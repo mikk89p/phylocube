@@ -1,4 +1,6 @@
-{"gene3d":{"id": 1,
+{"taxonomy":{"version":"20.06.2018",
+"taxonomy_file":"../taxonomy/ncbi_taxonomy_full.tsv"},
+"gene3d":{"id": 1,
 "type": "gene3d",
 "name": "Gene3D",
 "description": "Gene3D takes CATH domain families (from PDB structures) and assigns them to the millions protein sequences (using Hidden Markov models generated from HMMER) with no PDB structures",
@@ -30,4 +32,5 @@
 	"viral_genomes": "UniprotKB reference proteomes 2016_10",
 	"domains_file": "../pfam/pfam_ABEV.tsv",
 	"assignments_file": "../pfam/pfam_assignments.tsv",
-	"description_file":"../pfam/pfam_description.tsv"}}
+	"description_file":"../pfam/pfam_description.tsv",
+	"membership_file":"../pfam/clan_membership.tsv"}}
