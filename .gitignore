@@ -1,1 +1,3 @@
-/database/database.env
+# dotenv environment variables file
+database\database.env
+backend/database.env
