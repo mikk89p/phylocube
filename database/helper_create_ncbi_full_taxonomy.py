@@ -9,6 +9,7 @@ def is_number(s):
 		return True
 	except ValueError:
 		return False
+
 def striplist(l):
     return([x.strip() for x in l])
 
@@ -176,15 +177,16 @@ def usage():
 	print('scriptName.py -i <nodes.dmp> -t <ncbi_taxonomy.tsv> -o <output>')
 	print('-i, --input \t input file, a nodes.dmp')
 	print('-t, --taxonomy \t ncbi taxonomy tsv file: tax_id /t name')
+	print('-m, --merged \t ncbi merged.dmp file in tsv format') 
 	print('-u, --uniprot taxonomy \t uniprot full taxonomy tsv file')
 	print('-v, --verbose \t print process steps')
-	print('-t, --merged \t ncbi merged.dmp file in tsv format') #old new
+	
 	
 def main():
 	try:
 		#with options that require an argument followed by a colon
 		#usage of full names "help", "input=","output=" help doesn't need argument input and output does
-		opts, args = getopt.getopt(sys.argv[1:], "hi:o:t:m:u:v", ["help", "input=","output=","taxonomy=","uniprot=","merged="])
+		opts, args = getopt.getopt(sys.argv[1:], "hi:t:m:u:v", ["help", "input=","taxonomy=","merged=","uniprot=","verbose"])
 	except getopt.GetoptError as err:
 		# print help information and exit:
 		print(err)  # will print something like "option -a not recognized"
@@ -192,7 +194,7 @@ def main():
 		sys.exit(2)
 
 	for opt, arg in opts:
-		if opt == "-v":
+		if opt in ("-v", "--verbose"):
 			global verbose
 			verbose = True
 		elif opt in ("-h", "--help"):
@@ -201,18 +203,15 @@ def main():
 		elif opt in ("-i", "--input"):
 			global input
 			input = arg
-		elif opt in ("-o", "--output"):
-			global output
-			output = arg
 		elif opt in ("-t", "--taxonomy"):
 			global taxonomy
-			taxonomy = arg
-		elif opt in ("-u", "--uniprot"):
-			global uniprotTaxonomy
-			uniprotTaxonomy = arg
+			taxonomy = arg			
 		elif opt in ("-m", "--merged"):
 			global merged
 			merged = arg
+		elif opt in ("-u", "--uniprot"):
+			global uniprotTaxonomy
+			uniprotTaxonomy = arg
 		else:
 			assert False, "unhandled option"
 
