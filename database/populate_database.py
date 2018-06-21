@@ -58,8 +58,43 @@ def connectDb():
 		db=credentials['DB_NAME'])
 	
 	return db
-	
 
+	
+def insertTaxonomy(db,cursor,resource):
+	version = resources[resource]['version']
+	taxonomy_file = resources[resource]['taxonomy_file']
+	values = []
+	with open(taxonomy_file, 'r') as f:
+		 content = f.readlines()
+
+	contentLen = len(content)
+	maxNumberInsert = 4000
+	count = 0
+	for line in content:
+		count += 1
+		line = line.strip() 
+		arr = line.split("\t")
+		taxid = int(arr[0])
+		name = arr[1] 
+		rank = arr[2]
+		parent_id = arr[3] 
+		full_taxonomy = "-"
+		full_taxonomy_id = "-"
+		if (len(arr) > 4):
+			full_taxonomy = arr[4]
+		if (len(arr) > 5):
+			full_taxonomy_id = arr[5]
+	
+		value = [taxid,name,rank,parent_id,full_taxonomy,full_taxonomy_id]
+		values.append(value)
+		if (len(values)>=maxNumberInsert or count == contentLen):
+			try:
+				cursor.executemany("INSERT INTO taxonomy (id,name,rank,parent_id,full_taxonomy,full_taxonomy_id) VALUES (%s,%s,%s,%s,%s,%s)",values)
+				db.commit()
+				values = []
+			except:     
+				print("ERROR in insert Taxonomy or taxonomy exist")
+				db.rollback()
 
 def insertResource(db,cursor,resource):
 	id = resources[resource]['id']
@@ -208,7 +243,7 @@ def insertAssignments(db,cursor,resource):
 		
 		if (len(values)>=maxNumberInsert or count == contentLen):
 			try:
-				cursor.executemany("INSERT INTO assignment (taxid,protein_domain_id,significance) VALUES (%s,%s,%s)",values)
+				cursor.executemany("INSERT INTO assignment (taxonomy_id,protein_domain_id,significance) VALUES (%s,%s,%s)",values)
 				db.commit()
 				values = []
 			except:     
@@ -217,31 +252,36 @@ def insertAssignments(db,cursor,resource):
 
 
 def addIndex(db,cursor,resource):	
-	cursor.execute("CREATE INDEX assignment_index ON assignment (taxid, protein_domain_id)")
+	cursor.execute("CREATE INDEX assignment_index ON assignment (taxonomy_id, protein_domain_id)")
+	cursor.execute("CREATE INDEX taxonomy_name ON taxonomy (name)")
+	#ALTER TABLE assignment DROP INDEX assignment_index;
 
 if __name__ == '__main__':
 	# Connect
 	db = connectDb()
 	cursor = db.cursor()
-	
+
+
 	with open('resources.json') as f:
 		resources = json.load(f)
 
+	#insertTaxonomy(db,cursor,"taxonomy")
 	#loadResources = ["gene3d","supfam"]
-	loadResources = ["supfam"]
+	loadResources = ["pfam"]
+
 	
 	for resource in loadResources:
 		print("Building " + str(resource) + " resource")
 		insertResource(db,cursor,resource)
 		print("Inserting" + str(resource) + " protein domains")
-		#insertProteinDomain(db,cursor,resource)
+		insertProteinDomain(db,cursor,resource)
 		print("Inserting" + str(resource) + " summary")
 		#insertSummary(db,cursor,resource)
 		print("Inserting" + str(resource) + " assignments (takes several minutes)")
 		#insertAssignments(db,cursor,resource)
 	
-	print("Adding index to assignment table")
-	addIndex(db,cursor,resource)
+	print("Adding index to assignment and taxonomy table (takes several minutes)")
+	#addIndex(db,cursor,resource)
 
 	# Execute SQL select statement
 	cursor.execute("SELECT * FROM resource")
