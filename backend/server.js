@@ -1,13 +1,17 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-//const passport = require('passport');
+const cors = require('cors')
 
-//Config
+
+// Config
 const port = process.env.PORT || 3000;
 
-//Init app
+// Init app
 app = express();
+
+// middleware that can be used to enable CORS with various options
+app.use(cors())
 
 /*
 Node.js body parsing middleware.
