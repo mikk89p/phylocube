@@ -102,13 +102,14 @@ def insertResource(db,cursor,resource):
 	name = resources[resource]['name']
 	description = resources[resource]['description']
 	version = resources[resource]['version']
+	url = resources[resource]['url']
 	classification_version = resources[resource]['classification_version']
 	cellular_genomes = resources[resource]['cellular_genomes']
 	viral_genomes = resources[resource]['viral_genomes']
 	
 	try:
-		cursor.execute("INSERT INTO resource (id, type, name, description, version, classification_version, cellular_genomes, viral_genomes) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
-		(id,type,name,description,version,classification_version,cellular_genomes,viral_genomes))
+		cursor.execute("INSERT INTO resource (id, type, name, description, version, url, classification_version, cellular_genomes, viral_genomes) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+		(id,type,name,description,version,url,classification_version,cellular_genomes,viral_genomes))
 		db.commit()
 	except:     
 		print("ERROR in insertResource or resource exist")
