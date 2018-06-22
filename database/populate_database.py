@@ -286,8 +286,8 @@ if __name__ == '__main__':
 	with open('resources.json') as f:
 		resources = json.load(f)
 
-	#initList = ["taxonomy","gene3d","supfam","pfam","clan"]
-	initList = ["clan"]
+	#initList = ["taxonomy","gene3d","supfam","pfam","clan","clanpfam"]
+	initList = [""]
 
 	
 	for resource in initList:
@@ -295,6 +295,9 @@ if __name__ == '__main__':
 			insertTaxonomy(db,cursor,resource)
 		elif (resource == "pfam"):
 			insertClanMembership(db,cursor,resource)
+		elif (resource == "clanpfam"):
+			print("Only building " + str(resource) + " resource")
+			insertResource(db,cursor,resource)
 		else:
 			print("Building " + str(resource) + " resource")
 			insertResource(db,cursor,resource)
