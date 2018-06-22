@@ -15,8 +15,10 @@ import { FooterComponent } from './components/footer/footer.component';
 import { Error404Component } from './components/error404/error404.component';
 import { AboutComponent } from './components/about/about.component';
 import { CubeComponent } from './components/cube/cube.component';
-import { CubeSidebarComponent } from './components/cube-sidebar/cube-sidebar.component';
-import { CubeSidebarSecondaryComponent } from './components/cube-sidebar-secondary/cube-sidebar-secondary.component';
+import { ProteinDomainService } from './services/protein-domain.service';
+import { ResourceService } from './services/resource.service';
+import { ResourceComponent } from './components/resource/resource.component';
+import { ProteinDomainTableComponent } from './components/protein-domain-table/protein-domain-table.component';
 
 @NgModule({
   declarations: [
@@ -27,8 +29,8 @@ import { CubeSidebarSecondaryComponent } from './components/cube-sidebar-seconda
     Error404Component,
     AboutComponent,
     CubeComponent,
-    CubeSidebarComponent,
-    CubeSidebarSecondaryComponent
+    ResourceComponent,
+    ProteinDomainTableComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,7 @@ import { CubeSidebarSecondaryComponent } from './components/cube-sidebar-seconda
       enabled: environment.production
     })
   ],
-  providers: [],
+  providers: [ResourceService, ProteinDomainService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

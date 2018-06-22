@@ -2,16 +2,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {MatTableDataSource, MatSort} from '@angular/material';
 
 @Component({
-  selector: 'app-cube-sidebar-secondary',
-  templateUrl: './cube-sidebar-secondary.component.html',
-  styleUrls: ['./cube-sidebar-secondary.component.scss']
+  selector: 'app-protein-domain-table',
+  templateUrl: './protein-domain-table.component.html',
+  styleUrls: ['./protein-domain-table.component.scss']
 })
-export class CubeSidebarSecondaryComponent implements OnInit {
+export class ProteinDomainTableComponent implements OnInit {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
 
   @ViewChild(MatSort) sort: MatSort;
-
 
 
   constructor() { }

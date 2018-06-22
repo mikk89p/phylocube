@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CubeSidebarComponent } from './cube-sidebar.component';
+import { ProteinDomainTableComponent } from './protein-domain-table.component';
 
-describe('CubeSidebarComponent', () => {
-  let component: CubeSidebarComponent;
-  let fixture: ComponentFixture<CubeSidebarComponent>;
+describe('ProteinDomainTableComponent', () => {
+  let component: ProteinDomainTableComponent;
+  let fixture: ComponentFixture<ProteinDomainTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CubeSidebarComponent ]
+      declarations: [ ProteinDomainTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CubeSidebarComponent);
+    fixture = TestBed.createComponent(ProteinDomainTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
