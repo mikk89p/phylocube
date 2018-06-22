@@ -1,11 +1,11 @@
 var db = require('../dbconnection');
 
 var ProteinDomain = {  
-	getAllProteinDomains: function(callback) {  
+	getAll: function(callback) {  
 			return db.query("SELECT * FROM protein_domain", callback);  
 	},
-	getProteinDomainById: function(id, callback) {  
-		return db.query("SELECT * FROM protein_domain WHERE Id=?", [id], callback);  
+	getById: function(id, callback) {  
+		return db.query("SELECT * FROM protein_domain WHERE id=?", [id], callback);  
 	},
 
 	getProteinDomainSummaryById: function(id, callback) {  

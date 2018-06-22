@@ -1,4 +1,4 @@
-var Resource = require('../models/resourceModel')
+var Assignment = require('../models/assignmentModel')
 
 function sendDefaultResponse(res, err, data){
 	if (err) {
@@ -10,13 +10,13 @@ function sendDefaultResponse(res, err, data){
 	res.json(data);
 }
 
-exports.getResource = function(req, res, next) {  
+exports.getAssignment = function(req, res, next) {  
 	if (req.params.id) {  
-		Resource.getById(req.params.id, function(err, rows) {  
+		Assignment.getById(req.params.id, function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
 		});  
 	} else {  
-		Resource.getAll(function(err, rows) {  
+		Assignment.getAll(function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
 		});  
 	}  

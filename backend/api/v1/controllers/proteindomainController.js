@@ -16,11 +16,11 @@ function sendDefaultResponse(res, err, data){
 
 exports.getProteinDomain = function(req, res, next) {  
 	if (req.params.id) {  
-		proteinDomain.getProteinDomainById(req.params.id, function(err, rows) { 
+		proteinDomain.getById(req.params.id, function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} else {  
-		proteinDomain.getAllProteinDomains(function(err, rows) { 
+		proteinDomain.getAll(function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});}   
 };  

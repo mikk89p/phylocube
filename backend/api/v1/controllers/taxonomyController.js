@@ -1,4 +1,4 @@
-var Resource = require('../models/resourceModel')
+var Taxonomy = require('../models/taxonomyModel')
 
 function sendDefaultResponse(res, err, data){
 	if (err) {
@@ -10,13 +10,13 @@ function sendDefaultResponse(res, err, data){
 	res.json(data);
 }
 
-exports.getResource = function(req, res, next) {  
+exports.getTaxon = function(req, res, next) {  
 	if (req.params.id) {  
-		Resource.getById(req.params.id, function(err, rows) {  
+		Taxonomy.getById(req.params.id, function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
 		});  
 	} else {  
-		Resource.getAll(function(err, rows) {  
+		Taxonomy.getAll(function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
 		});  
 	}  

@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const passport = require('passport');
+//const passport = require('passport');
 
 //Config
 const port = process.env.PORT || 3000;
@@ -9,19 +9,29 @@ const port = process.env.PORT || 3000;
 //Init app
 app = express();
 
-//bodyParser
-//app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({ extended: false }));
+/*
+Node.js body parsing middleware.
+Parse incoming request bodies in a middleware before your handlers.
+As req.body's shape is based on user-controlled input, all properties and values in this object are untrusted and should be validated before trusting
+*/
+app.use(bodyParser.json());
+
+/*
+he extended option allows to choose between parsing the URL-encoded data with the querystring library (when false) 
+or the qs library (when true).
+*/
+app.use(bodyParser.urlencoded({ extended: false }));
 
 
 //Routes
-var routes = require('./api/v1/routes/resourceRoutes');
-var routes = require('./api/v1/routes/proteindomainRoutes');
+var routes = require('./api/v1/routes');
+
 
 //Default
 app.route('/')
 .get((request, response) => {
-	response.send('Default')
+	res.statusCode = 200;
+	response.send('Nothing to see here')
 });
 
 
