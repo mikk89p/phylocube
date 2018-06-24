@@ -11,8 +11,8 @@ function sendDefaultResponse(res, err, data){
 }
 
 exports.getResource = function(req, res, next) {  
-	if (req.params.id) {  
-		Resource.getById(req.params.id, function(err, rows) {  
+	if (req.params.type) {  
+		Resource.getByType(req.params.type, function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
 		});  
 	} else {  
