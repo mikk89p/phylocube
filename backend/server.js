@@ -33,9 +33,9 @@ var routes = require('./api/v1/routes');
 
 //Default
 app.route('/')
-.get((request, response) => {
+.get((req, res) => {
 	res.statusCode = 200;
-	response.send('Nothing to see here')
+	res.send('Nothing to see here')
 });
 
 

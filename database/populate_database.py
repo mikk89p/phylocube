@@ -280,6 +280,11 @@ def addIndex(db,cursor,resource):
 	cursor.execute("CREATE INDEX assignment_taxid_index ON assignment (taxonomy_id)")
 	cursor.execute("CREATE INDEX assignment_domainid_index ON assignment (protein_domain_id)")
 	cursor.execute("CREATE INDEX taxonomy_name ON taxonomy (name)")
+	#Must be - Makes pfamclan query much faster
+	cursor.execute("CREATE INDEX clan_membership_pfam_acc ON clan_membership (pfam_acc)")
+	cursor.execute("CREATE INDEX acc_index ON protein_domain (acc)")
+	cursor.execute("CREATE INDEX description_index ON protein_domain (description)")
+  
 	#ALTER TABLE assignment DROP INDEX assignment_index;
 
 if __name__ == '__main__':
