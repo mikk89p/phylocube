@@ -6,14 +6,15 @@
   fxLayoutGap="10px"
   fxLayoutGap.xs="0">
 
-  <div fxFlex="20%" class="sidebar">
+  <div fxFlex="70%"
+      fxLayout="column">
+    <app-cube></app-cube>
     <app-protein-domain-table></app-protein-domain-table>
   </div>
-  <div fxFlex="60%">
-    <app-cube></app-cube>
-  </div>
-  <div fxFlex="20%" class="sidebar">
-    <app-resource ></app-resource>
+
+
+  <div fxFlex="30%" class="sidebar">
+    <app-resource></app-resource>
   </div>
 
 </div>

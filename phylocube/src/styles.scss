@@ -10,7 +10,7 @@ body{
 }
 
 .sidebar {
-  //min-height: calc(100vh-64px);
+  //min-height: calc(100% - 64px);;
   min-height: 86vh;
 }
 
@@ -20,3 +20,4 @@ body{
 	position:absolute;
 	z-index: 1000;
 }
+
