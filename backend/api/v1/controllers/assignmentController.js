@@ -10,9 +10,9 @@ function sendDefaultResponse(res, err, data){
 	res.json(data);
 }
 
-exports.getAssignment = function(req, res, next) {  
-	if (req.params.id) {  
-		Assignment.getById(req.params.id, function(err, rows) {  
+exports.getAssignmentByAcc = function(req, res, next) {  
+	if (req.params.acc) {  
+		Assignment.getByAcc(req.params.acc, function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
 		});  
 	} else {  

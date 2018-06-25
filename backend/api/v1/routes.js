@@ -10,12 +10,12 @@ module.exports = function(app) {
 	
 	// Protein domain Routes
   var proteinDomainController = require('./controllers/proteindomainController');
-	app.route('/v1/proteindomain/:id?').get(proteinDomainController.getProteinDomain)
-	app.route('/v1/proteindomain/summary/:id?').get(proteinDomainController.getProteinDomainSummary)
-	app.route('/v1/proteindomain/resource/:id?').get(proteinDomainController.getAllProteinDomainsByResourceId)
-	app.route('/v1/proteindomain/resource/summary/:id?').get(proteinDomainController.getAllProteinDomainsSummaryByResource)
+	app.route('/v1/proteindomain/:acc?').get(proteinDomainController.getProteinDomainByAcc)
+	app.route('/v1/proteindomain/:acc?/distribution').get(proteinDomainController.getProteinDomainWithDistributionByAcc)
+	app.route('/v1/proteindomain/resource/:type?').get(proteinDomainController.getAllProteinDomainsByResourceType)
+	app.route('/v1/proteindomain/distribution/resource/:type?').get(proteinDomainController.getAllProteinDomainsWithDistributionByResourceType)
 	
 	//Taxonomy Routes
 	var assignmentController = require('./controllers/assignmentController');
-  app.route('/v1/assignment/:id?').get(assignmentController.getAssignment)
+  app.route('/v1/assignment/:acc?').get(assignmentController.getAssignmentByAcc)
 };

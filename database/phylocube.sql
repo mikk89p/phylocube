@@ -22,7 +22,7 @@ CREATE TABLE protein_domain (
 
 ALTER TABLE protein_domain AUTO_INCREMENT = 1
 
-CREATE TABLE summary (
+CREATE TABLE distribution (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   protein_domain_id INT UNSIGNED NOT NULL,
   archaea MEDIUMINT UNSIGNED DEFAULT 0, /* occurrence of a protein domain in Archaea genomes */
@@ -33,7 +33,7 @@ CREATE TABLE summary (
   foreign key (protein_domain_id) references protein_domain (id) on delete cascade on update cascade
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE summary AUTO_INCREMENT = 1
+ALTER TABLE distribution AUTO_INCREMENT = 1
 
 /* TODO assignmentsq table*/
 CREATE TABLE assignment (

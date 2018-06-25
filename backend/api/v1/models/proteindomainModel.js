@@ -4,20 +4,20 @@ var ProteinDomain = {
 	getAll: function(callback) {  
 			return db.query("SELECT * FROM protein_domain", callback);  
 	},
-	getById: function(id, callback) {  
-		return db.query("SELECT * FROM protein_domain WHERE id=?", [id], callback);  
+	getByAcc: function(acc, callback) {  
+		return db.query("SELECT * FROM protein_domain WHERE acc=?", [acc], callback);  
 	},
 
-	getProteinDomainSummaryById: function(id, callback) {  
-		return db.query("SELECT * FROM protein_domain JOIN summary ON protein_domain.id = summary.protein_domain_id WHERE protein_domain.Id=?", [id], callback);  
+	getProteinDomainWithDistributionByAcc: function(acc, callback) {  
+		return db.query("SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id WHERE protein_domain.acc=?", [acc], callback);  
 	},
 
-	getAllProteinDomainsByResourceId: function(resource_id, callback) {  
-		return db.query("SELECT * FROM protein_domain WHERE resource_id=?", [resource_id], callback);  
+	getAllProteinDomainsByResourceType: function(type, callback) {  
+		return db.query("SELECT * FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?", [type], callback);  
 	},
 
-	getAllProteinDomainsSummaryByResourceId: function(resource_id, callback) {  
-		return db.query("SELECT * FROM protein_domain JOIN summary ON protein_domain.id = summary.protein_domain_id WHERE resource_id=?", [resource_id], callback);  
+	getAllProteinDomainsWithDistributionByResourceType: function(type, callback) {  
+		return db.query("SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?", [type], callback);  
 	}
 };  
 module.exports = ProteinDomain;

@@ -199,10 +199,10 @@ def insertSummary(db,cursor,resource):
 			print(acc)
 
 	try:
-		cursor.executemany("INSERT INTO summary (protein_domain_id,archaea, bacteria, eukaryota, virus) VALUES (%s,%s,%s,%s,%s)",values)
+		cursor.executemany("INSERT INTO distribution (protein_domain_id,archaea, bacteria, eukaryota, virus) VALUES (%s,%s,%s,%s,%s)",values)
 		db.commit()
 	except:     
-		print("ERROR in insert into summary")
+		print("ERROR in insert into distribution")
 		db.rollback()
 
 def insertAssignments(db,cursor,resource):	
@@ -248,7 +248,7 @@ def insertAssignments(db,cursor,resource):
 				db.commit()
 				values = []
 			except:     
-				print("ERROR in insert into summary")
+				print("ERROR in insert into distribution")
 				db.rollback()
 
 def insertClanMembership(db,cursor,resource):
@@ -304,7 +304,7 @@ if __name__ == '__main__':
 			insertResource(db,cursor,resource)
 			print("Inserting " + str(resource) + " protein domains")
 			insertProteinDomain(db,cursor,resource)
-			print("Inserting " + str(resource) + " summary")
+			print("Inserting " + str(resource) + " distribution")
 			insertSummary(db,cursor,resource)
 			print("Inserting " + str(resource) + " assignments (takes several minutes)")
 			insertAssignments(db,cursor,resource)
