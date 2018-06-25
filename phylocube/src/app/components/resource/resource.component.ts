@@ -9,32 +9,25 @@ import { Component, OnInit } from '@angular/core';
 export class ResourceComponent implements OnInit {
   // https://www.iconshock.com/colorful-icons/database-icons/database-icon/
   resources = {};
-  activeResource = false;
+  activeResource;
   selectedValue: string;
   constructor(private resourceService: ResourceService) { }
 
   ngOnInit() {
     this.resources = this.resourceService.getResources();
-    this.resourceService.getResourceById(1).subscribe(
+    this.resourceService.getActiveResource().subscribe(
       resource => {
-        this.setActiveResource(resource);
+        this.activeResource = resource;
       },
-
-      error => console.log(error),
     );
+
   }
 
-  setActiveResource(resource) {
-    this.activeResource = resource;
-    // TODO set active resource global
-    // setActiveResource(resource.id);
-  }
-
-  onChange(event, resource) {
+  setActiveResource(event, resource) {
     if (event.isUserInput) {
-      console.log(resource);
-      this.setActiveResource(resource);
-   }
-}
+      this.activeResource = resource;
+      this.resourceService.setActiveResource(resource.type);
+    }
+  }
 
 }

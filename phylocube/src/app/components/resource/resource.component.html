@@ -1,27 +1,27 @@
 <mat-card  class="card" >
-    <mat-card-header>
-      <img mat-card-avatar src="assets/icons/database.png" alt="database">
-      <mat-card-title>Active Resource: {{activeResource.name}}</mat-card-title>
-      <mat-card-subtitle>Version: {{activeResource.version}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p><b>Url: </b>{{activeResource.url}}</p>
-      <p><b>Description: </b>{{activeResource.description}}</p>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" style="margin-right:10px;">Default!</button>
-      <mat-form-field>
-            <mat-select [(value)]="activeResource.id" >
-              <mat-option 
-                *ngFor="let resource of resources | async" 
-                [value]="resource.id" 
-                (onSelectionChange)="onChange($event, resource)"
-              >
-                {{resource.name}}
-              </mat-option>
-            </mat-select>
-      </mat-form-field>
-    </mat-card-actions>
-  </mat-card>
+  <mat-card-header>
+    <img mat-card-avatar src="assets/icons/database.png" alt="database">
+    <mat-card-title>Active Resource: {{activeResource.name}}</mat-card-title>
+    <mat-card-subtitle>Version: {{activeResource.version}}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p><b>Url: </b>{{activeResource.url}}</p>
+    <p><b>Description: </b>{{activeResource.description}}</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" style="margin-right:10px;">Default!</button>
+    <mat-form-field>
+          <mat-select [(value)]="activeResource.id" >
+            <mat-option 
+              *ngFor="let resource of resources | async" 
+              [value]="resource.id"
+              (onSelectionChange)="setActiveResource($event, resource)"
+            >
+              {{resource.name}}
+            </mat-option>
+          </mat-select>
+    </mat-form-field>
+  </mat-card-actions>
+</mat-card>
 
 

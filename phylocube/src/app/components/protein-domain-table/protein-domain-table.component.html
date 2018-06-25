@@ -1,5 +1,5 @@
-<div class="example-container mat-elevation-z8">
-
+<div  class="example-container mat-elevation-z8">
+  
     <div class="example-header">
         <mat-form-field>
           <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
@@ -7,31 +7,39 @@
       </div>
     <mat-table #table [dataSource]="dataSource" matSort>
   
-      <!-- Position Column -->
-      <ng-container matColumnDef="position">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> No. </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
+      <ng-container matColumnDef="acc">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Acc </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.acc}} </mat-cell>
       </ng-container>
   
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+      
+      <ng-container matColumnDef="archaea">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Arch </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.archaea}} / {{element.archaea_genomes}}  </mat-cell>
+      </ng-container>
+
+      
+      <ng-container matColumnDef="bacteria">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Bac </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.bacteria}} / {{element.bacteria_genomes}} </mat-cell>
       </ng-container>
   
-      <!-- Weight Column -->
-      <ng-container matColumnDef="weight">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Weight </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.weight}} </mat-cell>
+      
+      <ng-container matColumnDef="eukaryota">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Euk </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.eukaryota}} / {{element.eukaryota_genomes}} </mat-cell>
       </ng-container>
-  
-      <!-- Symbol Column -->
-      <ng-container matColumnDef="symbol">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Symbol </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.symbol}} </mat-cell>
+       
+      <ng-container matColumnDef="virus">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Vir </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.virus}} / {{element.virus_genomes}} </mat-cell>
       </ng-container>
-  
+
+
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" style="cursor: pointer;" [ngClass]="{'highlight':selectedRow == row.acc}" (click)="highlight(row)"></mat-row>
+
+
     </mat-table>
   </div>
+  <div *ngIf="dataSource.data.length == 0"><p>Loading...</p></div>
