@@ -104,12 +104,16 @@ def insertResource(db,cursor,resource):
 	version = resources[resource]['version']
 	url = resources[resource]['url']
 	classification_version = resources[resource]['classification_version']
-	cellular_genomes = resources[resource]['cellular_genomes']
-	viral_genomes = resources[resource]['viral_genomes']
+	cellular_genomes_version = resources[resource]['cellular_genomes_version']
+	viral_genomes_version = resources[resource]['viral_genomes_version']
+	archaea_genomes = resources[resource]['archaea_genomes']
+	bacteria_genomes = resources[resource]['bacteria_genomes']
+	eukaryota_genomes = resources[resource]['eukaryota_genomes']
+	virus_genomes = resources[resource]['virus_genomes']
 	
 	try:
-		cursor.execute("INSERT INTO resource (id, type, name, description, version, url, classification_version, cellular_genomes, viral_genomes) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-		(id,type,name,description,version,url,classification_version,cellular_genomes,viral_genomes))
+		cursor.execute("INSERT INTO resource (id, type, name, description, version, url, classification_version, cellular_genomes_version, viral_genomes_version,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+		(id,type,name,description,version,url,classification_version,cellular_genomes_version,viral_genomes_version,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes))
 		db.commit()
 	except:     
 		print("ERROR in insertResource or resource exist")
@@ -236,7 +240,7 @@ def insertAssignments(db,cursor,resource):
 			continue
 
 		# without domain grep "1111708,[a-zA-Z0-9]*,[a-zA-Z0-9]*,,"  ../gene3d/representative_uniprot_genome_assignments.csv
-    #  grep "taxid,[a-zA-Z0-9]*,[a-zA-Z0-9]*,[a-zA-Z0-9.]*,[a-zA-Z0-9-]*,p-value,"  ../gene3d/representative_uniprot_genome_assignments.csv
+		#  grep "taxid,[a-zA-Z0-9]*,[a-zA-Z0-9]*,[a-zA-Z0-9.]*,[a-zA-Z0-9-]*,p-value,"  ../gene3d/representative_uniprot_genome_assignments.csv
 		protein_domain_id = acc_dict.get(acc)
 		if(protein_domain_id is not None):
 			value = [taxid,protein_domain_id,significance]
@@ -287,8 +291,8 @@ if __name__ == '__main__':
 	with open('resources.json') as f:
 		resources = json.load(f)
 
-	#initList = ["taxonomy","gene3d","supfam","pfam","clan","clanpfam"]
-	initList = [""]
+	initList = ["taxonomy","gene3d","supfam","pfam","clan","clanpfam"]
+	initList = []
 
 	
 	for resource in initList:

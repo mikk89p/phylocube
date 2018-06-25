@@ -57,6 +57,18 @@ Some of the datasets do not use latest NCBI taxonomy. Thus, older/merged taxonid
 <code>awk -F'\t' '!seen[$1, $2]++' gene3d_data_raw.tsv > gene3d_data_without_duplicates.tsv</code><br>
 
 
+
+### Genome counts in A,B,E and V:
+Add these values to the resources.json file
+
+```
+echo -n > genome_counts.tsv
+awk -F '\t' '$4 ~ /(Archaea)/ {print $1;}' gene3d_data_without_duplicates.tsv | sort | uniq -c -i | wc -l | awk '{print "Archaea\t"$0;}' >> genome_counts.tsv &
+awk -F '\t' '$4 ~ /(Bacteria)/ {print $1;}' gene3d_data_without_duplicates.tsv | sort | uniq -c -i | wc -l | awk '{print "Bacteria\t"$0;}' >> genome_counts.tsv &
+awk -F '\t' '$4 ~ /(Eukaryota)/ {print $1;}' gene3d_data_without_duplicates.tsv | sort | uniq -c -i | wc -l | awk '{print "Eukaryota\t"$0;}' >> genome_counts.tsv &
+awk -F '\t' '$4 ~ /(Viruses)/ {print $1;}' gene3d_data_without_duplicates.tsv | sort | uniq -c -i | wc -l | awk '{print "Viruses\t"$0;}' >> genome_counts.tsv &
+```
+
 ### Protein domains and assignment counts in A,B,E and V:
 ```
 awk -F '\t' '$4 ~ /(Archaea)/ {print $3;}' gene3d_data_without_duplicates.tsv | sort | uniq -c -i | awk '{print $2"\t"$1}' | sort > gene3d_domain_count_A.tsv
@@ -98,6 +110,18 @@ python ../combine_files.py -a gene3d_domain_count_A.tsv -b gene3d_domain_count_B
 ### Remove dublicates:
 <code>awk '!seen[$0]++' supfam_data_raw.tsv > supfam_data.tsv</code>
 <br>
+
+### Genome counts in A,B,E and V:
+Add these values to the resources.json file
+
+```
+echo -n > genome_counts.tsv
+awk '$3 ~ /A/ {print $1;}' supfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Archaea\t"$0;}' >> genome_counts.tsv &
+awk '$3 ~ /B/ {print $1;}' supfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Bacteria\t"$0;}' >> genome_counts.tsv &
+awk '$3 ~ /E/ {print $1;}' supfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Eukaryota\t"$0;}' >> genome_counts.tsv &
+awk '$3 ~ /V/ {print $1;}' supfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Viruses\t"$0;}' >> genome_counts.tsv &
+
+```
 
 ### Protein domains and assignment counts in A,B,E and V:
 ```
@@ -151,6 +175,24 @@ python combine_files.py -a supfam_domain_count_A.tsv -b supfam_domain_count_B.ts
 ### Remove dublicate rows by taxon_id and protein domain accession:
 <code>awk -F '\t' '!seen[$1, $2]++' pfam_data_cutoff_applied_with_taxonomy.tsv > pfam_data.tsv</code><br>
 <code>awk -F '\t' '!seen[$1, $2]++' clan_data_cutoff_applied_with_taxonomy.tsv > clan_data.tsv</code><br>
+
+
+### Genome counts in A,B,E and V:
+Add these values to the resources.json file
+
+```
+echo -n > genome_counts.tsv
+awk -F '\t' '$4 ~ /Archaea/ {print $1;}' pfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Archaea\t"$0;}' >> genome_counts.tsv &
+awk -F '\t' '$4 ~ /Bacteria/ {print $1;}' pfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Bacteria\t"$0;}' >> genome_counts.tsv &
+awk -F '\t' '$4 ~ /Eukaryota/ {print $1;}' pfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Eukaryota\t"$0;}' >> genome_counts.tsv &
+awk -F '\t' '$4 ~ /Viruses/ {print $1;}' pfam_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Viruses\t"$0;}' >> genome_counts.tsv &
+
+echo -n > genome_counts_clan.tsv
+awk -F '\t' '$4 ~ /Archaea/ {print $1;}' clan_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Archaea\t"$0;}' >> genome_counts_clan.tsv &
+awk -F '\t' '$4 ~ /Bacteria/ {print $1;}' clan_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Bacteria\t"$0;}' >> genome_counts_clan.tsv &
+awk -F '\t' '$4 ~ /Eukaryota/ {print $1;}' clan_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Eukaryota\t"$0;}' >> genome_counts_clan.tsv &
+awk -F '\t' '$4 ~ /Viruses/ {print $1;}' clan_data.tsv | sort | uniq -c -i | wc -l | awk '{print "Viruses\t"$0;}' >> genome_counts_clan.tsv &
+```
 
 
 ### Pfam data summary:

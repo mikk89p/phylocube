@@ -6,8 +6,12 @@ CREATE TABLE resource (
   version VARCHAR(100) NOT NULL, /* SUPERFAMILY v1.75, Gene3D  V16.0  etc*/
 	url VARCHAR(250) NULL,
   classification_version VARCHAR(100) NOT NULL,  /* SUPERFAMILY v1.75, CATH 4.2, Pfam 31.0 etc*/
-  cellular_genomes VARCHAR(100) NOT NULL,  /* UniProt proteomes v2017 etc, SUPERFAMILY has assigned cellular and viral differently*/
-  viral_genomes VARCHAR(100) NOT NULL,
+  cellular_genomes_version VARCHAR(100) NOT NULL,  /* UniProt proteomes v2017 etc, SUPERFAMILY has assigned cellular and viral differently*/
+  viral_genomes_version VARCHAR(100) NOT NULL,
+  archaea_genomes MEDIUMINT UNSIGNED NOT NULL,
+  bacteria_genomes MEDIUMINT UNSIGNED NOT NULL,
+  eukaryota_genomes MEDIUMINT UNSIGNED NOT NULL,
+  virus_genomes MEDIUMINT UNSIGNED NOT NULL,
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
