@@ -5,6 +5,7 @@ CREATE TABLE resource (
   description VARCHAR(500) NULL, 
   version VARCHAR(100) NOT NULL, /* SUPERFAMILY v1.75, Gene3D  V16.0  etc*/
 	url VARCHAR(250) NULL,
+  api_url VARCHAR(250) NULL,
   classification_version VARCHAR(100) NOT NULL,  /* SUPERFAMILY v1.75, CATH 4.2, Pfam 31.0 etc*/
   cellular_genomes_version VARCHAR(100) NOT NULL,  /* UniProt proteomes v2017 etc, SUPERFAMILY has assigned cellular and viral differently*/
   viral_genomes_version VARCHAR(100) NOT NULL,

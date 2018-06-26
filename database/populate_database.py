@@ -103,6 +103,7 @@ def insertResource(db,cursor,resource):
 	description = resources[resource]['description']
 	version = resources[resource]['version']
 	url = resources[resource]['url']
+  api_url = resources[resource]['api_url']
 	classification_version = resources[resource]['classification_version']
 	cellular_genomes_version = resources[resource]['cellular_genomes_version']
 	viral_genomes_version = resources[resource]['viral_genomes_version']
@@ -112,8 +113,8 @@ def insertResource(db,cursor,resource):
 	virus_genomes = resources[resource]['virus_genomes']
 	
 	try:
-		cursor.execute("INSERT INTO resource (id, type, name, description, version, url, classification_version, cellular_genomes_version, viral_genomes_version,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-		(id,type,name,description,version,url,classification_version,cellular_genomes_version,viral_genomes_version,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes))
+		cursor.execute("INSERT INTO resource (id, type, name, description, version, url, api_url, classification_version, cellular_genomes_version, viral_genomes_version,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+		(id,type,name,description,version,url,api_url,classification_version,cellular_genomes_version,viral_genomes_version,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes))
 		db.commit()
 	except:     
 		print("ERROR in insertResource or resource exist")
