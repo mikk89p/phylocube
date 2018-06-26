@@ -1,0 +1,16 @@
+<mat-card  class="card" >
+    <mat-card-header>
+      <img mat-card-avatar src="assets/icons/selected_point.png" alt="database">
+      <mat-card-title *ngIf='!selectedPoint.acc'>Click on a point! </mat-card-title>
+      <mat-card-title *ngIf='selectedPoint.acc'><b>Acc:</b> {{selectedPoint.acc}} </mat-card-title>
+      <mat-card-subtitle *ngIf='selectedPoint'><b>{{selectedPoint.description}}</b></mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content *ngIf='selectedPoint.acc'>
+        <p><b>x: </b>{{selectedPoint.x}}
+        <b>y: </b>{{selectedPoint.y}}
+        <b>z: </b>{{selectedPoint.z}}</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- <button mat-raised-button color="primary" style="margin-right:10px;">Default!</button> -->
+    </mat-card-actions>
+  </mat-card>

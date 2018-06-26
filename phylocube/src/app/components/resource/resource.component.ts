@@ -11,10 +11,12 @@ export class ResourceComponent implements OnInit {
   resources = {};
   activeResource;
   selectedValue: string;
+  defaultResourceType = 'supfam';
   constructor(private resourceService: ResourceService) { }
 
   ngOnInit() {
     this.resources = this.resourceService.getResources();
+    this.resourceService.setActiveResource(this.defaultResourceType);
     this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;

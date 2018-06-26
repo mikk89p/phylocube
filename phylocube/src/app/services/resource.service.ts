@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs';
 
@@ -11,26 +10,23 @@ export class ResourceService {
 
   private url: String = 'http://localhost:3000/v1/';
 
-  // Current active data, default supfam
-  private activeResourceType = 'supfam';
+
+  private activeResourceType;
 
 
   // BehaviorSubject
-  public activeResource;
-  public activeDataset;
+  public activeResourceSubject;
+  public activeDatasetSubject;
 
   constructor(private http: HttpClient) {
-    this.activeDataset =  new BehaviorSubject<Object>({});
-    this.activeResource =  new BehaviorSubject<Object>({});
+    this.activeDatasetSubject =  new BehaviorSubject([]);
+    this.activeResourceSubject =  new BehaviorSubject<Object>({});
   }
 
 
-  getResources() {
-    console.log ('getResources()');
-    const uri = this.url + 'resource';
-    return this.http.get(uri).map(res => {
-      return res;
-    });
+  getActiveResource() {
+    console.log ('getActiveResource()');
+    return this.activeResourceSubject;
   }
 
   setActiveResource(type: string) {
@@ -39,22 +35,38 @@ export class ResourceService {
     this.getResourceByType(this.activeResourceType).subscribe(
       resource => {
         // Send new resource to observers
-        this.activeResource.next(resource);
+        this.activeResourceSubject.next(resource);
       },
     );
   }
 
-  getActiveResource() {
-    console.log ('getActiveResource()');
-    // Get  current active resource
-    this.getResourceByType(this.activeResourceType).subscribe(
+  // Get data based on active resource
+  getData() {
+    console.log ('getData()');
+    // Get current active resource
+    this.getActiveResource().subscribe(
       resource => {
-        // Send current active resource to observers
-        this.activeResource.next(resource);
+
+        this.getDataByResourceType(resource.type).subscribe(
+          dataset => {
+            // Send current dataset to observers
+            this.activeDatasetSubject.next(dataset);
+          },
+        );
       },
+
     );
-    // Return BehaviorSubject
-    return this.activeResource;
+
+    return this.activeDatasetSubject;
+  }
+
+  // Get all available resources
+  getResources() {
+    console.log ('getResources()');
+    const uri = this.url + 'resource';
+    return this.http.get(uri).map(res => {
+      return res;
+    });
   }
 
   getResourceByType(type: string) {
@@ -65,30 +77,20 @@ export class ResourceService {
     });
   }
 
-  getData() {
-    console.log ('getData()');
-    // Get current active resource
-    this.getActiveResource().subscribe(
-      resource => {
-        this.getDataByResourceType(resource.type).subscribe(
-          dataset => {
-            // Send current dataset to observers
-            this.activeDataset.next(dataset);
-          },
-        );
-      },
-
-    );
-
-    return this.activeDataset;
-  }
-
-
+  
   getDataByResourceType(type: string) {
     console.log ('getDataByResourceType()');
     const uri = this.url + 'proteindomain/distribution/resource/' + type;
     return this.http.get(uri).map(res => {
       return res;
+    });
+  }
+
+  getDataByAcc(acc: string) {
+    console.log ('getDataByAcc(' + acc + ')');
+    const uri = this.url + 'proteindomain/' + acc;
+    return this.http.get(uri).map(res => {
+      return res[0];
     });
   }
 }

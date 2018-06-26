@@ -2,6 +2,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {Config , Data, Layout} from 'plotly.js';
 import * as _ from 'lodash';
+import { ResourceService } from '../../services/resource.service';
+import { CubeService } from '../../services/cube.service';
 @Component({
   selector: 'app-cube',
   templateUrl: './cube.component.html',
@@ -9,55 +11,116 @@ import * as _ from 'lodash';
 })
 export class CubeComponent implements OnInit {
   @ViewChild('chart') el: ElementRef;
+  activeDataSet;
+  activeResource;
+  
 
-  constructor() { }
+  constructor(
+    private resourceService: ResourceService, 
+    private cubeService: CubeService
+  ) {}
 
   ngOnInit() {
-    this.basicChart();
+    this.resourceService.getActiveResource().subscribe(
+      resource => {
+        this.activeResource = resource;
+      }
+    );
+
+    this.resourceService.getData().subscribe(
+      proteinDomainData => {
+        // TODO is called 4 times at first load
+        this.activeDataSet = proteinDomainData;
+        this.drawChart(this.el.nativeElement, this.activeDataSet, this.activeResource, this.cubeService);
+      }
+    );
   }
 
-  basicChart() {
-    const element = this.el.nativeElement;
+  getXYZ(proteinDomainData) {
+    let x = [];
+    let y = [];
+    let z = [];
+    let acc = []
  
-    Plotly.d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/3d-scatter.csv', function(err, rows){
-function unpack(rows: any, key) {
-	return rows.map(function(row)
-	{ return row[key]; });}
+    proteinDomainData.forEach(function (row) {
+      x.push(row.eukaryota);
+      y.push(row.archaea);
+      z.push(row.bacteria);
+      acc.push(row.acc);
+    });
+    //x = x.map(x => x * -1);
+    return {x: x, y: y, z: z, acc: acc}
+
+  }
+
+  getLayout(resource) {
+    let layout = {
+      title: resource.name + ' ' + resource.version,
+      autosize: false,
+      width: 800,
+      height: 700,
+      margin: {l: 90, r: 0, b: 0, t: 0},
+      scene: {
+        xaxis: {
+          autorange: 'reversed',
+          title: 'Eukaryota',
+          titlefont: {
+            family: 'Courier New, monospace',
+            size: 18,
+            color: '#7f7f7f'
+          }
+        },
+        yaxis: {
+          title: 'Archaea',
+          titlefont: {
+            family: 'Courier New, monospace',
+            size: 18,
+            color: '#7f7f7f'
+          }
+        },
+        zaxis: {
+          title: 'Bacteria',
+          titlefont: {
+            family: 'Courier New, monospace',
+            size: 18,
+            color: '#7f7f7f'
+          }
+        }
+      }
+    };
+    return layout; // {margin: {l: 0, r: 100, b: 0, t: 0}};
+  }
+
+  drawChart(element, activeData, resource, service) {
+    const coordinates = this.getXYZ(activeData);
+    const layout = this.getLayout(resource);
     const trace1 = {
-      x: unpack(rows, 'x1'), y: unpack(rows, 'y1'), z: unpack(rows, 'z1'),
+      x: coordinates['x'], 
+      y: coordinates['y'], 
+      z: coordinates['z'],
+      name: coordinates['acc'],
       mode: 'markers',
       marker: {
-        size: 12,
+        size: 3,
+        /* fill color */
+        name:coordinates['acc'],
+        color: 'rgba(0, 0, 0,0.6)',
         line: {
-        color: 'rgba(217, 217, 217, 0.14)',
-        width: 0.5},
+          /* outer line color */
+          color: 'rgba(0, 0, 0,0.1)',
+          width: 0.5
+        },
         opacity: 0.8},
       type: 'scatter3d'
     };
+    const data = [trace1];
 
-    const trace2 = {
-      x: unpack(rows, 'x2'), y: unpack(rows, 'y2'), z: unpack(rows, 'z2'),
-      mode: 'markers',
-      marker: {
-        color: 'rgb(127, 127, 127)',
-        size: 12,
-        symbol: 'circle',
-        line: {
-        color: 'rgb(204, 204, 204)',
-        width: 1},
-        opacity: 0.8},
-      type: 'scatter3d'};
-const data = [trace1];
-const layout = {margin: {
-	l: 0,
-	r: 0,
-	b: 0,
-	t: 0
-  }};
+    Plotly.purge(element);
+    Plotly.plot(element, data, layout);
 
-Plotly.plot(element, data, layout);
-});
-
-}
+    element.on('plotly_click', function(data){
+      service.setSelectedPoint(data);
+    });
+  }
 
 }

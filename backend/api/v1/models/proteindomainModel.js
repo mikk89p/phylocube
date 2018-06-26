@@ -14,7 +14,7 @@ var ProteinDomain = {
 
 	getAllProteinDomainsByResourceType: function(type, callback) {  
     sql = "SELECT * FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?";
-    if (type = 'clanpfam') {
+    if (type == 'clanpfam') {
       sql = "SELECT * FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id " + 
             "LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " + 
             "WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL";
@@ -24,7 +24,7 @@ var ProteinDomain = {
 
 	getAllProteinDomainsWithDistributionByResourceType: function(type, callback) { 
     sql = "SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?"
-    if (type = 'clanpfam') {
+    if (type == 'clanpfam') {
       sql = "SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id " +
             "JOIN resource ON protein_domain.resource_id = resource.id " + 
             "LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " + 

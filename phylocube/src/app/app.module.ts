@@ -15,10 +15,11 @@ import { FooterComponent } from './components/footer/footer.component';
 import { Error404Component } from './components/error404/error404.component';
 import { AboutComponent } from './components/about/about.component';
 import { CubeComponent } from './components/cube/cube.component';
-import { ProteinDomainService } from './services/protein-domain.service';
 import { ResourceService } from './services/resource.service';
+import { CubeService } from './services/cube.service';
 import { ResourceComponent } from './components/resource/resource.component';
 import { ProteinDomainTableComponent } from './components/protein-domain-table/protein-domain-table.component';
+import { ProteinDomainInfoComponent } from './components/protein-domain-info/protein-domain-info.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ProteinDomainTableComponent } from './components/protein-domain-table/p
     AboutComponent,
     CubeComponent,
     ResourceComponent,
-    ProteinDomainTableComponent
+    ProteinDomainTableComponent,
+    ProteinDomainInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,7 @@ import { ProteinDomainTableComponent } from './components/protein-domain-table/p
       enabled: environment.production
     })
   ],
-  providers: [ResourceService, ProteinDomainService],
+  providers: [ResourceService, CubeService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
