@@ -11,6 +11,13 @@
         <b>z: </b>{{selectedPoint.z}}</p>
     </mat-card-content>
     <mat-card-actions>
-      <!-- <button mat-raised-button color="primary" style="margin-right:10px;">Default!</button> -->
+      <button *ngIf='selectedPoint.acc' 
+              mat-raised-button color="primary" 
+              style="margin-right:10px;"
+              (click)="openNewTab($event, selectedPoint)"
+              >
+      More info
+      </button>
+
     </mat-card-actions>
   </mat-card>

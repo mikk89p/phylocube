@@ -75,7 +75,7 @@
 	"description": "All clan assignments from Pfam database including Pfam assignments which are not assigned to a clan.",
 	"version":"31.0",
   "url":"https://pfam.xfam.org/",
-  "api_url":"https://pfam.xfam.org/clan/",
+  "api_url":"https://pfam.xfam.org/clan/;https://pfam.xfam.org/family/",
 	"classification_version": "Clans from Pfam 31.0",
 	"cellular_genomes_version": "UniprotKB reference proteomes 2016_10",
   "viral_genomes_version": "UniprotKB reference proteomes 2016_10",
