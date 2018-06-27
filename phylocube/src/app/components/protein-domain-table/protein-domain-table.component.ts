@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {MatTableDataSource, MatSort} from '@angular/material';
+import { MatPaginator, MatTableDataSource, MatSort} from '@angular/material';
 import { ResourceService } from './../../services/resource.service';
+import { CubeService } from '../../services/cube.service';
+import {SelectionModel} from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-protein-domain-table',
@@ -8,28 +10,28 @@ import { ResourceService } from './../../services/resource.service';
   styleUrls: ['./protein-domain-table.component.scss']
 })
 export class ProteinDomainTableComponent implements OnInit {
-  displayedColumns = ['acc',
-                      'archaea',
-                      //'archaea_genomes',
-                      'bacteria',
-                      //'bacteria_genomes',
-                      'eukaryota',
-                      //'eukaryota_genomes',
-                      'virus',
-                      //'virus_genomes'
-                    ];
+  displayedColumns = ['select','acc','x','y','z','v'];
   dataSource = new MatTableDataSource();
+  selection = new SelectionModel(true, []);
+
   activeResource;
   selectedRow: number = -1;
+  Math: any;
 
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
 
-  constructor(private resourceService: ResourceService) { }
+  constructor(
+    private resourceService: ResourceService, 
+    private cubeService: CubeService
+  ) {this.Math = Math;}
 
   ngOnInit() {
-    this.resourceService.getData().subscribe(
+    this.dataSource.paginator = this.paginator;
+    this.cubeService.getPointsOnCube().subscribe(
       data => {
+        console.log(data);
         this.dataSource.data = Object.values(data);
       },
 
@@ -41,6 +43,20 @@ export class ProteinDomainTableComponent implements OnInit {
         this.activeResource = resource;
       },
     );
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+        this.selection.clear() :
+        this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
   highlight(row) {
@@ -64,14 +80,8 @@ export class ProteinDomainTableComponent implements OnInit {
 
 export interface ProteinDomain {
   acc: string;
-  description: string;
-  archaea: number;
-  bacteria: number;
-  eukaryota: number;
-  virus: number;
-  archaea_genomes: number;
-  bacteria_genomes: number;
-  eukaryota_genomes: number;
-  virus_genomes: number;
-
+  x: number;
+  y: number;
+  z: number;
+  v: number;
 }

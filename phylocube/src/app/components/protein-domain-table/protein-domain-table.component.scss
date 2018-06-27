@@ -14,6 +14,11 @@
   width: 100%;
 }
 
+td.mat-cell, td.mat-footer-cell, th.mat-header-cell {
+  border-bottom-style: none;
+}
+
+/*
 .mat-table {
   overflow: auto;
   max-height: 500px;
@@ -24,16 +29,11 @@
   flex-direction: column;
   min-width: 300px;
 }
-
-.mat-table {
-  overflow: auto;
-  max-height: 500px;
-}
-
+*/
 .mat-header-cell.mat-sort-header-sorted {
   color: black;
 }
 
 .highlight{
-  background:#A2A948;
+  background:#D3D3D3;
 }
