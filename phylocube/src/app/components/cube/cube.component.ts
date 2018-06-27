@@ -4,6 +4,7 @@ import {Config , Data, Layout} from 'plotly.js';
 import * as _ from 'lodash';
 import { ResourceService } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
+import { CubeLimits } from '../../components/cube/cube-limits';
 @Component({
   selector: 'app-cube',
   templateUrl: './cube.component.html',
@@ -13,6 +14,7 @@ export class CubeComponent implements OnInit {
   @ViewChild('chart') el: ElementRef;
   activeDataSet;
   activeResource;
+  cubeLimits;
   
 
   constructor(
@@ -31,7 +33,15 @@ export class CubeComponent implements OnInit {
       proteinDomainData => {
         // TODO is called 4 times at first load
         this.activeDataSet = proteinDomainData;
-        this.drawChart(this.el.nativeElement, this.activeDataSet, this.activeResource, this.cubeService);
+        this.drawChart(proteinDomainData,this.cubeService);
+        this.applyCubeLimits(this.cubeLimits);
+      }
+    );
+
+    this.cubeService.getCubeLimits().subscribe(
+      cubeLimits => {
+        this.cubeLimits = cubeLimits;
+        this.applyCubeLimits(cubeLimits);
       }
     );
   }
@@ -43,9 +53,9 @@ export class CubeComponent implements OnInit {
     let acc = []
  
     proteinDomainData.forEach(function (row) {
-      x.push(row.eukaryota);
-      y.push(row.archaea);
-      z.push(row.bacteria);
+      x.push(row.x);
+      y.push(row.y);
+      z.push(row.z);
       acc.push(row.acc);
     });
     //x = x.map(x => x * -1);
@@ -54,16 +64,23 @@ export class CubeComponent implements OnInit {
   }
 
   getLayout(resource) {
+    /*
+      eukaryota_genomes = x
+      archaea_genomes = y
+      bacteria_genomes = z
+      virus_genomes = v
+    */
     let layout = {
-      title: resource.name + ' ' + resource.version,
+      title: resource.name?resource.name + ' ' + resource.version:'Loading...',
       autosize: false,
       width: 800,
       height: 700,
-      margin: {l: 90, r: 0, b: 0, t: 0},
+      margin: {l: 90, r: 0, b: 0, t: 30},
       scene: {
         xaxis: {
-          autorange: 'reversed',
+          //autorange: 'reversed',
           title: 'Eukaryota',
+          range:[0,resource.xMax],
           titlefont: {
             family: 'Courier New, monospace',
             size: 18,
@@ -72,6 +89,7 @@ export class CubeComponent implements OnInit {
         },
         yaxis: {
           title: 'Archaea',
+          range:[0,resource.yMax],
           titlefont: {
             family: 'Courier New, monospace',
             size: 18,
@@ -80,6 +98,7 @@ export class CubeComponent implements OnInit {
         },
         zaxis: {
           title: 'Bacteria',
+          range:[0,resource.zMax],
           titlefont: {
             family: 'Courier New, monospace',
             size: 18,
@@ -91,19 +110,24 @@ export class CubeComponent implements OnInit {
     return layout; // {margin: {l: 0, r: 100, b: 0, t: 0}};
   }
 
-  drawChart(element, activeData, resource, service) {
-    const coordinates = this.getXYZ(activeData);
-    const layout = this.getLayout(resource);
+  unpack(rows, key) {
+    return rows.map(function(row)
+    { return row[key]; });
+  }
+
+  drawChart(dataset,cubeService) {
+    //const coordinates = this.getXYZ(dataset);
+    const layout = this.getLayout(this.activeResource);
     const trace1 = {
-      x: coordinates['x'], 
-      y: coordinates['y'], 
-      z: coordinates['z'],
-      name: coordinates['acc'],
+      x: this.unpack(dataset,'x'), 
+      y: this.unpack(dataset,'y'),
+      z: this.unpack(dataset,'z'),
+      name: this.unpack(dataset,'acc'),
       mode: 'markers',
       marker: {
         size: 3,
         /* fill color */
-        name:coordinates['acc'],
+        name:this.unpack(dataset,'acc'),
         color: 'rgba(0, 0, 0,0.6)',
         line: {
           /* outer line color */
@@ -114,13 +138,63 @@ export class CubeComponent implements OnInit {
       type: 'scatter3d'
     };
     const data = [trace1];
+    const element = this.el.nativeElement;
+    //Plotly.purge(element);
+    Plotly.newPlot(element, data, layout);
 
-    Plotly.purge(element);
-    Plotly.plot(element, data, layout);
-
-    element.on('plotly_click', function(data){
-      service.setSelectedPoint(data);
+    element.on('plotly_click', function(points){
+      cubeService.setSelectedPoint(points);
     });
   }
+
+  applyCubeLimits(cubeLimits: CubeLimits){
+    console.log('applyCubeLimits()');
+    //Make deep copy and remove points from the copyed dataset
+    var dataset = JSON.parse(JSON.stringify(this.activeDataSet));
+
+    // Array of indexes
+    var indexes = [];
+
+    const xMax = this.activeResource.xMax
+    const yMax = this.activeResource.yMax
+    const zMax = this.activeResource.zMax
+    const vMax = this.activeResource.vMax
+    //console.log(cubeLimits);
+    //console.log(typeof(dataset));
+    dataset.forEach(element => {
+      let x = (element['x'] / xMax) * 100;
+      let y = (element['y']  / yMax) * 100;
+      let z = (element['z']  / zMax) * 100;
+      //console.log(z);
+      if (vMax != undefined) {
+        let v = (element['v']  / vMax) * 100;
+      }
+
+      /*
+      if (x >= cubeLimits.xLowerLimit && x <= cubeLimits.xUpperLimit &&
+          y >= cubeLimits.yLowerLimit && y <= cubeLimits.yUpperLimit &&
+          z >= cubeLimits.zLowerLimit && z <= cubeLimits.zUpperLimit) {
+      */
+
+      if (x < cubeLimits.xLowerLimit || x > cubeLimits.xUpperLimit ||
+          y < cubeLimits.yLowerLimit || y > cubeLimits.yUpperLimit ||
+          z < cubeLimits.zLowerLimit || z > cubeLimits.zUpperLimit) {
+        var index = dataset.indexOf(element);
+        indexes.push(index);
+      }
+      
+    });
+
+    //Go through in reverse order without messing up the indexes of the yet-to-be-removed items
+    indexes.reverse();
+    indexes.forEach(index => {
+      if (index !== -1) dataset.splice(index, 1);
+    });
+    
+    this.drawChart(dataset, this.cubeService);
+    
+  }
+
+
 
 }

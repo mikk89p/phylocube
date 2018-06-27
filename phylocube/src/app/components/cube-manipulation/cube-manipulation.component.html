@@ -1,0 +1,38 @@
+<mat-card>
+  <mat-card-header>
+    <img mat-card-avatar src="assets/icons/selected_object.png" alt="database">
+    <mat-card-title>Select domains based on their abundance</mat-card-title>
+    <mat-card-subtitle>Change range limits by dragging the slider</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div style="padding-bottom:20px;padding-top:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">
+      <div fxFlex="25%">{{activeResource.xTitle}} (x)</div>
+      <nouislider fxFlex="75%"
+                  [config]="sliderConfig"
+                  [(ngModel)]="xRange"
+                  (mouseup)="updateCube();">
+      </nouislider>
+    </div>
+
+    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">
+      <div fxFlex="25%">{{activeResource.yTitle}} (y)</div>
+      <nouislider fxFlex="75%"
+                  [config]="sliderConfig"
+                  [(ngModel)]="yRange"
+                  (mouseup)="updateCube();">
+      </nouislider>
+    </div>
+
+    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">
+      <div fxFlex="25%">{{activeResource.zTitle}} (z)</div>
+      <nouislider fxFlex="75%"
+                  [config]="sliderConfig"
+                  [(ngModel)]="zRange"
+                  (mouseup)="updateCube();">
+      </nouislider>
+      
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+  </mat-card-actions>
+</mat-card>

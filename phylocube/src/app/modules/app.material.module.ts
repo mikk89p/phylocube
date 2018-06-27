@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+
 import {
    MatInputModule,
     MatMenuModule,
@@ -11,7 +12,8 @@ import {
     MatTableModule,
     MatSortModule,
     MatSliderModule,
-    MatSelectModule
+    MatSelectModule,
+    MatFormFieldModule
 } from '@angular/material';
 
 @NgModule({
@@ -27,7 +29,8 @@ import {
     MatTableModule,
     MatSortModule,
     MatSliderModule,
-    MatSelectModule
+    MatSelectModule,
+    MatFormFieldModule
 ],
   exports: [
     MatInputModule,
@@ -41,7 +44,8 @@ import {
     MatTableModule,
     MatSortModule,
     MatSliderModule,
-    MatSelectModule
+    MatSelectModule,
+    MatFormFieldModule
 ],
 })
 export class MaterialModule { }

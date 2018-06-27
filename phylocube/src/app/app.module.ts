@@ -6,7 +6,8 @@ import { HttpClientModule } from '@angular/common/http';  // replaces previous H
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { environment } from '../environments/environment';
 import { ServiceWorkerModule } from '@angular/service-worker';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NouisliderModule } from 'ng2-nouislider';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -20,6 +21,7 @@ import { CubeService } from './services/cube.service';
 import { ResourceComponent } from './components/resource/resource.component';
 import { ProteinDomainTableComponent } from './components/protein-domain-table/protein-domain-table.component';
 import { ProteinDomainInfoComponent } from './components/protein-domain-info/protein-domain-info.component';
+import { CubeManipulationComponent } from './components/cube-manipulation/cube-manipulation.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,8 @@ import { ProteinDomainInfoComponent } from './components/protein-domain-info/pro
     CubeComponent,
     ResourceComponent,
     ProteinDomainTableComponent,
-    ProteinDomainInfoComponent
+    ProteinDomainInfoComponent,
+    CubeManipulationComponent
   ],
   imports: [
     BrowserModule,
@@ -41,6 +44,8 @@ import { ProteinDomainInfoComponent } from './components/protein-domain-info/pro
     MaterialModule,
     HttpClientModule,
     FlexLayoutModule,
+    FormsModule,
+    NouisliderModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production
     })

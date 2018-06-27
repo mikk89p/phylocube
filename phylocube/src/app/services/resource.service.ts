@@ -35,9 +35,42 @@ export class ResourceService {
     this.getResourceByType(this.activeResourceType).subscribe(
       resource => {
         // Send new resource to observers
+        /*
+        eukaryota_genomes = x
+        archaea_genomes = y
+        bacteria_genomes = z
+        virus_genomes = v
+        */
+        resource = this.addCubeMaxValuesToResource(resource,resource.eukaryota_genomes,resource.archaea_genomes,resource.bacteria_genomes,resource.virus_genomes)
+        resource = this.addAxesTitlesToResource(resource,'Eukaryota','Archaea','Bacteria','Virus');
         this.activeResourceSubject.next(resource);
       },
     );
+  }
+
+  addCubeMaxValuesToResource(resource,xMax,yMax,zMax,vMax?){
+    resource['xMax'] = xMax;
+    resource['yMax'] = yMax;
+    resource['zMax'] = zMax;
+    if (vMax != undefined) {
+      resource['vMax'] = vMax;
+    }
+    
+    return resource;
+  }
+
+  addAxesTitlesToResource(resource,xTitle,yTitle,zTitle,vTitle?){
+    resource['xTitle'] = xTitle;
+    resource['yTitle'] = yTitle;
+    resource['zTitle'] = zTitle;
+    if (vTitle != undefined) {
+      resource['vTitle'] = vTitle;
+    }
+    
+    return resource;
+  }
+  addCubeAxesToResource(){
+
   }
 
   // Get data based on active resource
@@ -46,10 +79,18 @@ export class ResourceService {
     // Get current active resource
     this.getActiveResource().subscribe(
       resource => {
-
         this.getDataByResourceType(resource.type).subscribe(
-          dataset => {
-            // Send current dataset to observers
+          response => {
+            let dataset = [];
+            Object.keys(response).forEach(function(key) {
+              let element = response[key];
+              let obj = {
+                x: element.eukaryota,
+                y: element.archaea,
+                z: element.bacteria, 
+                acc: element.acc}
+              dataset.push(obj);
+            });
             this.activeDatasetSubject.next(dataset);
           },
         );
