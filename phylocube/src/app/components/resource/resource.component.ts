@@ -1,4 +1,5 @@
 import { ResourceService } from './../../services/resource.service';
+//import { CubeService } from '../../services/cube.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -12,7 +13,10 @@ export class ResourceComponent implements OnInit {
   activeResource;
   selectedValue: string;
   defaultResourceType = 'supfam';
-  constructor(private resourceService: ResourceService) { }
+  constructor(
+    private resourceService: ResourceService, 
+    //private cubeService: CubeService
+  ) {}
 
   ngOnInit() {
     this.resources = this.resourceService.getResources();

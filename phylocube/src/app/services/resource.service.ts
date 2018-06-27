@@ -88,6 +88,7 @@ export class ResourceService {
                 x: element.eukaryota,
                 y: element.archaea,
                 z: element.bacteria, 
+                v: element.virus,
                 acc: element.acc}
               dataset.push(obj);
             });

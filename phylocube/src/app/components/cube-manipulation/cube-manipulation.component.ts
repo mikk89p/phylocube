@@ -11,6 +11,8 @@ import { CubeLimits } from '../../components/cube/cube-limits';
 export class CubeManipulationComponent implements OnInit {
 
   private activeResource;
+  private activeDataSet;
+  private pointsOnCube;
   private cubeLimits: CubeLimits;
 
   xRange=[0, 100];
@@ -44,6 +46,20 @@ export class CubeManipulationComponent implements OnInit {
         this.activeResource = resource;
       }
     );
+
+    this.resourceService.getData().subscribe(
+      data => {
+        this.activeDataSet = data;
+      }
+    );
+
+    this.cubeService.getPointsOnCube().subscribe(
+      data => {
+        this.pointsOnCube = data;
+      }
+    );
+
+
   }
 
   updateCube() {

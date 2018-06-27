@@ -11,18 +11,37 @@ import { CubeLimits } from '../components/cube/cube-limits';
 export class CubeService {
 
   private selectedPointSubject;
+  private highlightedPointsSubject;
   private cubeLimitsSubject;
+  private pointsOnCubeSubject;
 
 
   constructor(private http: HttpClient, private resourceService: ResourceService) {
-    this.selectedPointSubject =  new BehaviorSubject<Object>([]);
+    this.pointsOnCubeSubject =  new BehaviorSubject<Object>([]);
+    this.highlightedPointsSubject =  new BehaviorSubject<Array<Object>>([]);
+    this.selectedPointSubject =  new BehaviorSubject<Array<Object>>([]);
     this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0,100,0,100,0,100));
    }
+
+  getPointsOnCube(){
+    return this.pointsOnCubeSubject;
+  }
+
+  setPointsOnCube(data){
+    this.pointsOnCubeSubject.next(data);
+  }
+
+  getHighlightedPoints(){
+    return this.highlightedPointsSubject;
+  }
+
+  setHighlightedPoints(data: Array<Object>){
+    this.highlightedPointsSubject.next(data);
+  }
 
 
   setSelectedPoint(points) {
     var point = points['points'][0];
-    console.log(point)
     var acc = point.data.name[point.pointNumber];
     this.resourceService.getDataByAcc(acc).subscribe(
       proteinDomain => {

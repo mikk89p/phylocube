@@ -1,8 +1,8 @@
 <mat-card>
   <mat-card-header>
     <img mat-card-avatar src="assets/icons/selected_object.png" alt="database">
-    <mat-card-title>Select domains based on their abundance</mat-card-title>
-    <mat-card-subtitle>Change range limits by dragging the slider</mat-card-subtitle>
+    <mat-card-title>Total domains: {{activeDataSet.length}}</mat-card-title>
+    <mat-card-subtitle>Selected domains:{{pointsOnCube.length}}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <div style="padding-bottom:20px;padding-top:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">

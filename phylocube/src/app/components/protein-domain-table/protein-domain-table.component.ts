@@ -10,7 +10,7 @@ import {SelectionModel} from '@angular/cdk/collections';
   styleUrls: ['./protein-domain-table.component.scss']
 })
 export class ProteinDomainTableComponent implements OnInit {
-  displayedColumns = ['select','acc','x','y','z','v'];
+  displayedColumns = ['acc','x','y','z','v'];
   dataSource = new MatTableDataSource();
   selection = new SelectionModel(true, []);
 
@@ -31,7 +31,6 @@ export class ProteinDomainTableComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
     this.cubeService.getPointsOnCube().subscribe(
       data => {
-        console.log(data);
         this.dataSource.data = Object.values(data);
       },
 
@@ -60,7 +59,9 @@ export class ProteinDomainTableComponent implements OnInit {
   }
 
   highlight(row) {
-    console.log(row);
+    var arr = [];
+    arr.push(row);
+    this.cubeService.setHighlightedPoints(arr);
     this.selectedRow = row.acc;
   }
 

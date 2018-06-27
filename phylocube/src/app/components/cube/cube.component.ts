@@ -13,6 +13,7 @@ import { CubeLimits } from '../../components/cube/cube-limits';
 export class CubeComponent implements OnInit {
   @ViewChild('chart') el: ElementRef;
   activeDataSet;
+  filteredDataSet;
   activeResource;
   cubeLimits;
   
@@ -26,24 +27,76 @@ export class CubeComponent implements OnInit {
     this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
+        
       }
     );
 
     this.resourceService.getData().subscribe(
-      proteinDomainData => {
+      data => {
         // TODO is called 4 times at first load
-        this.activeDataSet = proteinDomainData;
-        this.drawChart(proteinDomainData,this.cubeService);
-        this.applyCubeLimits(this.cubeLimits);
+        this.activeDataSet = data;
+        var data = this.applyCubeLimits(this.cubeLimits);
+        this.cubeService.setPointsOnCube(data);
       }
     );
+
+    this.cubeService.getPointsOnCube().subscribe(
+      data => {
+        this.drawChart(data,this.cubeService);
+      }
+    );
+
+    this.cubeService.getHighlightedPoints().subscribe(
+      data => {
+        this.highlightPoints(data);
+      }
+    );
+
+    this.cubeService.getSelectedPoint().subscribe(
+      point => {
+        var arr = []
+        arr.push(point);
+        this.highlightPoints(arr);
+      }
+
+    );
+
 
     this.cubeService.getCubeLimits().subscribe(
       cubeLimits => {
         this.cubeLimits = cubeLimits;
-        this.applyCubeLimits(cubeLimits);
+        var data = this.applyCubeLimits(this.cubeLimits);
+        this.cubeService.setPointsOnCube(data);
       }
     );
+  }
+
+  highlightPoints(points){
+    const element = this.el.nativeElement;
+    //const layout = this.getLayout(this.activeResource);
+    var dataset = points;
+    console.log("data" + dataset);
+    var highlight = {
+      x: this.unpack(dataset,'x'), 
+      y: this.unpack(dataset,'y'),
+      z: this.unpack(dataset,'z'),
+      name: 'highlight',
+      mode: 'markers',
+      marker: {
+        size: 15,
+        name:'highlight',
+        color: 'rgba(0, 180, 0,0.6)',
+        line: {
+          color: 'rgba(0, 180, 0,0.1)',
+          width: 0.5
+        },
+        opacity: 0.7},
+        type: 'scatter3d'
+    }
+    if (points.length >= 1){
+      Plotly.plot(element, [highlight]);
+    }
+  
   }
 
   getXYZ(proteinDomainData) {
@@ -115,6 +168,11 @@ export class CubeComponent implements OnInit {
     { return row[key]; });
   }
 
+  unpackString(rows, key) {
+    return rows.map(function(row)
+    { return String(row[key]); });
+  }
+
   drawChart(dataset,cubeService) {
     //const coordinates = this.getXYZ(dataset);
     const layout = this.getLayout(this.activeResource);
@@ -140,10 +198,26 @@ export class CubeComponent implements OnInit {
     const data = [trace1];
     const element = this.el.nativeElement;
     //Plotly.purge(element);
-    Plotly.newPlot(element, data, layout);
+    if (element.data){
+      console.log(element.data);
+      console.log(element.data.length);
+    }
+    /* TODO
+    if (element.data && element.data.length > 2){
+      Plotly.deleteTraces(element, 0);
+      Plotly.plot(element, data, layout, [0]);
+    } else {
+      console.log("as");
+      Plotly.newPlot(element, data, layout, [0]);
+    }
+    */
+    Plotly.newPlot(element, data, layout, [0]);
+
+    
+    
 
     element.on('plotly_click', function(points){
-      cubeService.setSelectedPoint(points);
+      cubeService.setSelectedPoint(points)
     });
   }
 
@@ -191,7 +265,8 @@ export class CubeComponent implements OnInit {
       if (index !== -1) dataset.splice(index, 1);
     });
     
-    this.drawChart(dataset, this.cubeService);
+    this.filteredDataSet = dataset;
+    return dataset;
     
   }
 
