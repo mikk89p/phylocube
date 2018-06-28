@@ -22,6 +22,7 @@ import { ResourceComponent } from './components/resource/resource.component';
 import { ProteinDomainTableComponent } from './components/protein-domain-table/protein-domain-table.component';
 import { ProteinDomainInfoComponent } from './components/protein-domain-info/protein-domain-info.component';
 import { CubeManipulationComponent } from './components/cube-manipulation/cube-manipulation.component';
+import { AxesSelectionComponent } from './components/axes-selection/axes-selection.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { CubeManipulationComponent } from './components/cube-manipulation/cube-m
     ResourceComponent,
     ProteinDomainTableComponent,
     ProteinDomainInfoComponent,
-    CubeManipulationComponent
+    CubeManipulationComponent,
+    AxesSelectionComponent
   ],
   imports: [
     BrowserModule,
