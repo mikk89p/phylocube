@@ -59,9 +59,7 @@ export class ProteinDomainTableComponent implements OnInit {
   }
 
   highlight(row) {
-    var arr = [];
-    arr.push(row);
-    this.cubeService.setHighlightedPoints(arr);
+    this.cubeService.setHighlightedPoint(row);
     this.selectedRow = row.acc;
   }
 

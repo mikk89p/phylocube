@@ -6,8 +6,14 @@
   fxLayoutGap="10px"
   fxLayoutGap.xs="0">
 
-  <div fxFlex="60%" fxFlex.gt-md="70%" fxLayoutAlign="center" >
-    <app-cube ></app-cube>
+  <div fxFlex="60%" fxFlex.gt-md="70%" fxLayout="column"  >
+      <div fxFlex fxLayoutAlign="center">
+          <app-cube ></app-cube>
+      </div>
+      <div fxFlex>
+          <app-axes-selection></app-axes-selection>
+      </div>
+    
   </div>
 
 

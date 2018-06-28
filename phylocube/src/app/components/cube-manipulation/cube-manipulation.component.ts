@@ -10,18 +10,17 @@ import { CubeLimits } from '../../components/cube/cube-limits';
 })
 export class CubeManipulationComponent implements OnInit {
 
-  private activeResource;
-  private activeDataSet;
-  private pointsOnCube;
-  private cubeLimits: CubeLimits;
+  activeResource;
+  activeDataSet;
+  pointsOnCube;
+  cubeLimits: CubeLimits;
 
-  xRange=[0, 100];
-  yRange=[0, 100];
-  zRange=[0, 100];
-  
+  xRange = [0, 100];
+  yRange = [0, 100];
+  zRange = [0, 100];
   sliderConfig = {
     connect: true,
-    start: [0,100],
+    start: [0, 100],
     step: 0.5,
     range: {
       'min': [0],
@@ -36,7 +35,7 @@ export class CubeManipulationComponent implements OnInit {
 
 
   constructor(
-    private resourceService: ResourceService, 
+    private resourceService: ResourceService,
     private cubeService: CubeService
   ) {}
 
@@ -58,7 +57,12 @@ export class CubeManipulationComponent implements OnInit {
         this.pointsOnCube = data;
       }
     );
-
+/*
+    this.cubeService.getCubeLimits().subscribe(
+      cubeLimits => {
+      }
+    );
+*/
 
   }
 
@@ -71,6 +75,13 @@ export class CubeManipulationComponent implements OnInit {
       this.zRange[0],
       this.zRange[1]);
     this.cubeService.setCubeLimits(this.cubeLimits);
+  }
+
+  seToDefault() {
+    this.cubeService.setCubeLimits(new CubeLimits(0, 100, 0, 100, 0, 100));
+    this.xRange = [0, 100];
+    this.yRange = [0, 100];
+    this.zRange = [0, 100];
   }
 
 }

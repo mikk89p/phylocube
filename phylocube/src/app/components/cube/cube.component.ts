@@ -15,6 +15,7 @@ export class CubeComponent implements OnInit {
   activeDataSet;
   filteredDataSet;
   activeResource;
+  previousResource = {};
   cubeLimits;
   
 
@@ -26,6 +27,7 @@ export class CubeComponent implements OnInit {
   ngOnInit() {
     this.resourceService.getActiveResource().subscribe(
       resource => {
+        console.log('Cube component getActiveResource()');
         this.activeResource = resource;
         
       }
@@ -33,54 +35,93 @@ export class CubeComponent implements OnInit {
 
     this.resourceService.getData().subscribe(
       data => {
-        // TODO is called 4 times at first load
-        this.activeDataSet = data;
-        var data = this.applyCubeLimits(this.cubeLimits);
-        this.cubeService.setPointsOnCube(data);
+       
+          console.log('Cube component getData()');
+          this.activeDataSet = data;
+          var data = this.applyCubeLimits(this.cubeLimits);
+          this.cubeService.setPointsOnCube(data);
+        
       }
     );
 
     this.cubeService.getPointsOnCube().subscribe(
       data => {
-        this.drawChart(data,this.cubeService);
+        if (data != undefined && data.length != 0) {
+          console.log('Cube component getPointsOnCube()');
+          this.drawChart(data,this.cubeService);
+        }
       }
     );
 
-    this.cubeService.getHighlightedPoints().subscribe(
-      data => {
-        this.highlightPoints(data);
+    this.cubeService.getHighlightedPoint().subscribe(
+      point => {
+        this.highlightPoint(point);
       }
     );
 
     this.cubeService.getSelectedPoint().subscribe(
       point => {
-        var arr = []
-        arr.push(point);
-        this.highlightPoints(arr);
+        if (Object.keys(point).length !== 0) {
+          console.log('------------------getSel');
+          this.highlightPoint(point);
+        } 
       }
-
     );
-
 
     this.cubeService.getCubeLimits().subscribe(
       cubeLimits => {
-        this.cubeLimits = cubeLimits;
-        var data = this.applyCubeLimits(this.cubeLimits);
-        this.cubeService.setPointsOnCube(data);
+        if (Object.keys(cubeLimits).length !== 0) {
+          
+          var data = this.applyCubeLimits(cubeLimits);
+          this.cubeService.setPointsOnCube(data);
+        } 
       }
     );
   }
 
+  unpack(rows, key) {
+    return rows.map(function(row)
+    { return row[key]; });
+  }
+
+  highlightPoint(point){
+    if (point === undefined || JSON.stringify(point) === JSON.stringify({})) {return;}
+    console.log('Cube component highlightPoint()');
+    const element = this.el.nativeElement;
+    console.log(point);
+    var highlight = {
+      x: this.unpack([point],'x'), 
+      y: this.unpack([point],'y'),
+      z: this.unpack([point],'z'),
+      name: point.acc,
+      mode: 'markers',
+      marker: {
+        size: 15,
+        color: 'rgba(0, 180, 0,0.6)',
+        line: {
+          color: 'rgba(0, 180, 0,0.1)',
+          width: 0.5
+        },
+        opacity: 0.7},
+        type: 'scatter3d'
+    }
+    Plotly.plot(element, [highlight]);
+  }
+
+
+  /*
   highlightPoints(points){
+    if (points === undefined || points.length == 0) {return;}
+    console.log('Cube component highlightPoints() ' + points.length);
     const element = this.el.nativeElement;
     //const layout = this.getLayout(this.activeResource);
     var dataset = points;
-    console.log("data" + dataset);
+    console.log(dataset[0].acc);
     var highlight = {
       x: this.unpack(dataset,'x'), 
       y: this.unpack(dataset,'y'),
       z: this.unpack(dataset,'z'),
-      name: 'highlight',
+      name: dataset[0].acc,
       mode: 'markers',
       marker: {
         size: 15,
@@ -96,9 +137,8 @@ export class CubeComponent implements OnInit {
     if (points.length >= 1){
       Plotly.plot(element, [highlight]);
     }
-  
   }
-
+*/
   getXYZ(proteinDomainData) {
     let x = [];
     let y = [];
@@ -128,7 +168,7 @@ export class CubeComponent implements OnInit {
       autosize: false,
       width: 800,
       height: 700,
-      margin: {l: 90, r: 0, b: 0, t: 30},
+      margin: {l: 90, r: 0, b: 0, t: 0},
       scene: {
         xaxis: {
           //autorange: 'reversed',
@@ -163,15 +203,8 @@ export class CubeComponent implements OnInit {
     return layout; // {margin: {l: 0, r: 100, b: 0, t: 0}};
   }
 
-  unpack(rows, key) {
-    return rows.map(function(row)
-    { return row[key]; });
-  }
 
-  unpackString(rows, key) {
-    return rows.map(function(row)
-    { return String(row[key]); });
-  }
+
 
   drawChart(dataset,cubeService) {
     //const coordinates = this.getXYZ(dataset);
@@ -180,7 +213,8 @@ export class CubeComponent implements OnInit {
       x: this.unpack(dataset,'x'), 
       y: this.unpack(dataset,'y'),
       z: this.unpack(dataset,'z'),
-      name: this.unpack(dataset,'acc'),
+      acc: this.unpack(dataset,'acc'),
+      name: this.activeResource.name + ' data',
       mode: 'markers',
       marker: {
         size: 3,
@@ -211,6 +245,7 @@ export class CubeComponent implements OnInit {
       Plotly.newPlot(element, data, layout, [0]);
     }
     */
+    Plotly.purge(element);
     Plotly.newPlot(element, data, layout, [0]);
 
     
@@ -222,7 +257,15 @@ export class CubeComponent implements OnInit {
   }
 
   applyCubeLimits(cubeLimits: CubeLimits){
+    /*
+    if (this.cubeLimits && JSON.stringify(this.cubeLimits) == JSON.stringify(cubeLimits) && 
+    JSON.stringify(this.activeResource) == JSON.stringify(this.previousResource) ) {
+      return this.activeDataSet;
+    }*/
+    
     console.log('applyCubeLimits()');
+    this.cubeLimits = cubeLimits;
+    this.previousResource = this.activeResource;
     //Make deep copy and remove points from the copyed dataset
     var dataset = JSON.parse(JSON.stringify(this.activeDataSet));
 
@@ -233,22 +276,14 @@ export class CubeComponent implements OnInit {
     const yMax = this.activeResource.yMax
     const zMax = this.activeResource.zMax
     const vMax = this.activeResource.vMax
-    //console.log(cubeLimits);
-    //console.log(typeof(dataset));
+
     dataset.forEach(element => {
       let x = (element['x'] / xMax) * 100;
       let y = (element['y']  / yMax) * 100;
       let z = (element['z']  / zMax) * 100;
-      //console.log(z);
       if (vMax != undefined) {
         let v = (element['v']  / vMax) * 100;
       }
-
-      /*
-      if (x >= cubeLimits.xLowerLimit && x <= cubeLimits.xUpperLimit &&
-          y >= cubeLimits.yLowerLimit && y <= cubeLimits.yUpperLimit &&
-          z >= cubeLimits.zLowerLimit && z <= cubeLimits.zUpperLimit) {
-      */
 
       if (x < cubeLimits.xLowerLimit || x > cubeLimits.xUpperLimit ||
           y < cubeLimits.yLowerLimit || y > cubeLimits.yUpperLimit ||

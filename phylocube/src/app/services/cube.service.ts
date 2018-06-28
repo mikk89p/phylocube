@@ -11,15 +11,16 @@ import { CubeLimits } from '../components/cube/cube-limits';
 export class CubeService {
 
   private selectedPointSubject;
-  private highlightedPointsSubject;
+  private highlightedPointSubject;
   private cubeLimitsSubject;
   private pointsOnCubeSubject;
+  private previousData: {}[] = [];
 
 
   constructor(private http: HttpClient, private resourceService: ResourceService) {
-    this.pointsOnCubeSubject =  new BehaviorSubject<Object>([]);
-    this.highlightedPointsSubject =  new BehaviorSubject<Array<Object>>([]);
-    this.selectedPointSubject =  new BehaviorSubject<Array<Object>>([]);
+    this.pointsOnCubeSubject =  new BehaviorSubject([]);
+    this.highlightedPointSubject =  new BehaviorSubject<Object>({});
+    this.selectedPointSubject =  new BehaviorSubject<Object>({});
     this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0,100,0,100,0,100));
    }
 
@@ -27,22 +28,28 @@ export class CubeService {
     return this.pointsOnCubeSubject;
   }
 
-  setPointsOnCube(data){
-    this.pointsOnCubeSubject.next(data);
+  setPointsOnCube(data: {}[]){
+    if (data.length > 0){
+      if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))){
+        this.previousData = data;
+        this.pointsOnCubeSubject.next(data);
+      }
+    }
+    
   }
 
-  getHighlightedPoints(){
-    return this.highlightedPointsSubject;
+  getHighlightedPoint(){
+    return this.highlightedPointSubject;
   }
 
-  setHighlightedPoints(data: Array<Object>){
-    this.highlightedPointsSubject.next(data);
+  setHighlightedPoint(data: Object){
+    this.highlightedPointSubject.next(data);
   }
 
 
   setSelectedPoint(points) {
     var point = points['points'][0];
-    var acc = point.data.name[point.pointNumber];
+    var acc = point.data.acc[point.pointNumber];
     this.resourceService.getDataByAcc(acc).subscribe(
       proteinDomain => {
         proteinDomain['x'] = point.x;

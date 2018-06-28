@@ -9,9 +9,8 @@ import { BehaviorSubject } from 'rxjs';
 export class ResourceService {
 
   private url: String = 'http://localhost:3000/v1/';
-
-
   private activeResourceType;
+  private previousResourceType;
 
 
   // BehaviorSubject
@@ -25,12 +24,12 @@ export class ResourceService {
 
 
   getActiveResource() {
-    console.log ('getActiveResource()');
+    //console.log ('getActiveResource()');
     return this.activeResourceSubject;
   }
 
   setActiveResource(type: string) {
-    console.log ('setActiveResource(' + type + ')');
+    //console.log ('setActiveResource(' + type + ')');
     this.activeResourceType = type;
     this.getResourceByType(this.activeResourceType).subscribe(
       resource => {
@@ -75,10 +74,12 @@ export class ResourceService {
 
   // Get data based on active resource
   getData() {
-    console.log ('getData()');
+    //console.log ('getData()');
     // Get current active resource
     this.getActiveResource().subscribe(
       resource => {
+        if (resource.type == undefined || resource.type == this.previousResourceType){return;}
+        this.previousResourceType = resource.type; //set current type to previous
         this.getDataByResourceType(resource.type).subscribe(
           response => {
             let dataset = [];
@@ -104,7 +105,7 @@ export class ResourceService {
 
   // Get all available resources
   getResources() {
-    console.log ('getResources()');
+    //console.log ('getResources()');
     const uri = this.url + 'resource';
     return this.http.get(uri).map(res => {
       return res;
@@ -112,7 +113,7 @@ export class ResourceService {
   }
 
   getResourceByType(type: string) {
-    console.log ('getResourceByType()');
+    //console.log ('getResourceByType()');
     const uri = this.url + 'resource/' + type;
     return this.http.get(uri).map(res => {
       return res[0];
@@ -121,18 +122,19 @@ export class ResourceService {
 
   
   getDataByResourceType(type: string) {
-    console.log ('getDataByResourceType()');
+    //console.log ('getDataByResourceType()');
     const uri = this.url + 'proteindomain/distribution/resource/' + type;
     return this.http.get(uri).map(res => {
       return res;
     });
+
   }
 
   getDataByAcc(acc: string) {
-    console.log ('getDataByAcc(' + acc + ')');
+    //console.log ('getDataByAcc(' + acc + ')');
     const uri = this.url + 'proteindomain/' + acc;
     return this.http.get(uri).map(res => {
-      return res[0];
-    });
+        return res[0];
+      });
   }
 }
