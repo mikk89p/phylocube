@@ -10,7 +10,7 @@ function sendDefaultResponse(res, err, data){
 	res.json(data);
 }
 
-exports.getTaxon = function(req, res, next) {  
+exports.getTaxonByTaxonomyId = function(req, res, next) {  
 	if (req.params.id) {  
 		Taxonomy.getById(req.params.id, function(err, rows) {  
 			sendDefaultResponse(res, err, rows);  
@@ -21,3 +21,20 @@ exports.getTaxon = function(req, res, next) {
 		});  
 	}  
 };  
+
+exports.getTaxonByIdLike = function(req, res, next) {  
+	if (req.params.id) {  
+		Taxonomy.getByIdLike(req.params.id, function(err, rows) { 
+			sendDefaultResponse(res, err, rows);
+    });  
+  }
+};
+
+exports.getTaxonByNameLike = function(req, res, next) {  
+	if (req.params.name) {  
+		Taxonomy.getByNameLike(req.params.name, function(err, rows) { 
+			sendDefaultResponse(res, err, rows);
+		});  
+	} 
+};
+

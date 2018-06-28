@@ -5,6 +5,10 @@
 <code>/v1/resource/type</code>
 ### Get taxon by NCBI taxonomy Id
 <code>/v1/taxonomy/id</code>
+### Get taxon by NCBI taxonomy Id using SQL LIKE
+<code>/v1/taxonomy/idlike/id</code>
+### Get taxon by name using SQL LIKE
+<code>/v1/taxonomy/namelike/name</code>
 ### Get all protein domains
 <code>/v1/proteindomain/</code>
 ### Get protein domain by accession

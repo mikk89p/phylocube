@@ -5,8 +5,11 @@ module.exports = function(app) {
 	app.route('/v1/resource/:type?').get(resourceController.getResource)
 
 	//Taxonomy Routes
-	var taxonomyController = require('./controllers/taxonomyController');
-  app.route('/v1/taxonomy/:id?').get(taxonomyController.getTaxon)
+  var taxonomyController = require('./controllers/taxonomyController');
+  app.route('/v1/taxonomy/:id?').get(taxonomyController.getTaxonByTaxonomyId)
+  app.route('/v1/taxonomy/idlike/:id?').get(taxonomyController.getTaxonByIdLike)
+  app.route('/v1/taxonomy/namelike/:name?').get(taxonomyController.getTaxonByNameLike)
+  
 	
 	// Protein domain Routes
   var proteinDomainController = require('./controllers/proteindomainController');
