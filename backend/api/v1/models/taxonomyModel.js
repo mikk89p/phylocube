@@ -9,11 +9,15 @@ var Taxonomy = {
   },
 
   getByIdLike: function(id, callback) {  
-		return db.query("SELECT * FROM taxonomy WHERE id LIKE ?", ['%'+id+'%'], callback);  
+		return db.query("SELECT * FROM taxonomy WHERE id LIKE ? LIMIT 100", ['%'+id+'%'], callback);  
   },
 
   getByNameLike: function(name, callback) {  
-		return db.query("SELECT * FROM taxonomy WHERE name LIKE ? ", ['%'+name+'%'], callback);  
+		return db.query("SELECT * FROM taxonomy WHERE name LIKE ? LIMIT 100", ['%'+name+'%'], callback);  
+  },
+  
+  getByNameOrIdLike: function(query, callback) {  
+		return db.query("SELECT id, name FROM taxonomy WHERE name LIKE ? OR id LIKE ? LIMIT 100", ['%'+query+'%','%'+query+'%'], callback);  
 	}
 };  
 module.exports = Taxonomy;

@@ -9,6 +9,7 @@ module.exports = function(app) {
   app.route('/v1/taxonomy/:id?').get(taxonomyController.getTaxonByTaxonomyId)
   app.route('/v1/taxonomy/idlike/:id?').get(taxonomyController.getTaxonByIdLike)
   app.route('/v1/taxonomy/namelike/:name?').get(taxonomyController.getTaxonByNameLike)
+  app.route('/v1/taxonomy/nameorid/:query?').get(taxonomyController.getTaxonByNameOrIdLike)
   
 	
 	// Protein domain Routes

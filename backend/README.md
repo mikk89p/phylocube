@@ -5,10 +5,12 @@
 <code>/v1/resource/type</code>
 ### Get taxon by NCBI taxonomy Id
 <code>/v1/taxonomy/id</code>
-### Get taxon by NCBI taxonomy Id using SQL LIKE
+### Get taxon by NCBI taxonomy Id using SQL LIKE LIMIT 100
 <code>/v1/taxonomy/idlike/id</code>
-### Get taxon by name using SQL LIKE
+### Get taxon by name using SQL LIKE LIMIT 100
 <code>/v1/taxonomy/namelike/name</code>
+### Get taxon by name or id using SQL LIKE LIMIT 100
+<code>/v1/taxonomy/nameorid/query</code>
 ### Get all protein domains
 <code>/v1/proteindomain/</code>
 ### Get protein domain by accession

@@ -38,3 +38,11 @@ exports.getTaxonByNameLike = function(req, res, next) {
 	} 
 };
 
+exports.getTaxonByNameOrIdLike = function(req, res, next) {  
+	if (req.params.query) {  
+		Taxonomy.getByNameOrIdLike(req.params.query, function(err, rows) { 
+			sendDefaultResponse(res, err, rows);
+		});  
+	} 
+};
+
