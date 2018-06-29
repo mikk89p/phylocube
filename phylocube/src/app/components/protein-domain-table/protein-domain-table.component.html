@@ -1,82 +1,110 @@
-<div  class="example-container mat-elevation-z8">
-  
-    <div class="example-header">
-        <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field>
-      </div>
-    <mat-table #table [dataSource]="dataSource" matSort>
+<mat-card  class="card" >
+  <div class="example-header">
+      <mat-form-field>
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+    </div>
+  <mat-table #table [dataSource]="dataSource" matSort>
 
-    <!-- Checkbox Column -->
-    <ng-container matColumnDef="select" >
-      <th mat-header-cell *matHeaderCellDef style="margin-right:10px;">
-        <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()">
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row" style="margin-right:10px;">
-        <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)">
-        </mat-checkbox>
-      </td>
+  <!-- Checkbox Column -->
+  <ng-container matColumnDef="select" >
+    <th mat-header-cell *matHeaderCellDef style="margin-right:10px;">
+      <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+      </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row" style="margin-right:10px;">
+      <mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)">
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+    <ng-container matColumnDef="acc">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Acc </mat-header-cell>
+      <mat-cell *matCellDef="let element"> 
+
+        <div fxLayout="column" fxLayoutAlign="left">
+            {{element.acc}}
+        </div>
+
+      </mat-cell>
     </ng-container>
-  
-      <ng-container matColumnDef="acc">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Acc </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.acc}} </mat-cell>
-      </ng-container>
 
-      <ng-container matColumnDef="x">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.xTitle}} </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.x}} ( {{((element.y/activeResource.xMax)*100).toFixed(1)}}% ) </mat-cell>
-      </ng-container>
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+      <mat-cell *matCellDef="let element">
 
-      <ng-container matColumnDef="y">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.yTitle}} </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.y}} ( {{((element.y/activeResource.yMax)*100).toFixed(1)}}% ) </mat-cell>
-      </ng-container>
+          <div fxLayout="column" fxLayoutAlign="left">
+             {{element.description}} 
+          </div>
 
-      <ng-container matColumnDef="z">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.zTitle}} </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.z}} ( {{((element.y/activeResource.zMax)*100).toFixed(1)}}% ) </mat-cell>
-      </ng-container>
+      </mat-cell>
+    </ng-container>
 
-      <ng-container matColumnDef="v">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.vTitle}} </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{element.v}} ( {{((element.v/activeResource.vMax)*100).toFixed(1)}}% ) </mat-cell>
-      </ng-container>
-  
-      
-<!--       <ng-container matColumnDef="archaea">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Arch </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.archaea}} / {{element.archaea_genomes}}  </mat-cell>
-      </ng-container>
+    <ng-container matColumnDef="x">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.xTitle}} </mat-header-cell>
+      <mat-cell *matCellDef="let element">
 
-      
-      <ng-container matColumnDef="bacteria">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Bac </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.bacteria}} / {{element.bacteria_genomes}} </mat-cell>
-      </ng-container>
-  
-      
-      <ng-container matColumnDef="eukaryota">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Euk </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.eukaryota}} / {{element.eukaryota_genomes}} </mat-cell>
-      </ng-container>
-       
-      <ng-container matColumnDef="virus">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Vir </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.virus}} / {{element.virus_genomes}} </mat-cell>
-      </ng-container> -->
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <div>{{element.x}}</div>
+          <div>({{((element.x/activeResource.xMax)*100).toFixed(1)}}%)</div>
+        </div>
+
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="y">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.yTitle}} </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+
+          <div fxLayout="column" fxLayoutAlign="center center">
+              <div>{{element.y}}</div>
+              <div>({{((element.y/activeResource.yMax)*100).toFixed(1)}}%)</div>
+          </div>
+
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="z">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.zTitle}} </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <div>{{element.z}}</div>
+            <div>({{((element.z/activeResource.zMax)*100).toFixed(1)}}%)</div>
+        </div>
+        
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="v">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{activeResource.vTitle}} </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <div fxLayout="column" fxLayoutAlign="center center">
+              <div>{{element.v}}</div>
+              <div>({{((element.v/activeResource.vMax)*100).toFixed(1)}}%)</div>
+          </div>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="highlighted">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> High-<br>lighted </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <div fxLayout="column" fxLayoutAlign="center center">
+              <div>{{element.highlighted? 'Yes':'No'}}</div>
+          </div>
+        </mat-cell>
+    </ng-container>
 
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;" style="cursor: pointer;" [ngClass]="{'highlight':selectedRow == row.acc}" (click)="highlight(row)"></mat-row>
-      
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" style="cursor: pointer;" [ngClass]="{'highlight':row.highlighted==true}" (click)="highlight(row)"></mat-row>
+    
 
-    </mat-table>
-    <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
-  </div>
-  <div *ngIf="dataSource.data.length == 0"><p>Loading...</p></div>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
+</mat-card >
+<div *ngIf="dataSource.data.length == 0"><p>Loading...</p></div>

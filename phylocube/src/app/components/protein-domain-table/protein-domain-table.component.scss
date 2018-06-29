@@ -1,8 +1,3 @@
-.example-container {
-  display: flex;
-  flex-direction: column;
-  //min-width: 300px;
-}
 
 .example-header {
   min-height: 64px;
@@ -18,18 +13,6 @@ td.mat-cell, td.mat-footer-cell, th.mat-header-cell {
   border-bottom-style: none;
 }
 
-/*
-.mat-table {
-  overflow: auto;
-  max-height: 500px;
-}
-
-.example-container {
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
-}
-*/
 .mat-header-cell.mat-sort-header-sorted {
   color: black;
 }

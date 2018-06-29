@@ -14,7 +14,7 @@ export class CubeService {
   private highlightedPointSubject;
   private cubeLimitsSubject;
   private pointsOnCubeSubject;
-  private previousData: {}[] = [];
+  private previousData = [];
 
 
   constructor(private http: HttpClient, private resourceService: ResourceService) {
@@ -24,32 +24,47 @@ export class CubeService {
     this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0,100,0,100,0,100));
    }
 
-  getPointsOnCube(){
+  getPointsOnCube() {
     return this.pointsOnCubeSubject;
   }
 
-  setPointsOnCube(data: {}[]){
-    if (data.length > 0){
+  setPointsOnCube(data) {
+    if (data.length > 0) {
       if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))){
+        if (this.previousData) {
+
+          // Copy highlighted points to new data
+          this.previousData.forEach(oldPoint => {
+              // Set highlight from current currentDataset
+              if (oldPoint.highlighted) {
+                const acc = oldPoint.acc;
+                data.forEach(point => {
+                  // tslint:disable-next-line:triple-equals
+                  if (acc == point.acc) {
+                    point.highlighted = true;
+                  }
+                });
+              }
+          });
+        }
         this.previousData = data;
         this.pointsOnCubeSubject.next(data);
       }
     }
-    
   }
 
-  getHighlightedPoint(){
+  getHighlightedPoint() {
     return this.highlightedPointSubject;
   }
 
-  setHighlightedPoint(data: Object){
+  setHighlightedPoint(data: Object) {
     this.highlightedPointSubject.next(data);
   }
 
 
   setSelectedPoint(points) {
-    var point = points['points'][0];
-    var acc = point.data.acc[point.pointNumber];
+    const point = points['points'][0];
+    const acc = point.data.acc[point.pointNumber];
     this.resourceService.getDataByAcc(acc).subscribe(
       proteinDomain => {
         proteinDomain['x'] = point.x;
@@ -57,16 +72,14 @@ export class CubeService {
         proteinDomain['z'] = point.z;
         this.selectedPointSubject.next(proteinDomain);
       }
-
-    )
-    
+    );
   }
 
-  getSelectedPoint(){
+  getSelectedPoint() {
     return this.selectedPointSubject;
   }
 
-  setCubeLimits(cubeLimits){
+  setCubeLimits(cubeLimits) {
     this.cubeLimitsSubject.next(cubeLimits);
   }
 

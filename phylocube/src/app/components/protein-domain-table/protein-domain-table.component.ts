@@ -10,12 +10,12 @@ import {SelectionModel} from '@angular/cdk/collections';
   styleUrls: ['./protein-domain-table.component.scss']
 })
 export class ProteinDomainTableComponent implements OnInit {
-  displayedColumns = ['acc','x','y','z','v'];
+  displayedColumns = ['acc', 'description', 'x', 'y', 'z', 'v', 'highlighted'];
   dataSource = new MatTableDataSource();
   selection = new SelectionModel(true, []);
 
   activeResource;
-  selectedRow: number = -1;
+  selectedRow = -1;
   Math: any;
 
   @ViewChild(MatSort) sort: MatSort;
@@ -23,9 +23,9 @@ export class ProteinDomainTableComponent implements OnInit {
 
 
   constructor(
-    private resourceService: ResourceService, 
+    private resourceService: ResourceService,
     private cubeService: CubeService
-  ) {this.Math = Math;}
+  ) {this.Math = Math; }
 
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
@@ -60,7 +60,8 @@ export class ProteinDomainTableComponent implements OnInit {
 
   highlight(row) {
     this.cubeService.setHighlightedPoint(row);
-    this.selectedRow = row.acc;
+    // row.highlighted = row.highlighted ? false : true; // Toggle highlight -> under highlight function in cube component
+    this.selectedRow = row.acc; // Last selected row
   }
 
   // tslint:disable-next-line:use-life-cycle-interface
@@ -79,6 +80,8 @@ export class ProteinDomainTableComponent implements OnInit {
 
 export interface ProteinDomain {
   acc: string;
+  description: string;
+  highlighted: boolean;
   x: number;
   y: number;
   z: number;
