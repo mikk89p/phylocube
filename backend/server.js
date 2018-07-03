@@ -1,5 +1,5 @@
 const express = require('express');
-const logger = require('morgan');
+//const logger = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 
@@ -34,7 +34,7 @@ var routes = require('./api/v1/routes');
 //Default
 app.route('/')
 .get((req, res) => {
-	res.statusCode = 200;
+	res.statusCode = 418;
 	res.send('Nothing to see here')
 });
 

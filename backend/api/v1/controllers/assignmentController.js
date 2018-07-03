@@ -21,3 +21,11 @@ exports.getAssignmentByAcc = function(req, res, next) {
 		});  
 	}  
 };  
+
+exports.getByResourceTypeAndTaxonomyId = function(req, res, next) {  
+	if (req.params.type && req.params.id) {  
+		Assignment.getByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
+			sendDefaultResponse(res, err, rows); 
+		});  
+	} 
+};

@@ -242,8 +242,6 @@ def insertAssignments(db,cursor,resource):
 		if (acc == ""):
 			continue
 
-		# without domain grep "1111708,[a-zA-Z0-9]*,[a-zA-Z0-9]*,,"  ../gene3d/representative_uniprot_genome_assignments.csv
-		#  grep "taxid,[a-zA-Z0-9]*,[a-zA-Z0-9]*,[a-zA-Z0-9.]*,[a-zA-Z0-9-]*,p-value,"  ../gene3d/representative_uniprot_genome_assignments.csv
 		protein_domain_id = acc_dict.get(acc)
 		if(protein_domain_id is not None):
 			value = [taxid,protein_domain_id,frequency,e_val]
@@ -290,7 +288,6 @@ def addIndex(db,cursor,resource):
 	cursor.execute("CREATE INDEX taxonomy_parent_id ON taxonomy (parent_id)")
 	cursor.execute("CREATE INDEX taxonomy_full_taxonomy_id ON taxonomy (full_taxonomy_id)")
 	cursor.execute("CREATE INDEX taxonomy_full_taxonomy ON taxonomy (full_taxonomy)")
-	#Must be - Makes pfamclan query much faster
 	cursor.execute("CREATE INDEX clan_membership_pfam_acc ON clan_membership (pfam_acc)")
 	cursor.execute("CREATE INDEX acc_index ON protein_domain (acc)")
 	cursor.execute("CREATE INDEX description_index ON protein_domain (description)")
@@ -318,32 +315,31 @@ if __name__ == '__main__':
 		resources = json.load(f)
 
 	initList = ["taxonomy","gene3d","supfam","pfam","clan","clanpfam"]
-	initList = ["gene3d","supfam","pfam","clan"]
+
 
 	
 	for resource in initList:
 		if (resource == "taxonomy"):
 			insertTaxonomy(db,cursor,resource)
-		elif (resource == "pfam"):
-			pass
-			#insertClanMembership(db,cursor,resource)
 		elif (resource == "clanpfam"):
 			print("Only building " + str(resource) + " resource")
-			#insertResource(db,cursor,resource)
+			insertResource(db,cursor,resource)
 		else:
 			print("Building " + str(resource) + " resource")
-			#insertResource(db,cursor,resource)
+			insertResource(db,cursor,resource)
 			print("Inserting " + str(resource) + " protein domains")
-			#insertProteinDomain(db,cursor,resource)
+			insertProteinDomain(db,cursor,resource)
 			print("Inserting " + str(resource) + " distribution")
-			#insertSummary(db,cursor,resource)
+			insertSummary(db,cursor,resource)
 			print("Inserting " + str(resource) + " assignments (takes several minutes)")
 			insertAssignments(db,cursor,resource)
+			if (resource == "pfam"):
+				insertClanMembership(db,cursor,resource)
 		
 			
 	
-	#print("Adding index to assignment and taxonomy table (takes several minutes)")
-	#addIndex(db,cursor,resource)
+	print("Adding index to assignment and taxonomy table (takes several minutes)")
+	addIndex(db,cursor,resource)
 
 	# Close the connection
 	db.close()

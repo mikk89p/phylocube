@@ -33,6 +33,8 @@ var ProteinDomain = {
             "WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL";
     } 
 		return db.query(sql, [type], callback);  
-	}
+  }
+  
+  
 };  
 module.exports = ProteinDomain;

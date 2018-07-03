@@ -1,4 +1,4 @@
-var proteinDomain = require('../models/proteindomainModel')
+var ProteinDomain = require('../models/proteindomainModel')
 
 
 function sendDefaultResponse(res, err, data){
@@ -14,18 +14,18 @@ function sendDefaultResponse(res, err, data){
 
 exports.getProteinDomainByAcc = function(req, res, next) {  
 	if (req.params.acc) {  
-		proteinDomain.getByAcc(req.params.acc, function(err, rows) { 
+		ProteinDomain.getByAcc(req.params.acc, function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} else {  
-		proteinDomain.getAll(function(err, rows) { 
+		ProteinDomain.getAll(function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});}   
 };  
 
 exports.getProteinDomainWithDistributionByAcc = function(req, res, next) {  
 	if (req.params.acc) {  
-		proteinDomain.getProteinDomainWithDistributionByAcc(req.params.acc, function(err, rows) { 
+		ProteinDomain.getProteinDomainWithDistributionByAcc(req.params.acc, function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} 
@@ -33,7 +33,7 @@ exports.getProteinDomainWithDistributionByAcc = function(req, res, next) {
 
 exports.getAllProteinDomainsByResourceType = function(req, res, next) {  
 	if (req.params.type) {  
-		proteinDomain.getAllProteinDomainsByResourceType(req.params.type, function(err, rows) { 
+		ProteinDomain.getAllProteinDomainsByResourceType(req.params.type, function(err, rows) { 
 			sendDefaultResponse(res, err, rows);
 		});  
 	} 
@@ -41,8 +41,10 @@ exports.getAllProteinDomainsByResourceType = function(req, res, next) {
 
 exports.getAllProteinDomainsWithDistributionByResourceType = function(req, res, next) {  
 	if (req.params.type) {  
-		proteinDomain.getAllProteinDomainsWithDistributionByResourceType(req.params.type, function(err, rows) { 
+		ProteinDomain.getAllProteinDomainsWithDistributionByResourceType(req.params.type, function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} 
 };
+
+
