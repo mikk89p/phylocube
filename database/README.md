@@ -79,9 +79,9 @@ awk -F '\t' '$4 ~ /(Viruses)/ {print $3;}' gene3d_data_without_duplicates.tsv | 
 python ../combine_files.py -a gene3d_domain_count_A.tsv -b gene3d_domain_count_B.tsv -e gene3d_domain_count_E.tsv -v gene3d_domain_count_V.tsv > gene3d_cath_ABEV.tsv
 
 ```
-### Protein domain assignments (taxid, acc, E-value):
-<code>awk -F '\t' '{print $1"\t"$2"\t"$3}'  gene3d_data_raw.tsv > gene3d_assignments.tsv</code><br>
-
+### Protein domain assignments (taxid, acc, frequency, lowest E-value):
+<code>awk -F '\t' '{print $1"\t"$2"\t"$3}'  gene3d_data_raw.tsv > gene3d_assignments_raw.tsv</code><br>
+<code>python ../helper_create_assignment_file.py -i gene3d_assignments_raw.tsv > gene3d_assignments.tsv</code>
 
 # SUPERFAMILY assignments
 ### Download descriptions form mysql database in format  domain \t	description :
@@ -133,8 +133,9 @@ awk '$3 ~ /V/ {print $2;}' supfam_data.tsv | sort | uniq -c -i | awk '{print $2"
 python combine_files.py -a supfam_domain_count_A.tsv -b supfam_domain_count_B.tsv -e supfam_domain_count_E.tsv -v supfam_domain_count_V.tsv > supfam_ABEV.tsv
 ```
 
-### Protein domain assignments (taxid, acc, E-value):
-<code>awk -F '\t' '{print $1"\t"$2}'  supfam_data_raw.tsv > supfam_assignments.tsv</code><br>
+### Protein domain assignments (taxid, acc, frequency, lowest E-value):
+<code>awk -F '\t' '{print $1"\t"$2}'  supfam_data_raw.tsv > supfam_assignments_raw.tsv</code><br>
+<code>python ../helper_create_assignment_file.py -i supfam_assignments_raw.tsv > supfam_assignments.tsv</code>
 
 # Pfam 31.0 assignments
 ### Create folder
@@ -217,10 +218,11 @@ python ../phylocube/combine_files.py -a clan_domain_count_A.tsv -b clan_domain_c
 ```
 
 
-### Protein domain assignments (taxid, acc, E-value):
-<code>awk -F '\t' '{print $1"\t"$2"\t"$3}'  pfam_data_cutoff_applied_with_taxonomy.tsv > pfam_assignments.tsv</code><br>
-<code>awk -F '\t' '{print $1"\t"$2"\t"$3}'  clan_data_cutoff_applied_with_taxonomy.tsv > clan_assignments.tsv</code><br>
-
+### Protein domain assignments (taxid, acc, frequency, lowest E-value):
+<code>awk -F '\t' '{print $1"\t"$2"\t"$3}'  pfam_data_cutoff_applied_with_taxonomy.tsv > pfam_assignments_raw.tsv</code><br>
+<code>python ../helper_create_assignment_file.py -i pfam_assignments_raw.tsv > pfam_assignments.tsv</code><br>
+<code>awk -F '\t' '{print $1"\t"$2"\t"$3}'  clan_data_cutoff_applied_with_taxonomy.tsv > clan_assignments_raw.tsv</code><br>
+<code>python ../helper_create_assignment_file.py -i clan_assignments_raw.tsv > clan_assignments.tsv</code><br>
 
 
 # Populate database

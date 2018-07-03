@@ -45,12 +45,13 @@ CREATE TABLE assignment (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   taxonomy_id MEDIUMINT UNSIGNED NOT NULL,
   protein_domain_id INT UNSIGNED NOT NULL,
-  significance VARCHAR(150) NULL,
+  frequency SMALLINT UNSIGNED NOT NULL, /* frequency in a genome */
+  e_val VARCHAR(150) NULL, /* Lowest e-val */
   PRIMARY KEY(id),
   foreign key (protein_domain_id) references protein_domain (id) on delete cascade on update cascade
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE assignments AUTO_INCREMENT = 1
+ALTER TABLE assignment AUTO_INCREMENT = 1
 
 CREATE TABLE taxonomy (
   id INT UNSIGNED NOT NULL,
@@ -59,7 +60,9 @@ CREATE TABLE taxonomy (
 	parent_id INT UNSIGNED NOT NULL,
 	full_taxonomy VARCHAR(1000) NULL,
 	full_taxonomy_id VARCHAR(1000) NULL,
-  PRIMARY KEY(id)
+  PRIMARY KEY(id),
+  CONSTRAINT `fk_taxon_parent_id` FOREIGN KEY (parent_id) REFERENCES taxonomy (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
 

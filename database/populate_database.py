@@ -103,7 +103,7 @@ def insertResource(db,cursor,resource):
 	description = resources[resource]['description']
 	version = resources[resource]['version']
 	url = resources[resource]['url']
-  api_url = resources[resource]['api_url']
+	api_url = resources[resource]['api_url']
 	classification_version = resources[resource]['classification_version']
 	cellular_genomes_version = resources[resource]['cellular_genomes_version']
 	viral_genomes_version = resources[resource]['viral_genomes_version']
@@ -234,9 +234,11 @@ def insertAssignments(db,cursor,resource):
 		arr = line.split("\t")
 		taxid = arr[0]
 		acc = arr[1]
-		significance = 0
-		if (len(arr)>2):
-			significance = arr[2]
+		frequency = arr[2]
+    # Lowest e-value
+		e_val = False
+		if (len(arr)>3):
+			e_val = arr[3]
 		if (acc == ""):
 			continue
 
@@ -244,12 +246,16 @@ def insertAssignments(db,cursor,resource):
 		#  grep "taxid,[a-zA-Z0-9]*,[a-zA-Z0-9]*,[a-zA-Z0-9.]*,[a-zA-Z0-9-]*,p-value,"  ../gene3d/representative_uniprot_genome_assignments.csv
 		protein_domain_id = acc_dict.get(acc)
 		if(protein_domain_id is not None):
-			value = [taxid,protein_domain_id,significance]
+			value = [taxid,protein_domain_id,frequency,e_val]
 			values.append(value)
 		
 		if (len(values)>=maxNumberInsert or count == contentLen):
 			try:
-				cursor.executemany("INSERT INTO assignment (taxonomy_id,protein_domain_id,significance) VALUES (%s,%s,%s)",values)
+				if (e_val):
+					sql = "INSERT INTO assignment (taxonomy_id,protein_domain_id,frequency,e_val) VALUES (%s,%s,%s,%s)"
+				else:
+					sql = "INSERT INTO assignment (taxonomy_id,protein_domain_id,frequency) VALUES (%s,%s,%s)" 
+				cursor.executemany(sql,values)
 				db.commit()
 				values = []
 			except:     
@@ -279,14 +285,28 @@ def insertClanMembership(db,cursor,resource):
 
 def addIndex(db,cursor,resource):	
 	cursor.execute("CREATE INDEX assignment_taxid_index ON assignment (taxonomy_id)")
-	cursor.execute("CREATE INDEX assignment_domainid_index ON assignment (protein_domain_id)")
 	cursor.execute("CREATE INDEX taxonomy_name ON taxonomy (name)")
+	cursor.execute("CREATE INDEX taxonomy_rank ON taxonomy (rank)")
+	cursor.execute("CREATE INDEX taxonomy_parent_id ON taxonomy (parent_id)")
+	cursor.execute("CREATE INDEX taxonomy_full_taxonomy_id ON taxonomy (full_taxonomy_id)")
+	cursor.execute("CREATE INDEX taxonomy_full_taxonomy ON taxonomy (full_taxonomy)")
 	#Must be - Makes pfamclan query much faster
 	cursor.execute("CREATE INDEX clan_membership_pfam_acc ON clan_membership (pfam_acc)")
 	cursor.execute("CREATE INDEX acc_index ON protein_domain (acc)")
 	cursor.execute("CREATE INDEX description_index ON protein_domain (description)")
   
-	#ALTER TABLE assignment DROP INDEX assignment_index;
+	'''
+	TO VIEW INDEX
+  SHOW INDEX FROM mytable;
+
+	TO DROP INDEX
+  ALTER TABLE assignment DROP INDEX assignment_index
+  ALTER TABLE assignment DROP INDEX assignment_domainid_index
+  
+
+	ALTER TABLE assignment DROP INDEX assignment_taxid_index;
+  ALTER TABLE assignment DROP INDEX assignment_domainid_index;
+	'''
 
 if __name__ == '__main__':
 	# Connect
@@ -298,31 +318,32 @@ if __name__ == '__main__':
 		resources = json.load(f)
 
 	initList = ["taxonomy","gene3d","supfam","pfam","clan","clanpfam"]
-	initList = []
+	initList = ["gene3d","supfam","pfam","clan"]
 
 	
 	for resource in initList:
 		if (resource == "taxonomy"):
 			insertTaxonomy(db,cursor,resource)
 		elif (resource == "pfam"):
-			insertClanMembership(db,cursor,resource)
+			pass
+			#insertClanMembership(db,cursor,resource)
 		elif (resource == "clanpfam"):
 			print("Only building " + str(resource) + " resource")
-			insertResource(db,cursor,resource)
+			#insertResource(db,cursor,resource)
 		else:
 			print("Building " + str(resource) + " resource")
-			insertResource(db,cursor,resource)
+			#insertResource(db,cursor,resource)
 			print("Inserting " + str(resource) + " protein domains")
-			insertProteinDomain(db,cursor,resource)
+			#insertProteinDomain(db,cursor,resource)
 			print("Inserting " + str(resource) + " distribution")
-			insertSummary(db,cursor,resource)
+			#insertSummary(db,cursor,resource)
 			print("Inserting " + str(resource) + " assignments (takes several minutes)")
 			insertAssignments(db,cursor,resource)
 		
 			
 	
-	print("Adding index to assignment and taxonomy table (takes several minutes)")
-	addIndex(db,cursor,resource)
+	#print("Adding index to assignment and taxonomy table (takes several minutes)")
+	#addIndex(db,cursor,resource)
 
 	# Close the connection
 	db.close()
