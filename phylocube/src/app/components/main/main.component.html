@@ -1,0 +1,44 @@
+
+<app-loading [style.visibility]="(showLoading)? 'visible' : 'hidden'"></app-loading>
+
+<div class="container"
+  fxLayout.gt-md="row"
+  fxLayout="column"
+  fxLayoutAlign="center"
+  fxLayoutGap="10px"
+  fxLayoutGap.xs="0">
+
+  <div fxFlex="20%" fxFlex.gt-md="20%" fxLayoutGap="10px" fxLayout="column">
+
+
+      <div fxLayout="column" fxLayoutGap="10px">
+          <app-protein-domain-info></app-protein-domain-info>
+      </div>
+
+      <div fxLayout="column" fxLayoutGap="10px">
+          <app-axes-selection></app-axes-selection>
+          <app-cube-manipulation></app-cube-manipulation>
+      </div>
+
+  </div>
+
+  <div fxFlex="45%" fxFlex.gt-md="45%" fxLayout="column"  >
+      <div fxLayoutAlign="center " style ="">
+          <app-cube></app-cube>
+      </div>
+      <app-taxonomy-search></app-taxonomy-search>
+    
+  </div>
+
+  <div fxFlex="35%" fxFlex.gt-md="35%" fxLayoutGap="10px" fxLayout="column">
+      <app-resource></app-resource>
+      <app-protein-domain-table></app-protein-domain-table>
+  </div>
+
+
+
+</div>
+
+
+
+

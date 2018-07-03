@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs';
 import { ResourceService } from './resource.service';
+import { Point } from './resource.service';
 import { CubeLimits } from '../components/cube/cube-limits';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +19,16 @@ export class CubeService {
   private previousData = [];
 
 
-  constructor(private http: HttpClient, private resourceService: ResourceService) {
+  constructor(
+    private http: HttpClient,
+    private resourceService: ResourceService,
+    private loadingService: LoadingService
+  ){
+
     this.pointsOnCubeSubject =  new BehaviorSubject([]);
-    this.highlightedPointSubject =  new BehaviorSubject<Object>({});
+    this.highlightedPointSubject =  new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
     this.selectedPointSubject =  new BehaviorSubject<Object>({});
-    this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0,100,0,100,0,100));
+    this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0, 100, 0, 100, 0, 100));
    }
 
   getPointsOnCube() {
@@ -30,6 +37,7 @@ export class CubeService {
 
   setPointsOnCube(data) {
     if (data.length > 0) {
+      // tslint:disable-next-line:triple-equals
       if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))){
         if (this.previousData) {
 
@@ -53,26 +61,54 @@ export class CubeService {
     }
   }
 
-  getHighlightedPoint() {
+  getHighlightedPoints() {
     return this.highlightedPointSubject;
   }
 
-  setHighlightedPoint(data: Object) {
-    this.highlightedPointSubject.next(data);
+  setHighlightedPoints(points, description?) {
+    description = description ?  description : 'Null';
+    this.highlightedPointSubject.next({'data': points, 'description' : description});
+  }
+
+
+  highlightPointsByTaxonomyId(type: string, taxid: number, description: string) {
+    // Papillomaviridae | Taxonomy ID: 151340
+    // Mimiviridae | Taxonomy ID: 549779
+    this.loadingService.setLoading('resource_setHighlightedPointsByTaxonomyId',
+    'Getting ' + description + ' data' );
+    this.resourceService.getDataByTaxonomyId(type, taxid).subscribe(
+      points => {
+        this.loadingService.removeLoading('resource_setHighlightedPointsByTaxonomyId');
+        this.setHighlightedPoints(points, description);
+      },
+      err => {
+        // TODO, handle error
+        console.log(err);
+        this.loadingService.removeLoading('resource_setHighlightedPointsByTaxonomyId');
+      }
+
+    );
   }
 
 
   setSelectedPoint(points) {
-    const point = points['points'][0];
-    const acc = point.data.acc[point.pointNumber];
-    this.resourceService.getDataByAcc(acc).subscribe(
-      proteinDomain => {
-        proteinDomain['x'] = point.x;
-        proteinDomain['y'] = point.y;
-        proteinDomain['z'] = point.z;
-        this.selectedPointSubject.next(proteinDomain);
-      }
-    );
+    // tslint:disable-next-line:triple-equals
+    if (points['points'][0] != undefined && points['points'][0].data.is_highlight == undefined) {
+      const pointData = points['points'][0];
+      const point: Point = {
+        x: pointData.x,
+        y: pointData.y,
+        z: pointData.y,
+        v: pointData.v,
+        acc: pointData.data.acc[pointData.pointNumber],
+        description: pointData.description,
+        highlighted: pointData.data.highlighted[pointData.pointNumber],
+      };
+
+      this.selectedPointSubject.next(point);
+
+    }
+
   }
 
   getSelectedPoint() {

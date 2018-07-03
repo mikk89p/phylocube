@@ -13,7 +13,7 @@ export class ProteinDomainInfoComponent implements OnInit {
   activeResource;
 
   constructor(
-    private resourceService: ResourceService, 
+    private resourceService: ResourceService,
     private cubeService: CubeService
   ) {}
 
@@ -26,27 +26,38 @@ export class ProteinDomainInfoComponent implements OnInit {
 
     this.cubeService.getSelectedPoint().subscribe(
       point => {
-        this.selectedPoint = point;
+        // tslint:disable-next-line:triple-equals
+        if (point.acc != undefined) {
+        // Get more information
+        this.resourceService.getDataByAcc(point.acc).subscribe(
+          proteinDomain => {
+            if (proteinDomain) {
+              proteinDomain['x'] = point.x;
+              proteinDomain['y'] = point.y;
+              proteinDomain['z'] = point.z;
+              // proteinDomain['highlighted'] = point.highlighted;
+              this.selectedPoint = proteinDomain;
+            }
+          });
+        }
       }
 
     );
   }
 
-  openNewTab($event,selectedPoint){
-    var acc = selectedPoint.acc
-    var api_url = this.activeResource.api_url;
-    if (this.activeResource.type == "clanpfam"){
+  openNewTab($event, selectedPoint) {
+    const acc = selectedPoint.acc;
+    let api_url = this.activeResource.api_url;
+    if (this.activeResource.type === 'clanpfam') {
       // https://pfam.xfam.org/clan/;https://pfam.xfam.org/family/
-      var res = api_url.split(";");
+      const res = api_url.split(';');
       if (acc.indexOf('CL') !== -1) {
         api_url = res[0];
       } else {
         api_url = res[1];
       }
-    } 
+    }
     window.open(api_url + acc);
-    
-    
   }
 
 }

@@ -10,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NouisliderModule } from 'ng2-nouislider';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './components/home/home.component';
+import { MainComponent } from './components/main/main.component';
 import { NavComponent } from './components/nav/nav.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { Error404Component } from './components/error404/error404.component';
@@ -23,11 +23,14 @@ import { ProteinDomainTableComponent } from './components/protein-domain-table/p
 import { ProteinDomainInfoComponent } from './components/protein-domain-info/protein-domain-info.component';
 import { CubeManipulationComponent } from './components/cube-manipulation/cube-manipulation.component';
 import { AxesSelectionComponent } from './components/axes-selection/axes-selection.component';
+import { TaxonomySearchComponent } from './components/taxonomy-search/taxonomy-search.component';
+import { LoadingComponent } from './components/loading/loading.component';
+import { LoadingService } from './services/loading.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    MainComponent,
     NavComponent,
     FooterComponent,
     Error404Component,
@@ -37,7 +40,9 @@ import { AxesSelectionComponent } from './components/axes-selection/axes-selecti
     ProteinDomainTableComponent,
     ProteinDomainInfoComponent,
     CubeManipulationComponent,
-    AxesSelectionComponent
+    AxesSelectionComponent,
+    TaxonomySearchComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,
@@ -47,12 +52,13 @@ import { AxesSelectionComponent } from './components/axes-selection/axes-selecti
     HttpClientModule,
     FlexLayoutModule,
     FormsModule,
+    ReactiveFormsModule,
     NouisliderModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production
     })
   ],
-  providers: [ResourceService, CubeService],
+  providers: [ResourceService, CubeService, LoadingService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

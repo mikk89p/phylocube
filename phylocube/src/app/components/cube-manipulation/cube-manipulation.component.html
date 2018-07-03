@@ -5,27 +5,27 @@
     <mat-card-subtitle>Selected domains:{{pointsOnCube.length}}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <div style="padding-bottom:20px;padding-top:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">
-      <div fxFlex="25%">{{activeResource.xTitle}} (x)</div>
-      <nouislider fxFlex="75%"
+    <div style="padding-bottom:20px;padding-top:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
+      <div >{{activeResource.xTitle}} (x)</div>
+      <nouislider fxFlex="100%"
                   [config]="sliderConfig"
                   [(ngModel)]="xRange"
                   (mouseup)="updateCube();">
       </nouislider>
     </div>
 
-    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">
-      <div fxFlex="25%">{{activeResource.yTitle}} (y)</div>
-      <nouislider fxFlex="75%"
+    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
+      <div>{{activeResource.yTitle}} (y)</div>
+      <nouislider fxFlex="100%"
                   [config]="sliderConfig"
                   [(ngModel)]="yRange"
                   (mouseup)="updateCube();">
       </nouislider>
     </div>
 
-    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="row" fxLayoutGap="2px">
-      <div fxFlex="25%">{{activeResource.zTitle}} (z)</div>
-      <nouislider fxFlex="75%"
+    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
+      <div>{{activeResource.zTitle}} (z)</div>
+      <nouislider fxFlex="100%"
                   [config]="sliderConfig"
                   [(ngModel)]="zRange"
                   (mouseup)="updateCube();">

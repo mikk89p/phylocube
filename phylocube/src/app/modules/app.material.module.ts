@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import {
-   MatInputModule,
+    MatInputModule,
     MatMenuModule,
     MatIconModule,
     MatToolbarModule,

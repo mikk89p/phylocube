@@ -3,6 +3,7 @@ import { MatPaginator, MatTableDataSource, MatSort} from '@angular/material';
 import { ResourceService } from './../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import {SelectionModel} from '@angular/cdk/collections';
+import { Point } from '../../services/resource.service';
 
 @Component({
   selector: 'app-protein-domain-table',
@@ -58,10 +59,9 @@ export class ProteinDomainTableComponent implements OnInit {
         this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
-  highlight(row) {
-    this.cubeService.setHighlightedPoint(row);
-    // row.highlighted = row.highlighted ? false : true; // Toggle highlight -> under highlight function in cube component
-    this.selectedRow = row.acc; // Last selected row
+  highlight(point) {
+    this.cubeService.setHighlightedPoints([point]);
+    this.selectedRow = point.acc; // Last selected row
   }
 
   // tslint:disable-next-line:use-life-cycle-interface
