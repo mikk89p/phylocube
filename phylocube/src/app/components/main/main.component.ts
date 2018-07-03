@@ -11,7 +11,7 @@ import { LoadingService } from '../../services/loading.service';
 })
 export class MainComponent implements OnInit {
 
-  private showLoading = false;
+  showLoading = false;
 
   constructor(
     private resourceService: ResourceService,

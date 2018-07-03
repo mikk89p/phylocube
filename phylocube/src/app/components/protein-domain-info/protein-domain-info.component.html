@@ -1,11 +1,11 @@
 <mat-card >
     <mat-card-header>
       <img mat-card-avatar src="assets/icons/selected_point.png" alt="database">
-      <mat-card-title *ngIf='(selectedPoint == undefinied)'>Click on a point! </mat-card-title>
-      <mat-card-title *ngIf='(selectedPoint != undefinied && selectedPoint.acc)'><b>Acc:</b> {{selectedPoint.acc}} <a class="link" (click)="openNewTab($event, selectedPoint)">more info</a></mat-card-title>
-      <mat-card-subtitle *ngIf='(selectedPoint != undefinied)'><b>{{selectedPoint.description}}</b></mat-card-subtitle>
+      <mat-card-title *ngIf='(!selectedPoint)'>Click on a point! </mat-card-title>
+      <mat-card-title *ngIf='(selectedPoint && selectedPoint.acc)'><b>Acc:</b> {{selectedPoint.acc}} <a class="link" (click)="openNewTab($event, selectedPoint)">more info</a></mat-card-title>
+      <mat-card-subtitle *ngIf='(selectedPoint)'><b>{{selectedPoint.description}}</b></mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content *ngIf='(selectedPoint != undefinied)'>
+    <mat-card-content *ngIf='(selectedPoint)'>
         <p><b>x: </b>{{selectedPoint.x}}
         <b>y: </b>{{selectedPoint.y}}
         <b>z: </b>{{selectedPoint.z}}</p>

@@ -9,7 +9,7 @@ import { LoadingService } from '../../services/loading.service';
 })
 export class LoadingComponent implements OnInit {
 
-  private loadingText  = 'Loading';
+  loadingText  = 'Loading';
 
   constructor(private loadingService: LoadingService) {}
 

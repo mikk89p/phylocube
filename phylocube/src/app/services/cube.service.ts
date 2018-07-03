@@ -15,6 +15,7 @@ export class CubeService {
   private selectedPointSubject;
   private highlightedPointSubject;
   private cubeLimitsSubject;
+  private fullDataSubject;
   private pointsOnCubeSubject;
   private previousData = [];
 
@@ -24,12 +25,28 @@ export class CubeService {
     private resourceService: ResourceService,
     private loadingService: LoadingService
   ){
-
     this.pointsOnCubeSubject =  new BehaviorSubject([]);
     this.highlightedPointSubject =  new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
     this.selectedPointSubject =  new BehaviorSubject<Object>({});
     this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0, 100, 0, 100, 0, 100));
    }
+
+   getFullData() {
+    // tslint:disable-next-line:triple-equals
+    if (this.fullDataSubject == undefined) {
+      this.fullDataSubject =  new BehaviorSubject([]);
+      this.resourceService.getData().subscribe(
+        data => {
+          this.fullDataSubject.next(data);
+        }
+      );
+    }
+    return this.fullDataSubject;
+  }
+
+  setFullData(data) {
+    this.fullDataSubject.next(data);
+  }
 
   getPointsOnCube() {
     return this.pointsOnCubeSubject;
@@ -74,20 +91,38 @@ export class CubeService {
   highlightPointsByTaxonomyId(type: string, taxid: number, description: string) {
     // Papillomaviridae | Taxonomy ID: 151340
     // Mimiviridae | Taxonomy ID: 549779
-    this.loadingService.setLoading('resource_setHighlightedPointsByTaxonomyId',
+    this.loadingService.setLoading('resource_highlightPointsByTaxonomyId',
     'Getting ' + description + ' data' );
     this.resourceService.getDataByTaxonomyId(type, taxid).subscribe(
       points => {
-        this.loadingService.removeLoading('resource_setHighlightedPointsByTaxonomyId');
+        this.loadingService.removeLoading('resource_highlightPointsByTaxonomyId');
         this.setHighlightedPoints(points, description);
       },
       err => {
         // TODO, handle error
         console.log(err);
-        this.loadingService.removeLoading('resource_setHighlightedPointsByTaxonomyId');
+        this.loadingService.removeLoading('resource_highlightPointsByTaxonomyId');
       }
 
     );
+  }
+
+  setPointsByTaxonomyId(type: string, taxid: number, description: string) {
+    this.loadingService.setLoading('resource_setPointsByTaxonomyId',
+    'Getting ' + description + ' data' );
+    this.resourceService.getDataByTaxonomyId(type, taxid).subscribe(
+      points => {
+        this.loadingService.removeLoading('resource_setPointsByTaxonomyId');
+        this.setFullData(points);
+      },
+      err => {
+        // TODO, handle error
+        console.log(err);
+        this.loadingService.removeLoading('resource_setPointsByTaxonomyId');
+      }
+
+    );
+
   }
 
 

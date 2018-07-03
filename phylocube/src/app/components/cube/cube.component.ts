@@ -33,6 +33,15 @@ export class CubeComponent implements OnInit {
       }
     );
 
+    /* Full data is needed for sliders faster interaction */
+    this.cubeService.getFullData().subscribe(
+      data => {
+        this.fullDataSet = data;
+        data = this.applyCubeLimits(this.cubeLimits);
+        this.cubeService.setPointsOnCube(data);
+      }
+    );
+    /*
     this.resourceService.getData().subscribe(
       data => {
           // console.log('Cube component getData()');
@@ -41,7 +50,7 @@ export class CubeComponent implements OnInit {
           this.cubeService.setPointsOnCube(data);
       }
     );
-
+*/
     this.cubeService.getPointsOnCube().subscribe(
       data => {
         if (data !== undefined && data.length !== 0) {

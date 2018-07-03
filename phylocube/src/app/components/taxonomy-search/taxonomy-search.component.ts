@@ -61,7 +61,11 @@ export class TaxonomySearchComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.form.value.taxon);
+    const arr = this.form.value.taxon.split('|');
+    const name = arr[0].trim();
+    let taxid = arr[1].trim();
+    taxid = Number((taxid.split(':')[1]).trim());
+    this.cubeService.setPointsByTaxonomyId(this.activeResource.type, taxid, name);
   }
 
   highlight() {
@@ -70,6 +74,10 @@ export class TaxonomySearchComponent implements OnInit {
     let taxid = arr[1].trim();
     taxid = Number((taxid.split(':')[1]).trim());
     this.cubeService.highlightPointsByTaxonomyId(this.activeResource.type, taxid, name);
+  }
+
+  resetDataset() {
+
   }
 
 }
