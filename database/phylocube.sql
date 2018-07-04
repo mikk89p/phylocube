@@ -56,15 +56,14 @@ ALTER TABLE assignment AUTO_INCREMENT = 1
 CREATE TABLE taxonomy (
   id INT UNSIGNED NOT NULL,
 	name VARCHAR(500) NOT NULL, 
-	rank VARCHAR(150) NULL, 
+	rank VARCHAR(250) NULL, 
 	parent_id INT UNSIGNED NOT NULL,
 	full_taxonomy VARCHAR(1000) NULL,
 	full_taxonomy_id VARCHAR(1000) NULL,
-  PRIMARY KEY(id),
-  CONSTRAINT `fk_taxon_parent_id` FOREIGN KEY (parent_id) REFERENCES taxonomy (id) ON DELETE NO ACTION ON UPDATE NO ACTION
-
+  PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
-
+/* CONSTRAINT `fk_taxon_parent_id` FOREIGN KEY (parent_id) REFERENCES taxonomy (id) ON DELETE NO ACTION ON UPDATE NO ACTION*/
+ALTER TABLE taxonomy AUTO_INCREMENT = 1
 
 CREATE TABLE clan_membership (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,

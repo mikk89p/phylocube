@@ -61,40 +61,69 @@ def connectDb():
 
 	
 def insertTaxonomy(db,cursor,resource):
+
+  # Import only taxons which exist in the assignment table
+  # Default ~1,618,192 rows ~2GB
+	cursor.execute("SELECT DISTINCT taxonomy_id FROM assignment ORDER BY taxonomy_id DESC")
+	rows = cursor.fetchall()
+	taxonomy_set = set()
+	values = []
+
+	for row in rows:
+		taxonomy_set.add(int(row[0]))
+
+  #root
+	taxonomy_set.add(1)
+
 	version = resources[resource]['version']
 	taxonomy_file = resources[resource]['taxonomy_file']
 	values = []
 	with open(taxonomy_file, 'r') as f:
 		 content = f.readlines()
+	
 
 	contentLen = len(content)
-	maxNumberInsert = 4000
+	maxNumberInsert = 3000
 	count = 0
 	for line in content:
+		add = False # If a taxon should be added to the database
 		count += 1
 		line = line.strip() 
 		arr = line.split("\t")
 		taxid = int(arr[0])
 		name = arr[1] 
 		rank = arr[2]
-		parent_id = arr[3] 
+		parent_id = int(arr[3])
 		full_taxonomy = "-"
 		full_taxonomy_id = "-"
 		if (len(arr) > 4):
 			full_taxonomy = arr[4]
 		if (len(arr) > 5):
 			full_taxonomy_id = arr[5]
-	
-		value = [taxid,name,rank,parent_id,full_taxonomy,full_taxonomy_id]
+
+		if (taxid in taxonomy_set or parent_id in taxonomy_set):
+			ids = full_taxonomy_id.split(';')
+			for id in ids:
+				if (is_number(id)):
+					taxonomy_set.add(int(id))
+			add = True
+
+		if (not add):
+			continue
+		
+		value = [str(taxid),name,rank,str(parent_id),full_taxonomy,full_taxonomy_id]
 		values.append(value)
 		if (len(values)>=maxNumberInsert or count == contentLen):
 			try:
 				cursor.executemany("INSERT INTO taxonomy (id,name,rank,parent_id,full_taxonomy,full_taxonomy_id) VALUES (%s,%s,%s,%s,%s,%s)",values)
 				db.commit()
 				values = []
-			except:     
+			except:    
+				#print(values) 
 				print("ERROR in insert Taxonomy or taxonomy exist")
 				db.rollback()
+		
+	
 
 def insertResource(db,cursor,resource):
 	id = resources[resource]['id']
@@ -286,8 +315,6 @@ def addIndex(db,cursor,resource):
 	cursor.execute("CREATE INDEX taxonomy_name ON taxonomy (name)")
 	cursor.execute("CREATE INDEX taxonomy_rank ON taxonomy (rank)")
 	cursor.execute("CREATE INDEX taxonomy_parent_id ON taxonomy (parent_id)")
-	cursor.execute("CREATE INDEX taxonomy_full_taxonomy_id ON taxonomy (full_taxonomy_id)")
-	cursor.execute("CREATE INDEX taxonomy_full_taxonomy ON taxonomy (full_taxonomy)")
 	cursor.execute("CREATE INDEX clan_membership_pfam_acc ON clan_membership (pfam_acc)")
 	cursor.execute("CREATE INDEX acc_index ON protein_domain (acc)")
 	cursor.execute("CREATE INDEX description_index ON protein_domain (description)")
@@ -314,10 +341,9 @@ if __name__ == '__main__':
 	with open('resources.json') as f:
 		resources = json.load(f)
 
-	initList = ["taxonomy","gene3d","supfam","pfam","clan","clanpfam"]
+	#Taxonomy should be last as it uses assignment table
+	initList = ["gene3d","supfam","pfam","clan","clanpfam","taxonomy"]
 
-
-	
 	for resource in initList:
 		if (resource == "taxonomy"):
 			insertTaxonomy(db,cursor,resource)
