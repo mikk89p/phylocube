@@ -1,0 +1,31 @@
+<mat-card  class="card" >
+  <mat-card-content>  
+    <div *ngIf="showLoading" fxLayout="row" fxLayoutAlign="center center">
+        <mat-spinner color='primary' ></mat-spinner>
+    </div>
+    
+    <form *ngIf="!showLoading" [formGroup]="form" (ngSubmit)="form.valid && onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Domain Accesions ({{accessionCount}})</mat-label>
+            <textarea
+              matInput
+              [formControl]="proteinDomainsInput"
+              style="min-height:90px;">
+            </textarea>
+        </mat-form-field>
+        <div fxLayout="row" fxLayoutGap="20px">
+            <button mat-raised-button color="primary" type="button" (click)="getPointsFromCube()">Get Accessions</button>
+            <button mat-raised-button color="primary" type="button" (click)="highlight()" [disabled]="!form.valid">HighLight</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Show only</button>
+            <!-- <button mat-raised-button color="primary" type="button" (click)="resetDataset()">Reset Dataset</button> -->
+        </div>
+
+      </form>
+  </mat-card-content>
+
+  <mat-card-actions>
+  </mat-card-actions>
+
+</mat-card>
+
+
