@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {Config , Data, Layout} from 'plotly.js';
@@ -64,6 +65,7 @@ export class CubeComponent implements OnInit {
       result => {
         const points = result.data;
         const description = result.description;
+        // tslint:disable-next-line:triple-equals
         if (points != undefined || points.length > 1) {
           if (points.length > 1) {
             if (points.length < 250) {
@@ -78,17 +80,6 @@ export class CubeComponent implements OnInit {
             } else {
               this.highlightMultiplePoints(points, description);
             }
-            /*const highlightPointsOnCube = [];
-            this.currentDataSet.forEach(pointOnCube => {
-              for (let i = 0; i < points.length; i++) {
-                // tslint:disable-next-line:triple-equals
-                if (pointOnCube.acc == points[i].acc) {
-                  highlightPointsOnCube.push(pointOnCube);
-                }
-              }
-            });
-            this.highlightMultiplePoints(highlightPointsOnCube, description);
-            */
           } else {
             const point = points[0];
             this.highlightPoint(point);
@@ -120,6 +111,9 @@ export class CubeComponent implements OnInit {
 
   unpack(rows, key) {
     return rows.map(function(row) {
+      if (key == 'x') {
+        return -1 * row[key];
+      }
       return row[key];
     });
   }
@@ -130,6 +124,7 @@ export class CubeComponent implements OnInit {
 
     const element = this.el.nativeElement;
     points.forEach(point => {
+      // tslint:disable-next-line:triple-equals
       if (point.highlighted == undefined || !point.highlighted) {
         point.highlighted = true; // Toggle highlight
       } else {
@@ -137,6 +132,8 @@ export class CubeComponent implements OnInit {
       }
 
     });
+
+    console.log(this.unpack(points, 'x'));
 
     const highlight = {
       x: this.unpack(points, 'x'),
@@ -163,6 +160,7 @@ export class CubeComponent implements OnInit {
   highlightPoint(point) {
     if (point === undefined || JSON.stringify(point) === JSON.stringify({})) {return; }
     const element = this.el.nativeElement;
+    // tslint:disable-next-line:triple-equals
     if (point.highlighted == undefined || !point.highlighted) {
       const highlight = {
         x: this.unpack([point], 'x'),
@@ -209,43 +207,47 @@ export class CubeComponent implements OnInit {
   }
 
 
-  getXYZ(proteinDomainData) {
-    const x = [];
-    const y = [];
-    const z = [];
-    const acc = [];
-
-    proteinDomainData.forEach(function (row) {
-      x.push(row.x);
-      y.push(row.y);
-      z.push(row.z);
-      acc.push(row.acc);
-    });
-    // x = x.map(x => x * -1);
-    return {x: x, y: y, z: z, acc: acc};
-
-  }
-
   getLayout(resource) {
-    /*
-      eukaryota_genomes = x
-      archaea_genomes = y
-      bacteria_genomes = z
-      virus_genomes = v
-    */
+
+    // x-axis is reversed by default and it cannot be changd with autorange: 'reversed',
+    // As reversed is not implemented in plotly 3D scatter *-1 is a workaround
+    // Therefore, also tickvals should be fixed
+    const steps = 5;
+    let stepSize = Math.round(resource.xMax / steps);
+    let length = stepSize.toString().length;
+    if (length == 2) {
+      length = stepSize.toString().length - 1 ;
+    } else {
+      length = stepSize.toString().length - 2;
+    }
+    stepSize = Math.round(stepSize / Math.pow(10, length)) * Math.pow(10, length);
+
+    const tickvals = [];
+    const ticktext = [];
+    for (let index = 0; index * stepSize <= resource.xMax; index++) {
+      const currentStep = index * stepSize;
+      tickvals.push(-currentStep);
+      ticktext.push(Math.abs(currentStep));
+    }
+
     const layout = {
       title: resource.name ? resource.name + ' ' + resource.version : 'Loading...',
-      autosize: false,
-      width: 800,
-      height: 700,
+      autosize: true,
+      height: 750,
       margin: {l: 0, r: 0, b: 0, t: 50},
       showlegend: false,
       legend: {'orientation': 'h'},
+
       scene: {
+        camera: {
+          eye: {x: 2.1, y: 0.9, z: 0.9}
+        },
         xaxis: {
-          // autorange: 'reversed',
           title: 'Eukaryota',
-          range: [0, resource.xMax],
+          range: [-resource.xMax, 0],  // workaround
+          tickmode : 'array', // workaround
+          tickvals : tickvals,  // workaround
+          ticktext : ticktext,  // workaround
           titlefont: {
             family: 'Courier New, monospace',
             size: 18,
@@ -269,16 +271,47 @@ export class CubeComponent implements OnInit {
             size: 18,
             color: '#7f7f7f'
           }
-        }
+        },
+
+        annotations: [{
+          x: -resource.xMax,
+          y: resource.yMax,
+          z: resource.zMax,
+          ax: 0,
+          ay: -75,
+          text: "Most abundant domains",
+          arrowhead: 1,
+          xanchor: "top",
+          yanchor: "bottom"
+        }]
       }
     };
     return layout; // {margin: {l: 0, r: 100, b: 0, t: 0}};
   }
 
 
-
+  getHoverText(dataset) {
+    const xTitle = this.activeResource.xTitle;
+    const yTitle = this.activeResource.yTitle;
+    const zTitle = this.activeResource.zTitle;
+    const vTitle = this.activeResource.vTitle;
+    const xMax = this.activeResource.xMax;
+    const yMax = this.activeResource.yMax;
+    const zMax = this.activeResource.zMax;
+    const vMax = this.activeResource.vMax;
+    return dataset.map(function(point) {
+      return 'Acc : ' + point.acc + '<br>' +
+      xTitle + ' : ' +  point.x + ' (' + ((point.x / xMax) * 100).toFixed(1) + '%)<br>' +
+      yTitle + ' : ' +  point.y + ' (' + ((point.y / yMax) * 100).toFixed(1) + '%)<br>' +
+      zTitle + ' : ' +  point.z + ' (' + ((point.z / zMax) * 100).toFixed(1) + '%)<br>' +
+      vTitle + ' : ' +  point.v + ' (' + ((point.y / vMax) * 100).toFixed(1) + '%)<br>';
+    });
+  }
 
   drawChart(dataset, cubeService) {
+
+
+    const text = this.getHoverText(dataset);
     // const coordinates = this.getXYZ(dataset);
     const layout = this.getLayout(this.activeResource);
     const trace1 = {
@@ -289,9 +322,10 @@ export class CubeComponent implements OnInit {
       highlighted: this.unpack(dataset, 'highlighted'),
       name: this.activeResource.name + ' data',
       mode: 'markers',
+      hoverinfo: 'text',
+      text: text,
       marker: {
         size: 3,
-        /* fill color */
         name: this.unpack(dataset, 'acc'),
         color: 'rgba(0, 0, 0,0.6)',
         line: {
@@ -315,6 +349,15 @@ export class CubeComponent implements OnInit {
       // cubeService.setHighlightedPoint(point);
       cubeService.setSelectedPoint(point);
     });
+
+    element.on('plotly_hover', function(dataPoints) {
+      const infotext = dataPoints.points.map(function(d) {
+        return (d.data.name + ': x= ' + d.x + ', y= ' + d.y.toPrecision(3));
+      });
+
+      // someelement.hoverInfo.innerHTML = infotext.join('');
+    });
+
 
     // Apply copied highlighted points to new data
     dataset.forEach(point => {
