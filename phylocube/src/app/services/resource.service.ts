@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingService } from './loading.service';
+// import * as xml2js from 'xml2js';
+
+
+
+
 
 export interface Point {
   x: number;
@@ -30,6 +35,7 @@ export class ResourceService {
   // BehaviorSubject
   public activeResourceSubject;
   public activeDatasetSubject;
+  public searchResultSubject;
 
   constructor(
     private http: HttpClient,
@@ -37,6 +43,7 @@ export class ResourceService {
   ) {
     this.activeDatasetSubject =  new BehaviorSubject([]);
     this.activeResourceSubject =  new BehaviorSubject<Object>({});
+    this.searchResultSubject =  new BehaviorSubject<string[]>([]);
   }
 
 
@@ -51,19 +58,17 @@ export class ResourceService {
     this.loadingService.setLoading('resource_setActiveResource', 'Getting resource');
     this.getResourceByType(this.activeResourceType).subscribe(
       resource => {
-        // Send new resource to observers
-        /*
-        eukaryota_genomes = x
-        archaea_genomes = y
-        bacteria_genomes = z
-        virus_genomes = v
-        */
         // tslint:disable-next-line:max-line-length
         resource = this.addCubeMaxValuesToResource(resource, resource.eukaryota_genomes, resource.archaea_genomes, resource.bacteria_genomes, resource.virus_genomes);
         resource = this.addAxesTitlesToResource(resource, 'Eukaryota', 'Archaea', 'Bacteria', 'Virus');
         this.loadingService.removeLoading('resource_setActiveResource');
         this.activeResourceSubject.next(resource);
       },
+
+      err => {
+        this.loadingService.removeLoading('resource_setActiveResource');
+        this.loadingService.setLoading('resource_setActiveResource', 'Error - unable to connect resource database');
+      }
     );
   }
 
@@ -126,6 +131,11 @@ export class ResourceService {
         );
       },
 
+      err => {
+        this.loadingService.removeLoading('resource_getData');
+        this.loadingService.setLoading('resource_setActiveResource', 'Error - unable to get data');
+      }
+
     );
 
     return this.activeDatasetSubject;
@@ -159,10 +169,32 @@ export class ResourceService {
 
   getDataByAcc(acc: string) {
     // console.log ('getDataByAcc(' + acc + ')');
-    const uri = this.url + 'proteindomain/' + acc;
+    const uri = this.url + 'proteindomain/' + acc + '/distribution/' ;
     return this.http.get(uri).map(res => {
         return res[0];
       });
+  }
+
+  getClanByPfamAcc(acc: string) {
+    // console.log ('getDataByAcc(' + acc + ')');
+    const uri = this.url + 'clanmembership/' + acc;
+    return this.http.get(uri).map(res => {
+        return res[0];
+      });
+  }
+
+  /* Test - Papillomaviridae | Taxonomy ID: 151340 */
+  getAccByTaxonomyId(type: string, taxid: number) {
+    const uri = this.url + 'assignment/proteindomain/acc/resource/' + type + '/taxonomy/' + taxid;
+    return this.http.get(uri).map(res => {
+      const arr = [];
+      Object.keys(res).forEach(function(key) {
+        const row = res[key];
+        arr.push(row.acc);
+      });
+      return arr;
+    });
+
   }
 
   getDataByTaxonomyId(type: string, taxid: number) {
@@ -183,9 +215,78 @@ export class ResourceService {
         };
         points.push(obj);
 
+
       });
       return points;
     });
 
   }
+
+  getAccByUniprotId(uniprotId: string) {
+    const uri = 'https://www.uniprot.org/uniprot/' + uniprotId + '.xml';
+    console.log(uri);
+    // npm install xml2js --save
+    const headers = new Headers();
+    headers.append('Accept', 'application/xml');
+    const requestOptions = Object.assign(
+      { responseType: 'text',
+        headers: headers }
+    );
+
+    return this.http.get(uri, requestOptions).map(res => {
+      const xmlDOM = new DOMParser().parseFromString(String(res), 'text/xml');
+      return this.xmlToJson(xmlDOM);
+    });
+  }
+
+  getSearchResult() {
+    return this.searchResultSubject;
+  }
+
+  setSearchResult(data: string[]) {
+    this.searchResultSubject.next(data);
+  }
+
+
+  xmlToJson(xml) {
+
+    // Create the return object
+    let obj = {};
+    if (xml.nodeType == 1) { // element
+      // do attributes
+      if (xml.attributes.length > 0) {
+      obj['@attributes'] = {};
+        for (let j = 0; j < xml.attributes.length; j++) {
+          const attribute = xml.attributes.item(j);
+          obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
+        }
+      }
+    // tslint:disable-next-line:triple-equals
+    } else if (xml.nodeType == 3) { // text
+      obj = xml.nodeValue;
+    }
+
+    // do children
+    // If just one text node inside
+    if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
+      obj = xml.childNodes[0].nodeValue;
+    } else if (xml.hasChildNodes()) {
+      for( let i = 0; i < xml.childNodes.length; i++) {
+        const item = xml.childNodes.item(i);
+        const nodeName = item.nodeName;
+        if (typeof(obj[nodeName]) == 'undefined') {
+          obj[nodeName] = this.xmlToJson(item);
+        } else {
+          if (typeof(obj[nodeName].push) == 'undefined') {
+            const old = obj[nodeName];
+            obj[nodeName] = [];
+            obj[nodeName].push(old);
+          }
+          obj[nodeName].push(this.xmlToJson(item));
+        }
+      }
+    }
+    return obj;
+  }
+
 }

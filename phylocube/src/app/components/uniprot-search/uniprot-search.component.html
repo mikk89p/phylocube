@@ -1,0 +1,16 @@
+<form [formGroup]="form" (ngSubmit)="form.valid && onSubmit()">
+    <div fxLayout="row" fxLayoutAlign="left"  fxLayoutGap="10px">
+  
+        <mat-form-field appearance="outline" fxFlex="grow">
+            <mat-label>UniProt ID</mat-label>
+            <input 
+              matInput
+              [formControl]="uniprotId"
+            >
+        </mat-form-field>
+      <div fxFlex>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid" style="height:55px;">Get domains</button>
+      </div>
+    
+    </div>
+  </form>
