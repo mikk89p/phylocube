@@ -78,10 +78,8 @@ getByResourceTypeAndTaxonomyId: function(type, id, callback) {
     }
     var ids = ids_arr.join(',');
     var bytes = lengthInUtf8Bytes(ids);
-    if (bytes > 3000000) {
-      // SLOWER
-      ids = sql;
-
+    if (ids_arr.length == 0 || bytes > 3000000) {
+      ids = sql; // SLOWER
     } 
     if (type == 'clanpfam') {
       sql = "SELECT " + columns + " FROM assignment" +
@@ -101,6 +99,52 @@ getByResourceTypeAndTaxonomyId: function(type, id, callback) {
     }
       return db.query(sql, [type], callback);
 
+  });
+
+
+ 
+},
+
+getAccByResourceTypeAndTaxonomyId: function(type, id, callback) { 
+  columns = "DISTINCT protein_domain.acc";
+  id_like = '"%;' +id+ ';%"';
+  id_like2 = '"' +id+ ';%"'; //Before root e.g., Bacteria, archaea, eukaryota, viruses etc..
+
+  sql = "SELECT DISTINCT id FROM taxonomy WHERE (full_taxonomy_id LIKE " + id_like + 
+  " OR full_taxonomy_id LIKE "+id_like2 + ")" +
+  " AND (rank = 'species' OR rank = 'no rank')";
+  var ids_arr = []
+  db.query(sql, function (err, rows) {
+    if (err) {
+      throw err;
+    } else {
+      for (var i of rows) {
+        var string = JSON.stringify(i);
+        var json =  JSON.parse(string);
+        ids_arr.push(json.id);
+      }
+    }
+
+    var ids = ids_arr.join(',');
+    var bytes = lengthInUtf8Bytes(ids);
+    if (ids_arr.length == 0 || bytes > 3000000) {
+      ids = sql; // SLOWER
+    } 
+    if (type == 'clanpfam') {
+      sql = "SELECT " + columns + " FROM assignment" +
+      " JOIN protein_domain ON assignment.protein_domain_id = protein_domain.id" +
+      " JOIN resource ON protein_domain.resource_id = resource.id" + 
+      " LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " +
+      " WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL" +
+      " AND assignment.taxonomy_id IN (" + ids + ");";
+    } else {
+      sql = "SELECT " + columns + " FROM assignment" +
+      " JOIN protein_domain ON assignment.protein_domain_id = protein_domain.id" +
+      " JOIN resource ON protein_domain.resource_id = resource.id" + 
+      " WHERE resource.type=?"+
+      " AND assignment.taxonomy_id IN (" + ids + ");";
+    }
+      return db.query(sql, [type], callback);
   });
 
 

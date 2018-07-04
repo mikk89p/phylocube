@@ -23,5 +23,8 @@
 <code>/v1/proteindomain/distribution/resource/:type?</code>
 ### Get assignment by protein domain accession
 <code>/v1/assignment/:acc?</code>
+### Get protein domains acc by resource type and taxonomy id
+<code>v1/assignment/proteindomain/acc/resource/:type?/taxonomy/:taxid?</code>
 ### Get protein domains by resource type and taxonomy id
 <code>v1/assignment/proteindomain/distribution/resource/:type?/taxonomy/:taxid?</code>
+

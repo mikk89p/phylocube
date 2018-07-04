@@ -24,6 +24,10 @@ module.exports = function(app) {
  // Assignment routes
 	var assignmentController = require('./controllers/assignmentController');
   app.route('/v1/assignment/:acc?').get(assignmentController.getAssignmentByAcc)
+  app.route('/v1/assignment/proteindomain/acc/resource/:type?/taxonomy/:id?').get(assignmentController.getAccByResourceTypeAndTaxonomyId)
   app.route('/v1/assignment/proteindomain/distribution/resource/:type?/taxonomy/:id?').get(assignmentController.getByResourceTypeAndTaxonomyId)
-	
+  
+  // Clan membership
+  var clanController = require('./controllers/clanController');
+  app.route('/v1/clanmembership/:pfam?').get(clanController.getClanByPfamAcc)
 };

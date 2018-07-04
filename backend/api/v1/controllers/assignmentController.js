@@ -29,3 +29,11 @@ exports.getByResourceTypeAndTaxonomyId = function(req, res, next) {
 		});  
 	} 
 };
+
+exports.getAccByResourceTypeAndTaxonomyId = function(req, res, next) {  
+	if (req.params.type && req.params.id) {  
+		Assignment.getAccByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
+			sendDefaultResponse(res, err, rows); 
+		});  
+	} 
+};
