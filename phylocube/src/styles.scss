@@ -5,6 +5,12 @@
 $primary_background : #673ab7;
 body{
     margin:0;
+    height:100%;
+}
+
+.mat-autocomplete-panel {
+  max-width: none !important;
+  min-width: 450px !important;
 }
 
 .fullscreen {
@@ -14,11 +20,6 @@ body{
 
 .full-width {
   width: 100%;
-}
-
-.sidebar {
-  //min-height: calc(100% - 64px);;
-  min-height: 86vh;
 }
 
 .overlay{
