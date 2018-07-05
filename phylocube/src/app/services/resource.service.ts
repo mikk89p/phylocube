@@ -43,7 +43,7 @@ export class ResourceService {
   ) {
     this.activeDatasetSubject =  new BehaviorSubject([]);
     this.activeResourceSubject =  new BehaviorSubject<Object>({});
-    this.searchResultSubject =  new BehaviorSubject<string[]>([]);
+    this.searchResultSubject =  new BehaviorSubject<string[]>(undefined);
   }
 
 
@@ -224,8 +224,6 @@ export class ResourceService {
 
   getAccByUniprotId(uniprotId: string) {
     const uri = 'https://www.uniprot.org/uniprot/' + uniprotId + '.xml';
-    console.log(uri);
-    // npm install xml2js --save
     const headers = new Headers();
     headers.append('Accept', 'application/xml');
     const requestOptions = Object.assign(

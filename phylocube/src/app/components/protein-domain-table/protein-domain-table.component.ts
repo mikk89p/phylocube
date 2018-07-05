@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator, MatTableDataSource, MatSort} from '@angular/material';
 import { ResourceService } from './../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
@@ -10,14 +10,19 @@ import { Point } from '../../services/resource.service';
   templateUrl: './protein-domain-table.component.html',
   styleUrls: ['./protein-domain-table.component.scss']
 })
-export class ProteinDomainTableComponent implements OnInit {
+export class ProteinDomainTableComponent implements OnInit, OnDestroy {
   displayedColumns = ['acc', 'description', 'x', 'y', 'z', 'v', 'highlighted'];
   dataSource = new MatTableDataSource();
   selection = new SelectionModel(true, []);
 
   activeResource;
   selectedRow = -1;
-  Math: any;
+
+  // Subscriptions
+  // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
+  resourceSubscription;
+  pointsOnCubeSubscription;
+
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -26,19 +31,28 @@ export class ProteinDomainTableComponent implements OnInit {
   constructor(
     private resourceService: ResourceService,
     private cubeService: CubeService
-  ) {this.Math = Math; }
+  ) {}
+
+  ngOnDestroy() {
+    this.resourceSubscription.unsubscribe();
+    this.pointsOnCubeSubscription.unsubscribe();
+
+  }
 
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
-    this.cubeService.getPointsOnCube().subscribe(
+    this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
-        this.dataSource.data = Object.values(data);
+        // tslint:disable-next-line:triple-equals
+        if (data != undefined && data.length > 0) {
+          this.dataSource.data = Object.values(data);
+        }
       },
 
       error => console.log(error),
     );
 
-    this.resourceService.getActiveResource().subscribe(
+    this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
       },

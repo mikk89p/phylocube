@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ResourceService } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 
@@ -7,41 +7,41 @@ import { CubeService } from '../../services/cube.service';
   templateUrl: './protein-domain-info.component.html',
   styleUrls: ['./protein-domain-info.component.scss']
 })
-export class ProteinDomainInfoComponent implements OnInit {
+export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
 
   selectedPoint;
   activeResource;
+
+  // Subscriptions
+  // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
+  resourceSubscription;
+  pointsOnCubeSubscription;
+
 
   constructor(
     private resourceService: ResourceService,
     private cubeService: CubeService
   ) {}
 
+  ngOnDestroy() {
+    this.resourceSubscription.unsubscribe();
+    this.pointsOnCubeSubscription.unsubscribe();
+
+  }
+
   ngOnInit() {
-    this.resourceService.getActiveResource().subscribe(
+    this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
       },
     );
 
-    this.cubeService.getSelectedPoint().subscribe(
+    this.pointsOnCubeSubscription = this.cubeService.getSelectedPoint().subscribe(
       point => {
-        // tslint:disable-next-line:triple-equals
-        if (point.acc != undefined) {
-        // Get more information
-        this.resourceService.getDataByAcc(point.acc).subscribe(
-          proteinDomain => {
-            if (proteinDomain) {
-              proteinDomain['x'] = point.x;
-              proteinDomain['y'] = point.y;
-              proteinDomain['z'] = point.z;
-              // proteinDomain['highlighted'] = point.highlighted;
-              this.selectedPoint = proteinDomain;
-            }
-          });
+        if (point.x != undefined) {
+          this.selectedPoint = point;
         }
       }
-
     );
   }
 

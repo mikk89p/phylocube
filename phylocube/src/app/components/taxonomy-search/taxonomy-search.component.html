@@ -1,21 +1,23 @@
+<!-- onFocus="(document.getElementById('searchBtn').style.display = 'none')"
+onBlur="(document.getElementById('searchBtn').style.display = 'block')" -->
 
 <form [formGroup]="form" (ngSubmit)="form.valid && onSubmit()">
   <div fxLayout="row" fxLayoutAlign="left"  fxLayoutGap="10px">
 
       <mat-form-field appearance="outline" fxFlex="grow">
-          <mat-label>Taxon</mat-label>
+          <mat-label>Taxonomy</mat-label>
           <input 
             matInput
             [formControl]="taxon"
             [matAutocomplete]="auto">
-          <mat-autocomplete #auto="matAutocomplete" >
+          <mat-autocomplete #auto="matAutocomplete">
             <mat-option *ngFor="let taxon of filteredTaxons$ | async" [value]="taxon.name +' | Taxonomy ID: '+ taxon.id" [innerHtml]="taxon.formattedName"></mat-option>
           </mat-autocomplete>
       </mat-form-field>
 
     <div >
       <mat-spinner [diameter]="30" color='primary' *ngIf="(submitted)"></mat-spinner>
-      <button mat-raised-button color="primary" type="submit" *ngIf="(!form.valid || !submitted)" [disabled]="!form.valid" style="height:55px;">
+      <button id="searchBtn" mat-raised-button color="primary" type="submit" *ngIf="(!submitted)" [disabled]="!form.valid" style="height:55px;">
         Get domains
       </button>
     </div>

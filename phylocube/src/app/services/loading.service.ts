@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs';
+import { MatDialog, MatDialogConfig} from '@angular/material';
+import { ErrorDialogComponent } from '../components/error-dialog/error-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,7 @@ export class LoadingService {
   public loadingSubject; // Show loading screen with caller text
   private loadingArray = [];
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     this.loadingSubject =  new BehaviorSubject([]);
   }
 
@@ -31,6 +33,19 @@ export class LoadingService {
 
     this.loadingArray = loadingRemoved;
     this.loadingSubject.next(this.loadingArray);
+  }
+
+  openDialog(title: string, description?: string) {
+
+    const dialogConfig = new MatDialogConfig();
+    // dialogConfig.autoFocus = true;
+
+    dialogConfig.data = {
+      title: title,
+      description: description
+    };
+
+    this.dialog.open(ErrorDialogComponent, dialogConfig);
   }
 
 }

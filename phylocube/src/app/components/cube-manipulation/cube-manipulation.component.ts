@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CubeService } from '../../services/cube.service';
 import { ResourceService } from '../../services/resource.service';
 import { CubeLimits } from '../../components/cube/cube-limits';
@@ -8,7 +8,7 @@ import { CubeLimits } from '../../components/cube/cube-limits';
   templateUrl: './cube-manipulation.component.html',
   styleUrls: ['./cube-manipulation.component.scss']
 })
-export class CubeManipulationComponent implements OnInit {
+export class CubeManipulationComponent implements OnInit, OnDestroy {
 
   activeResource;
   activeDataSet;
@@ -33,36 +33,55 @@ export class CubeManipulationComponent implements OnInit {
     tooltips: true,
   };
 
+  // Subscriptions
+  // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
+  resourceSubscription;
+  dataSubscription;
+  pointsOnCubeSubscription;
+  cubeLimitsSubscription;
+
 
   constructor(
     private resourceService: ResourceService,
     private cubeService: CubeService
   ) {}
 
+
+  ngOnDestroy() {
+    this.resourceSubscription.unsubscribe();
+    this.dataSubscription.unsubscribe();
+    this.pointsOnCubeSubscription.unsubscribe();
+    this.cubeLimitsSubscription.unsubscribe();
+  }
+
   ngOnInit() {
-    this.resourceService.getActiveResource().subscribe(
+    this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
       }
     );
 
-    this.resourceService.getData().subscribe(
+    this.dataSubscription = this.resourceService.getData().subscribe(
       data => {
         this.activeDataSet = data;
       }
     );
 
-    this.cubeService.getPointsOnCube().subscribe(
+    this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
         this.pointsOnCube = data;
       }
     );
-/*
-    this.cubeService.getCubeLimits().subscribe(
+
+    // If user comes back from about page, sliders must be updated
+    this.cubeLimitsSubscription = this.cubeService.getCubeLimits().subscribe(
       cubeLimits => {
+        if (Object.keys(cubeLimits).length !== 0) {
+          this.cubeLimits = cubeLimits;
+          this.updateRange(cubeLimits);
+        }
       }
     );
-*/
 
   }
 
@@ -82,6 +101,15 @@ export class CubeManipulationComponent implements OnInit {
     this.xRange = [0, 100];
     this.yRange = [0, 100];
     this.zRange = [0, 100];
+  }
+
+  updateRange(cubeLimits) {
+      this.xRange[0] = cubeLimits.xLowerLimit;
+      this.xRange[1] = cubeLimits.xUpperLimit;
+      this.yRange[0] = cubeLimits.yLowerLimit;
+      this.yRange[1] = cubeLimits.yUpperLimit;
+      this.zRange[0] = cubeLimits.zLowerLimit;
+      this.zRange[1] = cubeLimits.zUpperLimit;
   }
 
 }

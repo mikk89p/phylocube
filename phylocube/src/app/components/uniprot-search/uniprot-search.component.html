@@ -9,7 +9,8 @@
             >
         </mat-form-field>
       <div fxFlex>
-        <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid" style="height:55px;">Get domains</button>
+        <mat-spinner [diameter]="30" color='primary' *ngIf="(submitted)"></mat-spinner>
+        <button mat-raised-button color="primary" type="submit" *ngIf="(!form.valid || !submitted)" [disabled]="!form.valid" style="height:55px;">Get domains</button>
       </div>
     
     </div>

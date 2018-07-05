@@ -1,5 +1,5 @@
 import { LoadingService } from './../../services/loading.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith, debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { ResourceService } from '../../services/resource.service';
   templateUrl: './taxonomy-search.component.html',
   styleUrls: ['./taxonomy-search.component.scss']
 })
-export class TaxonomySearchComponent implements OnInit {
+export class TaxonomySearchComponent implements OnInit, OnDestroy {
 
   activeResource;
   form: FormGroup;
@@ -21,6 +21,12 @@ export class TaxonomySearchComponent implements OnInit {
   taxon = new FormControl('', [Validators.required, Validators.minLength(5)]);
   filteredTaxons$: Observable<Taxon[]>;   // $ suffix (popularized by Cycle.js) is used to indicate that the variable is an Observable.
   submitted = false;
+
+  // Subscriptions
+  // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
+  resourceSubscription;
+  taxonomySubscription;
+
 
   constructor(
     private cubeService: CubeService,
@@ -45,9 +51,14 @@ export class TaxonomySearchComponent implements OnInit {
 
   }
 
+  ngOnDestroy() {
+    this.resourceSubscription.unsubscribe();
+    if (this.taxonomySubscription) { this.taxonomySubscription.unsubscribe(); }
+  }
+
   ngOnInit() {
 
-    this.resourceService.getActiveResource().subscribe(
+    this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
       },
@@ -69,16 +80,19 @@ export class TaxonomySearchComponent implements OnInit {
     const name = arr[0].trim();
     let taxid = arr[1].trim();
     taxid = Number((taxid.split(':')[1]).trim());
-    this.resourceService.getAccByTaxonomyId(this.activeResource.type, taxid).subscribe(
+
+    if (this.taxonomySubscription) { this.taxonomySubscription.unsubscribe(); }
+    this.taxonomySubscription = this.resourceService.getAccByTaxonomyId(this.activeResource.type, taxid).subscribe(
       data => {
         if (data.length > 0) {
           this.resourceService.setSearchResult(data);
         } else {
-          this.loadingService.openDialog('No domains found from taxon ' + name);
+          this.loadingService.openDialog('No domains found from ' + name);
         }
       },
       err => {
         console.log(err);
+        this.submitted = false;
         this.loadingService.openDialog('Error', err.statusText);
       },
       () => { this.submitted = false; }

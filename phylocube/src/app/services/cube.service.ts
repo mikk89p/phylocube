@@ -24,8 +24,8 @@ export class CubeService {
     private http: HttpClient,
     private resourceService: ResourceService,
     private loadingService: LoadingService
-  ){
-    this.pointsOnCubeSubject =  new BehaviorSubject([]);
+  ) {
+    this.pointsOnCubeSubject =  new BehaviorSubject<Object[]>([]);
     this.highlightedPointSubject =  new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
     this.selectedPointSubject =  new BehaviorSubject<Object>({});
     this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0, 100, 0, 100, 0, 100));
@@ -37,6 +37,7 @@ export class CubeService {
       this.fullDataSubject =  new BehaviorSubject([]);
       this.resourceService.getData().subscribe(
         data => {
+          console.log(data);
           this.fullDataSubject.next(data);
         }
       );
@@ -55,7 +56,7 @@ export class CubeService {
   setPointsOnCube(data) {
     if (data.length > 0) {
       // tslint:disable-next-line:triple-equals
-      if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))){
+      if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))) {
         if (this.previousData) {
 
           // Copy highlighted points to new data
@@ -89,8 +90,6 @@ export class CubeService {
 
 
   highlightPointsByTaxonomyId(type: string, taxid: number, description: string) {
-    // Papillomaviridae | Taxonomy ID: 151340
-    // Mimiviridae | Taxonomy ID: 549779
     this.loadingService.setLoading('resource_highlightPointsByTaxonomyId',
     'Getting ' + description + ' data' );
     this.resourceService.getDataByTaxonomyId(type, taxid).subscribe(
@@ -99,9 +98,8 @@ export class CubeService {
         this.setHighlightedPoints(points, description);
       },
       err => {
-        // TODO, handle error
-        console.log(err);
         this.loadingService.removeLoading('resource_highlightPointsByTaxonomyId');
+        this.loadingService.openDialog('Error', err.statusText);
       }
 
     );
@@ -116,9 +114,8 @@ export class CubeService {
         this.setFullData(points);
       },
       err => {
-        // TODO, handle error
-        console.log(err);
         this.loadingService.removeLoading('resource_setPointsByTaxonomyId');
+        this.loadingService.openDialog('Error', err.statusText);
       }
 
     );
@@ -129,14 +126,15 @@ export class CubeService {
   setSelectedPoint(points) {
     // tslint:disable-next-line:triple-equals
     if (points['points'][0] != undefined && points['points'][0].data.is_highlight == undefined) {
+      console.log(points['points'][0] );
       const pointData = points['points'][0];
       const point: Point = {
-        x: pointData.x,
+        x: Math.abs(pointData.x),
         y: pointData.y,
-        z: pointData.y,
-        v: pointData.v,
+        z: pointData.z,
+        v: pointData.data.v[pointData.pointNumber],
         acc: pointData.data.acc[pointData.pointNumber],
-        description: pointData.description,
+        description: pointData.data.description[pointData.pointNumber],
         highlighted: pointData.data.highlighted[pointData.pointNumber],
       };
 

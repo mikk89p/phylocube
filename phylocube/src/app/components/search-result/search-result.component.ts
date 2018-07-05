@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CubeService } from '../../services/cube.service';
 import { LoadingService } from '../../services/loading.service';
@@ -14,14 +14,19 @@ export interface DialogData {
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss']
 })
-export class SearchResultComponent implements OnInit {
+export class SearchResultComponent implements OnInit, OnDestroy {
 
   activeResource;
+  pointsOnCube;
   showLoading = false;
   accessionCount = 0;
   form: FormGroup;
 
   proteinDomainsInput = new FormControl('', [Validators.required, Validators.minLength(5)]);
+
+  // Subscriptions
+  // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
+  pointsOnCubeSubscription;
 
   constructor(
     private cubeService: CubeService,
@@ -41,18 +46,31 @@ export class SearchResultComponent implements OnInit {
 
     this.resourceService.getSearchResult().subscribe(
       data => {
-        if (data.length != undefined  && data.length > 0) {
-          this.proteinDomainsInput.setValue(data.join(','));
-        } else {
-          this.proteinDomainsInput.setValue('');
+        if (data != undefined) {
+          if (data.length > 0) {
+            console.log(data);
+            this.proteinDomainsInput.setValue(data.join(','));
+          } else {
+            this.loadingService.openDialog('Message', 'No results');
+            this.proteinDomainsInput.setValue('');
+          }
         }
-
       }
     );
 
   }
 
+  ngOnDestroy() {
+    this.pointsOnCubeSubscription.unsubscribe();
+  }
+
   ngOnInit() {
+
+    this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
+      points => {
+        this.pointsOnCube = points;
+      }
+    );
   }
 
   setAccessionCount(data: string): void {
@@ -66,74 +84,42 @@ export class SearchResultComponent implements OnInit {
   }
 
   getPointsFromCube() {
-    this.showLoading = true;
-    const subscription = this.cubeService.getPointsOnCube().subscribe(
-      points => {
-        this.showLoading = false;
-        let result = '';
-        points.forEach(point => {
-          result += point.acc + ',';
-        });
-        this.proteinDomainsInput.setValue(result);
-      }
-    );
-    subscription.unsubscribe();
+    let result = '';
+    this.pointsOnCube.forEach(point => {
+      result += point.acc + ',';
+    });
+    this.proteinDomainsInput.setValue(result);
   }
 
   onSubmit() {
-    /*
-    117070,161070,103378,74853,101478,89733,49478,52309,58100,160104,49344,141130,49373,*/
-    this.showLoading = true;
-    const start = new Date().getMilliseconds();
+
+    // this.showLoading = true;
+    // const start = new Date().getMilliseconds();
     const accessions = this.proteinDomainsInput.value.split(',');
-    const subscription = this.cubeService.getPointsOnCube().subscribe(
-      points => {
-        const resultPoints = [];
-        points.forEach(point => {
-        if (accessions.includes(point.acc) ) {
-            resultPoints.push(point);
-          }
-        });
-        // tslint:disable-next-line:triple-equals
-        if (resultPoints.length == 0) {
-          this.loadingService.openDialog('Message', 'Current dataset did not have protein domains with provided accessions');
-        } else {
-          this.cubeService.setFullData(resultPoints);
-        }
-        const comp = this;
-        setTimeout(function() {comp.showLoading = false; }, 800 - start);
-
-      },
-      err => {
-        this.loadingService.openDialog('Error', err.statusText);
+    const resultPoints = [];
+    this.pointsOnCube.forEach(point => {
+    if (accessions.includes(point.acc) ) {
+        resultPoints.push(point);
       }
-    );
-
-    subscription.unsubscribe();
+    });
+    // tslint:disable-next-line:triple-equals
+    if (resultPoints.length == 0) {
+      this.loadingService.openDialog('Message', 'Current dataset did not have protein domains with provided accessions');
+    } else {
+      this.cubeService.setFullData(resultPoints);
+    }
+    // const comp = this;
+    // setTimeout(function() {comp.showLoading = false; }, 800 - start);
   }
 
   highlight() {
-    this.loadingService.setLoading('search-result_highlight', 'In progress' );
     const accessions = this.proteinDomainsInput.value.split(',');
-    const subscription = this.cubeService.getPointsOnCube().subscribe(
-      points => {
-        this.showLoading = false;
-        const resultPoints = [];
-        points.forEach(point => {
-          if (accessions.includes(point.acc) ) {
-            resultPoints.push(point);
-          }
-        });
-        this.cubeService.setHighlightedPoints(resultPoints, 'selection');
-        this.loadingService.removeLoading('search-result_highlight');
-      },
-      err => {
-        this.loadingService.removeLoading('search-result_highlight');
-        this.loadingService.openDialog('Error', err.statusText);
+    const resultPoints = [];
+    this.pointsOnCube.forEach(point => {
+      if (accessions.includes(point.acc) ) {
+        resultPoints.push(point);
       }
-    );
-
-    subscription.unsubscribe();
+    });
+    this.cubeService.setHighlightedPoints(resultPoints, 'selection');
   }
-
 }

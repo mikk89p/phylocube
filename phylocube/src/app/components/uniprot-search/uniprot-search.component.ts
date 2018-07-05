@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { TaxonomyService } from '../../services/taxonomy.service';
 import { CubeService } from '../../services/cube.service';
@@ -10,12 +10,19 @@ import { LoadingService } from '../../services/loading.service';
   templateUrl: './uniprot-search.component.html',
   styleUrls: ['./uniprot-search.component.scss']
 })
-export class UniprotSearchComponent implements OnInit {
+export class UniprotSearchComponent implements OnInit, OnDestroy {
 
   activeResource;
   form: FormGroup;
   uniprotId = new FormControl('', [Validators.required, Validators.minLength(5)]);
   submitted = false;
+
+  // Subscriptions
+  // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
+  resourceSubscription;
+  uniprotSubscription;
+  clanSubscription;
+
 
 
   constructor(
@@ -31,25 +38,31 @@ export class UniprotSearchComponent implements OnInit {
 
   }
 
+  ngOnDestroy() {
+    this.resourceSubscription.unsubscribe();
+    if (this.uniprotSubscription) { this.uniprotSubscription.unsubscribe(); }
+    if (this.clanSubscription) { this.clanSubscription.unsubscribe(); }
+  }
+
   ngOnInit() {
 
-    this.resourceService.getActiveResource().subscribe(
+    this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
       },
     );
-
   }
-
-
 
   onSubmit() {
     this.submitted = true;
     const uniprotID = this.form.value.uniprotId;
-    console.log(uniprotID); // P12345
-    this.resourceService.getAccByUniprotId( uniprotID).subscribe(
+
+    if (this.uniprotSubscription) { this.uniprotSubscription.unsubscribe(); }
+    if (this.clanSubscription) { this.clanSubscription.unsubscribe(); }
+
+    this.uniprotSubscription = this.resourceService.getAccByUniprotId( uniprotID).subscribe(
       data => {
-        let result = [];
+        const result = [];
         const arr = data['uniprot']['entry']['dbReference'];
 
         // Uniprot types
@@ -64,16 +77,23 @@ export class UniprotSearchComponent implements OnInit {
 
         arr.forEach(element => {
           const attribute = element['@attributes'];
-          if (attribute['type'] == activeResourceType) {
-            let acc = attribute['id'];
-            if (this.activeResource.type == 'supfam') {
-              // SSF53383 - TODO
+
+          // Look domains only for activeResource
+          if (attribute['type'] != activeResourceType) { return; }
+
+          let acc = attribute['id'];
+
+          if (activeResourceType == 'Gene3D') {
+            result.push(acc);
+          } else if (activeResourceType == 'SUPFAM') {
               acc = acc.replace('SSF', '');
               result.push(acc);
-
-            } else if (this.activeResource.type == 'clan' || this.activeResource.type == 'clanpfam') {
-
-              this.resourceService.getClanByPfamAcc(acc).subscribe(
+          } else if (activeResourceType == 'Pfam' ) {
+            if (this.activeResource.type == 'pfam') {
+              result.push(acc);
+            } else {
+              // clan and clanpfam
+              this.clanSubscription = this.resourceService.getClanByPfamAcc(acc).subscribe(
                 clan_acc => {
                   if (clan_acc) {
                     result.push(clan_acc['clan_acc']);
@@ -84,23 +104,27 @@ export class UniprotSearchComponent implements OnInit {
                 },
                 err => {
                   console.log(err);
-                }
+                },
               );
-            } else {
-              result.push(acc);
-              this.resourceService.setSearchResult(result);
             }
           }
+
+          // In case of clan and clanpfam resource there is extra query
+          if (this.activeResource.type != 'clan' && this.activeResource.type != 'clanpfam') {
+            this.resourceService.setSearchResult(result);
+          }
+
         });
 
-        
-
+        this.submitted = false;
       },
       err => {
         console.log(err);
+        this.submitted = false;
         this.loadingService.openDialog('Error', err.statusText);
       },
-      () => { this.submitted = false; }
+
+      //() => { this.submitted = false; }
     );
   }
 

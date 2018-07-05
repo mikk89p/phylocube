@@ -1,5 +1,5 @@
-export class CubeLimits{
-  
+export class CubeLimits {
+
   constructor(
     private _xLowerLimit: number,
     private _xUpperLimit: number,
@@ -8,58 +8,57 @@ export class CubeLimits{
     private _zLowerLimit: number,
     private _zUpperLimit: number,
     private _vLowerLimit?: number,
-    private _vUpperLimit?: number ){}
+    private _vUpperLimit?: number ) {}
 
-    get xLowerLimit (){
+    get xLowerLimit () {
       return this._xLowerLimit;
     }
-    set xLowerLimit (value){
-      this._xLowerLimit=value;
+    set xLowerLimit (value) {
+      this._xLowerLimit = value;
     }
-    get xUpperLimit (){
+    get xUpperLimit () {
       return this._xUpperLimit;
     }
-    set xUpperLimit (value){
-      this._xUpperLimit=value;
+    set xUpperLimit (value) {
+      this._xUpperLimit = value;
     }
 
-    get yLowerLimit (){
+    get yLowerLimit () {
       return this._yLowerLimit;
     }
-    set yLowerLimit (value){
-      this._yLowerLimit=value;
+    set yLowerLimit (value) {
+      this._yLowerLimit = value;
     }
-    get yUpperLimit (){
+    get yUpperLimit () {
       return this._yUpperLimit;
     }
-    set yUpperLimit (value){
-      this._yUpperLimit=value;
+    set yUpperLimit (value) {
+      this._yUpperLimit = value;
     }
 
-    get zLowerLimit (){
+    get zLowerLimit () {
       return this._zLowerLimit;
     }
-    set zLowerLimit (value){
-      this._zLowerLimit=value;
+    set zLowerLimit (value) {
+      this._zLowerLimit = value;
     }
-    get zUpperLimit (){
+    get zUpperLimit () {
       return this._zUpperLimit;
     }
-    set zUpperLimit (value){
-      this._zUpperLimit=value;
+    set zUpperLimit (value) {
+      this._zUpperLimit = value;
     }
 
-    get vLowerLimit (){
+    get vLowerLimit () {
       return this._vLowerLimit;
     }
-    set vLowerLimit (value){
-      this._vLowerLimit=value;
+    set vLowerLimit (value) {
+      this._vLowerLimit = value;
     }
-    get vUpperLimit (){
+    get vUpperLimit () {
       return this._vUpperLimit;
     }
-    set vUpperLimit (value){
-      this._vUpperLimit=value;
+    set vUpperLimit (value) {
+      this._vUpperLimit = value;
     }
-
 }

@@ -15,7 +15,9 @@ import {
     MatSelectModule,
     MatFormFieldModule,
     MatPaginatorModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
 } from '@angular/material';
 
 @NgModule({
@@ -34,7 +36,9 @@ import {
     MatSelectModule,
     MatFormFieldModule,
     MatPaginatorModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
 ],
   exports: [
     MatInputModule,
@@ -51,7 +55,9 @@ import {
     MatSelectModule,
     MatFormFieldModule,
     MatPaginatorModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
 ],
 })
 export class MaterialModule { }
