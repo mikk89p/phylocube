@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator, MatTableDataSource, MatSort} from '@angular/material';
 import { ResourceService } from './../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
-import {SelectionModel} from '@angular/cdk/collections';
+import { SelectionModel } from '@angular/cdk/collections';
 import { Point } from '../../services/resource.service';
 
 @Component({

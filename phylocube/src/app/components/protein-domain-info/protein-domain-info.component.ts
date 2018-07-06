@@ -11,11 +11,13 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
 
   selectedPoint;
   activeResource;
+  currentDataSet;
 
   // Subscriptions
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
   resourceSubscription;
-  pointsOnCubeSubscription;
+  selectedPointSubscription;
+  currentDataSetSubscription;
 
 
   constructor(
@@ -25,7 +27,8 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resourceSubscription.unsubscribe();
-    this.pointsOnCubeSubscription.unsubscribe();
+    this.selectedPointSubscription.unsubscribe();
+    this.currentDataSetSubscription.unsubscribe();
 
   }
 
@@ -36,7 +39,13 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
       },
     );
 
-    this.pointsOnCubeSubscription = this.cubeService.getSelectedPoint().subscribe(
+    this.currentDataSetSubscription = this.cubeService.getPointsOnCube().subscribe(
+      data => {
+        this.currentDataSet = data;
+      }
+    );
+
+    this.selectedPointSubscription = this.cubeService.getSelectedPoint().subscribe(
       point => {
         if (point.x != undefined) {
           this.selectedPoint = point;
@@ -58,6 +67,14 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
       }
     }
     window.open(api_url + acc);
+  }
+
+  highlightSelectedPoint() {
+    this.currentDataSet.forEach(pointInData => {
+      if (pointInData.acc == this.selectedPoint.acc) {
+        this.cubeService.setHighlightedPoints([pointInData]);
+      }
+    });
   }
 
 }
