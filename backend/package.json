@@ -18,12 +18,16 @@
     "nodemon": "^1.17.5"
   },
   "dependencies": {
+    "bignumber": "^1.1.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "morgan": "^1.9.0",
+    "mysql": "^2.15.0",
     "node-exceptions": "^3.0.0",
     "passport": "^0.4.0",
+    "sqlstring": "^2.3.1",
     "throw": "^1.1.0"
   }
 }
