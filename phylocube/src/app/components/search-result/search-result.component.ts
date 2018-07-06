@@ -19,6 +19,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   activeResource;
   pointsOnCube;
   showLoading = false;
+  showGoEnrichmentLink = true;
   accessionCount = 0;
   form: FormGroup;
 
@@ -27,6 +28,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   // Subscriptions
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
   pointsOnCubeSubscription;
+  resourceSubscription;
 
   constructor(
     private cubeService: CubeService,
@@ -48,7 +50,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
       data => {
         if (data != undefined) {
           if (data.length > 0) {
-            console.log(data);
             this.proteinDomainsInput.setValue(data.join(','));
           } else {
             this.loadingService.openDialog('Message', 'No results');
@@ -62,9 +63,23 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.pointsOnCubeSubscription.unsubscribe();
+    this.resourceSubscription.unsubscribe();
   }
 
   ngOnInit() {
+
+    this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
+      resource => {
+        this.activeResource = resource;
+        if (this.activeResource.type == 'pfam' || this.activeResource.type == 'supfam') {
+          this.showGoEnrichmentLink = true;
+        } else {
+          this.showGoEnrichmentLink = false;
+        }
+
+      }
+    );
+
 
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       points => {

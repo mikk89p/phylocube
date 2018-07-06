@@ -28,6 +28,7 @@ export interface Point {
 export class ResourceService {
 
   private url: String = 'http://localhost:3000/v1/';
+  // private url: String = 'http://bioinfo.ut.ee:3000/v1/';
   private activeResourceType;
   private previousResourceType;
 

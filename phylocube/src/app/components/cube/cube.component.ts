@@ -1,24 +1,32 @@
-import { map } from 'rxjs/operators';
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import {Config , Data, Layout} from 'plotly.js';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
+// import {Config , Data, Layout} from 'plotly.js';
 import * as _ from 'lodash';
+import { map } from 'rxjs/operators';
 import { ResourceService } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
-import { CubeLimits } from '../../components/cube/cube-limits';
+import { CubeParameters } from './cube-parameters';
+import { MatSnackBar } from '@angular/material';
+
 @Component({
   selector: 'app-cube',
   templateUrl: './cube.component.html',
   styleUrls: ['./cube.component.scss']
 })
+
 export class CubeComponent implements OnInit, OnDestroy {
   @ViewChild('chart') el: ElementRef;
+
+  // chart options
+  type = 'scatter3d';
+  defaultColor = 'rgb(0, 0, 0)';
+  ready = false;
+
   fullDataSet;
-  // filtered Dataset
-  currentDataSet;
+  currentDataSet; // filtered Dataset
   activeResource;
   previousResource = {};
-  cubeLimits;
+  previousCubeParameters;
   plotlyEvents = [];
 
   // Subscriptions
@@ -31,7 +39,9 @@ export class CubeComponent implements OnInit, OnDestroy {
 
   constructor(
     private resourceService: ResourceService,
-    private cubeService: CubeService
+    private cubeService: CubeService,
+    private snackBar: MatSnackBar,
+    private zone: NgZone
   ) {}
 
   ngOnDestroy() {
@@ -41,7 +51,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.highlightSubscription.unsubscribe();
     this.selectedPointSubscription.unsubscribe();
   }
-  
+
   ngOnInit() {
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
@@ -53,15 +63,18 @@ export class CubeComponent implements OnInit, OnDestroy {
     /* Full data is needed for sliders faster interaction */
     this.fullDataSubscription = this.cubeService.getFullData().subscribe(
       data => {
-        this.fullDataSet = data;
-        this.cubeService.getCubeLimits().subscribe(
-          cubeLimits => {
-            if (Object.keys(cubeLimits).length !== 0) {
-              const filteredData = this.applyCubeLimits(cubeLimits);
-              this.cubeService.setPointsOnCube(filteredData);
+        if (data.length > 0) {
+          this.fullDataSet = data;
+          this.cubeService.getCubeParameters().subscribe(
+            cubeParameters => {
+              if (cubeParameters) {
+                this.previousCubeParameters = cubeParameters;
+                this.applyParameters(cubeParameters);
+                this.cubeService.setPointsOnCube(this.currentDataSet);
+              }
             }
-          }
-        );
+          );
+        }
       }
     );
 
@@ -69,6 +82,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       data => {
         if (data !== undefined && data.length !== 0) {
           this.drawChart(data, this.cubeService);
+          this.ready = true;
         }
       }
     );
@@ -79,8 +93,11 @@ export class CubeComponent implements OnInit, OnDestroy {
         const description = result.description;
         // tslint:disable-next-line:triple-equals
         if (points != undefined) {
-          if (points.length > 1) {
-            if (points.length < 250) {
+          // if false -> clear all highlight
+          if (points === false) {
+            this.clearHighlight();
+          } else if (points.length > 1) {
+            if (points.length < 150) {
               this.currentDataSet.forEach(pointOnCube => {
                 for (let i = 0; i < points.length; i++) {
                   // tslint:disable-next-line:triple-equals
@@ -101,20 +118,14 @@ export class CubeComponent implements OnInit, OnDestroy {
     );
 
 
-    this.selectedPointSubscription =  this.cubeService.getSelectedPoint().subscribe(
+    this.selectedPointSubscription = this.cubeService.getSelectedPoint().subscribe(
       point => {
-        // tslint:disable-next-line:triple-equals
-        if (point != undefined) {
-          // TODO
-          // this.highlightPoint(point);
+        if (point.acc !== undefined) {
+          // this.openSnackBar(point);
         }
       }
     );
-
-
   }
-
-
 
   unpack(rows, key) {
     return rows.map(function(row) {
@@ -131,18 +142,6 @@ export class CubeComponent implements OnInit, OnDestroy {
     if (points === undefined || points.length === 0 || JSON.stringify(points) === JSON.stringify({})) {return; }
 
     const element = this.el.nativeElement;
-
-    // If number of points exceed threshold then the highlight is not set
-    /*
-    points.forEach(point => {
-      if (point.highlighted == undefined || !point.highlighted) {
-        point.highlighted = true;
-      } else {
-        point.highlighted = false;
-      }
-
-    });
-    */
     const highlight = {
       x: this.unpack(points, 'x'),
       y: this.unpack(points, 'y'),
@@ -159,7 +158,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           width: 0.5
         },
         opacity: 0.7},
-        type: 'scatter3d'
+        type: this.type
     };
 
     Plotly.plot(element, [highlight]);
@@ -186,7 +185,7 @@ export class CubeComponent implements OnInit, OnDestroy {
             width: 0.5
           },
           opacity: 0.7},
-          type: 'scatter3d'
+          type: this.type
       };
 
       while ( true ) {
@@ -242,8 +241,10 @@ export class CubeComponent implements OnInit, OnDestroy {
     const layout = {
       title: resource.name ? resource.name + ' ' + resource.version : 'Loading...',
       autosize: true,
-      height: 750,
-      margin: {l: 0, r: 0, b: 0, t: 50},
+      height: (window.innerHeight * 0.7),
+      paper_bgcolor : 'rgba(0,0,0,0)',
+      plot_bgcolor : 'rgba(0,0,0,0)',
+      margin: {l: 0, r: 0, b: 0, t: 0},
       showlegend: false,
       legend: {'orientation': 'h'},
 
@@ -282,7 +283,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           }
         },
 
-        annotations: [{
+        /*annotations: [{
           x: -resource.xMax,
           y: resource.yMax,
           z: resource.zMax,
@@ -292,10 +293,10 @@ export class CubeComponent implements OnInit, OnDestroy {
           arrowhead: 1,
           xanchor: 'top',
           yanchor: 'bottom'
-        }]
+        }] */
       }
     };
-    return layout; // {margin: {l: 0, r: 100, b: 0, t: 0}};
+    return layout;
   }
 
 
@@ -320,9 +321,9 @@ export class CubeComponent implements OnInit, OnDestroy {
 
   drawChart(dataset, cubeService) {
 
-
+    const size = 3;
+    const opacity = 0.5;
     const text = this.getHoverText(dataset);
-    // const coordinates = this.getXYZ(dataset);
     const layout = this.getLayout(this.activeResource);
     const trace1 = {
       x: this.unpack(dataset, 'x'),
@@ -337,16 +338,11 @@ export class CubeComponent implements OnInit, OnDestroy {
       hoverinfo: 'text',
       text: text,
       marker: {
-        size: 3,
+        size: size,
         name: this.unpack(dataset, 'acc'),
-        color: 'rgba(0, 0, 0,0.6)',
-        line: {
-          /* outer line color */
-          color: 'rgba(0, 0, 0,0.1)',
-          width: 0.5
-        },
-        opacity: 0.8},
-      type: 'scatter3d'
+        color: this.unpack(dataset, 'color'),
+        opacity: opacity},
+      type: this.type
     };
     const data = [trace1];
     const element = this.el.nativeElement;
@@ -354,21 +350,9 @@ export class CubeComponent implements OnInit, OnDestroy {
     Plotly.purge(element);
     Plotly.newPlot(element, data, layout, [0]);
 
-    // const comp = this;
     element.on('plotly_click', function(point) {
-      // console.log(point);
-      // comp.highlightPoint(point);
       cubeService.setSelectedPoint(point);
     });
-
-    element.on('plotly_hover', function(dataPoints) {
-      const infotext = dataPoints.points.map(function(d) {
-        return (d.data.name + ': x= ' + d.x + ', y= ' + d.y.toPrecision(3));
-      });
-
-      // someelement.hoverInfo.innerHTML = infotext.join('');
-    });
-
 
     // Apply copied highlighted points to new data
     dataset.forEach(point => {
@@ -380,17 +364,18 @@ export class CubeComponent implements OnInit, OnDestroy {
     });
   }
 
-  applyCubeLimits(cubeLimits: CubeLimits) {
+  applyParameters(cubeParameters: CubeParameters) {
     /*
-    if (this.cubeLimits && JSON.stringify(this.cubeLimits) == JSON.stringify(cubeLimits) &&
+    if (this.cubeParameters && JSON.stringify(this.cubeParameters) == JSON.stringify(cubeParameters) &&
     JSON.stringify(this.activeResource) == JSON.stringify(this.previousResource) ) {
       return this.activeDataSet;
     }*/
-    // console.log('applyCubeLimits()');
-    this.cubeLimits = cubeLimits;
+   
     this.previousResource = this.activeResource;
+
     // Make deep copy and remove points from the copyed dataset
     const dataset = JSON.parse(JSON.stringify(this.fullDataSet));
+
 
     // Array of indexes
     const indexes = [];
@@ -408,28 +393,45 @@ export class CubeComponent implements OnInit, OnDestroy {
         const v = (element['v']  / vMax) * 100;
       }
 
-      if (x < cubeLimits.xLowerLimit || x > cubeLimits.xUpperLimit ||
-          y < cubeLimits.yLowerLimit || y > cubeLimits.yUpperLimit ||
-          z < cubeLimits.zLowerLimit || z > cubeLimits.zUpperLimit) {
+      // Apply color
+      element['color'] = this.defaultColor;
+
+      if (cubeParameters.colorScheme === 1) {
+        if (element['v'] > 0) {
+          element['color'] = 'rgb(250, 0, 0)';
+        }
+      } else if (cubeParameters.colorScheme === 2) {
+        if (element['v'] > 0) {
+          element['color'] = 'rgb(250, 0, 0)';
+          if (element['v'] > 1) {
+            element['color'] = 'rgb(0, 0, 250)';
+          }
+        }
+
+      }
+
+      if (x < cubeParameters.xLowerLimit || x > cubeParameters.xUpperLimit ||
+          y < cubeParameters.yLowerLimit || y > cubeParameters.yUpperLimit ||
+          z < cubeParameters.zLowerLimit || z > cubeParameters.zUpperLimit) {
         const index = dataset.indexOf(element);
         indexes.push(index);
-
       }
 
     });
 
     // Go through in reverse order without messing up the indexes of the yet-to-be-removed items
-    indexes.reverse();
-    indexes.forEach(index => {
-      if (index !== -1) {dataset.splice(index, 1); }
-    });
+    if (indexes.length > 0) {
+      indexes.reverse();
+      indexes.forEach(index => {
+        if (index !== -1) {dataset.splice(index, 1); }
+      });
+    }
 
     this.currentDataSet = dataset;
     return dataset;
-
   }
 
-  resetHighlight() {
+  clearHighlight() {
     const element = this.el.nativeElement;
     const length = element.data.length;
     const indexes = [];
@@ -448,6 +450,23 @@ export class CubeComponent implements OnInit, OnDestroy {
     Plotly.deleteTraces(element, indexes);
   }
 
+  public openSnackBar(point): void {
+    this.zone.run(() => {
+      const text = point.acc;
+      const snackBar = this.snackBar.open(text, 'Highlight', {
+        duration: 3000,
+        verticalPosition: 'top',
+        horizontalPosition: 'right',
+      });
+      snackBar.onAction().subscribe(() => {
+        this.cubeService.setHighlightedPoints([point]);
+        snackBar.dismiss();
+      });
+    });
+  }
 
 
 }
+
+
+

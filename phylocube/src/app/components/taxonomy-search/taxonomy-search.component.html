@@ -4,7 +4,7 @@ onBlur="(document.getElementById('searchBtn').style.display = 'block')" -->
 <form [formGroup]="form" (ngSubmit)="form.valid && onSubmit()">
   <div fxLayout="row" fxLayoutAlign="left"  fxLayoutGap="10px">
 
-      <mat-form-field appearance="outline" fxFlex="grow">
+      <mat-form-field appearance="outline" fxFlex="70">
           <mat-label>Taxonomy</mat-label>
           <input 
             matInput
@@ -18,7 +18,7 @@ onBlur="(document.getElementById('searchBtn').style.display = 'block')" -->
     <div >
       <mat-spinner [diameter]="30" color='primary' *ngIf="(submitted)"></mat-spinner>
       <button id="searchBtn" mat-raised-button color="primary" type="submit" *ngIf="(!submitted)" [disabled]="!form.valid" style="height:55px;">
-        Get domains
+        Submit
       </button>
     </div>
   

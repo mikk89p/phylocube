@@ -2,10 +2,14 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~nouislider/distribute/nouislider.min.css";
 
-$primary_background : #673ab7;
+$primary_background : #e9ebee;
 body{
     margin:0;
     height:100%;
+}
+
+.defaultBackground{
+  background-color: $primary_background;
 }
 
 .mat-autocomplete-panel {

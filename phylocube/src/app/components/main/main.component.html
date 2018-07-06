@@ -2,33 +2,39 @@
 <app-loading [style.visibility]="(showLoading)? 'visible' : 'hidden'"></app-loading>
 
 <div 
+  class="defaultBackground"
   fxLayout.gt-md="row"
   fxLayout="column"
   fxLayoutAlign="center"
-  fxLayoutGap="10px"
+  fxLayoutGap="5px"
   fxLayoutGap.xs="0"
-  style="margin-top:10px;">
+  style="margin-top:5px; margin-bottom:5px;"
+  >
 
 
   <!-- left section  -->
-  <div fxFlex="grow" fxFlex.gt-md="grow" fxLayout.gt-sm="row" fxLayoutGap="10px" fxLayout="column">
+  <div fxFlexOrder.lt-md="2" fxFlex="70" fxFlex.gt-lg="67" fxLayout.gt-sm="row" fxLayoutGap="5px" fxLayout="column">
     
         <!-- left sidebar -->
-        <div fxFlex="30" fxFlex.gt-md="30" fxLayoutGap="10px"  fxLayout="column" >
+        <div fxFlexOrder.lt-md="2" fxFlex="30" fxFlex.lt-lg="35" fxLayoutGap="5px"  fxLayout="column" >
 
-          <app-protein-domain-info></app-protein-domain-info>
-
-          <mat-card >
-              <b>Search</b>
+          <app-cube-manipulation></app-cube-manipulation>
+          <app-color-scheme></app-color-scheme>
+          <mat-card>
+              <mat-card-header>
+                  <img mat-card-avatar src="assets/icons/search.png" alt="search">
+                    <mat-card-title>Search</mat-card-title>
+                    <mat-card-subtitle>Get accessions by taxonomy Id or UniProt Id</mat-card-subtitle>
+              </mat-card-header>
+              
               <mat-card-content>
                 <app-taxonomy-search></app-taxonomy-search>
                 <app-uniprot-search></app-uniprot-search>
               </mat-card-content>
-              <mat-card-actions>
-              </mat-card-actions>
+
           </mat-card>
 
-          <app-cube-manipulation></app-cube-manipulation>
+          
         
         </div>
         <!-- left sidebar -->
@@ -36,8 +42,10 @@
 
 
         <!-- cube -->
-        <div fxFlex="grow" fxFlex.gt-md="grow" fxLayout="column">
+        <div fxFlexOrder.lt-md="1" fxFlex="70" fxFlex.lt-lg="65" fxLayoutGap="5px" fxLayout="column">
+          <app-protein-domain-info></app-protein-domain-info>
           <app-cube></app-cube>
+          
         </div>
         <!-- cube -->
 
@@ -48,7 +56,7 @@
 
 
   <!-- right section  -->
-  <div fxFlex="30" fxFlex.gt-md="30" fxLayoutGap="10px" fxLayout="column" >
+  <div fxFlexOrder.lt-md="1" fxFlex="30" fxFlex.gt-lg="33" fxLayoutGap="5px" fxLayout="column" >
       <app-resource></app-resource>
       <app-search-result></app-search-result>
       <app-protein-domain-table></app-protein-domain-table>

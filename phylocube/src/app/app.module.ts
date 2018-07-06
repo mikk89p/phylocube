@@ -38,6 +38,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { UniprotSearchComponent } from './components/uniprot-search/uniprot-search.component';
 import { SearchResultComponent } from './components/search-result/search-result.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
+import { ColorSchemeComponent } from './components/color-scheme/color-scheme.component';
 
 
 @NgModule({
@@ -58,7 +59,8 @@ import { ErrorDialogComponent } from './components/error-dialog/error-dialog.com
     LoadingComponent,
     UniprotSearchComponent,
     SearchResultComponent,
-    ErrorDialogComponent
+    ErrorDialogComponent,
+    ColorSchemeComponent
   ],
   imports: [
     BrowserModule,
