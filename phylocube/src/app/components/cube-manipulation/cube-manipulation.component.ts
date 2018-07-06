@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CubeService } from '../../services/cube.service';
 import { ResourceService } from '../../services/resource.service';
-import { CubeLimits } from '../../components/cube/cube-limits';
+import { CubeParameters } from '../../components/cube/cube-parameters';
 
 @Component({
   selector: 'app-cube-manipulation',
@@ -13,7 +13,7 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
   activeResource;
   activeDataSet;
   pointsOnCube;
-  cubeLimits: CubeLimits;
+  cubeParameters: CubeParameters;
 
   xRange = [0, 100];
   yRange = [0, 100];
@@ -38,7 +38,7 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
   resourceSubscription;
   dataSubscription;
   pointsOnCubeSubscription;
-  cubeLimitsSubscription;
+  cubeParametersSubscription;
 
 
   constructor(
@@ -51,7 +51,7 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
     this.resourceSubscription.unsubscribe();
     this.dataSubscription.unsubscribe();
     this.pointsOnCubeSubscription.unsubscribe();
-    this.cubeLimitsSubscription.unsubscribe();
+    this.cubeParametersSubscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -74,11 +74,11 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
     );
 
     // If user comes back from about page, sliders must be updated
-    this.cubeLimitsSubscription = this.cubeService.getCubeLimits().subscribe(
-      cubeLimits => {
-        if (Object.keys(cubeLimits).length !== 0) {
-          this.cubeLimits = cubeLimits;
-          this.updateRange(cubeLimits);
+    this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
+      cubeParameters => {
+        if (cubeParameters && Object.keys(cubeParameters).length !== 0) {
+          this.cubeParameters = cubeParameters;
+          this.updateRange(cubeParameters);
         }
       }
     );
@@ -86,30 +86,34 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
   }
 
   updateCube() {
-    this.cubeLimits = new CubeLimits(
+    this.cubeService.setBoundaries(
       this.xRange[0],
       this.xRange[1],
       this.yRange[0],
       this.yRange[1],
       this.zRange[0],
       this.zRange[1]);
-    this.cubeService.setCubeLimits(this.cubeLimits);
   }
 
   seToDefault() {
-    this.cubeService.setCubeLimits(new CubeLimits(0, 100, 0, 100, 0, 100));
+    this.cubeService.setBoundaries(0, 100, 0, 100, 0, 100);
     this.xRange = [0, 100];
     this.yRange = [0, 100];
     this.zRange = [0, 100];
   }
 
-  updateRange(cubeLimits) {
-      this.xRange[0] = cubeLimits.xLowerLimit;
-      this.xRange[1] = cubeLimits.xUpperLimit;
-      this.yRange[0] = cubeLimits.yLowerLimit;
-      this.yRange[1] = cubeLimits.yUpperLimit;
-      this.zRange[0] = cubeLimits.zLowerLimit;
-      this.zRange[1] = cubeLimits.zUpperLimit;
+  updateRange(cubeParameters) {
+      this.xRange[0] = cubeParameters.xLowerLimit;
+      this.xRange[1] = cubeParameters.xUpperLimit;
+      this.yRange[0] = cubeParameters.yLowerLimit;
+      this.yRange[1] = cubeParameters.yUpperLimit;
+      this.zRange[0] = cubeParameters.zLowerLimit;
+      this.zRange[1] = cubeParameters.zUpperLimit;
   }
+
+  clearHighlight() {
+    this.cubeService.setHighlightedPoints(false);
+  }
+
 
 }

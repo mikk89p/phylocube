@@ -1,10 +1,10 @@
+import { CubeParameters } from './../components/cube/cube-parameters';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs';
 import { ResourceService } from './resource.service';
 import { Point } from './resource.service';
-import { CubeLimits } from '../components/cube/cube-limits';
 import { LoadingService } from './loading.service';
 
 @Injectable({
@@ -12,13 +12,20 @@ import { LoadingService } from './loading.service';
 })
 export class CubeService {
 
+
+
+  // variables
+  // x, y, z boundaries and color scheme
+  cubeParameters = new CubeParameters(0, 100, 0, 100, 0, 100, 0, 0, 100);
+
+  // Subjects
   private selectedPointSubject;
   private highlightedPointSubject;
-  private cubeLimitsSubject;
+  private cubeParametersSubject;
   private fullDataSubject;
   private pointsOnCubeSubject;
+  private colorSchemeSubject;
   private previousData = [];
-
 
   constructor(
     private http: HttpClient,
@@ -28,7 +35,8 @@ export class CubeService {
     this.pointsOnCubeSubject =  new BehaviorSubject<Object[]>([]);
     this.highlightedPointSubject =  new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
     this.selectedPointSubject =  new BehaviorSubject<Object>({});
-    this.cubeLimitsSubject =  new BehaviorSubject<Object>(new CubeLimits(0, 100, 0, 100, 0, 100));
+    this.cubeParametersSubject =  new BehaviorSubject<Object>(this.cubeParameters);
+    this.colorSchemeSubject = new BehaviorSubject<number>(undefined);
    }
 
    getFullData() {
@@ -37,7 +45,6 @@ export class CubeService {
       this.fullDataSubject =  new BehaviorSubject([]);
       this.resourceService.getData().subscribe(
         data => {
-          console.log(data);
           this.fullDataSubject.next(data);
         }
       );
@@ -56,7 +63,7 @@ export class CubeService {
   setPointsOnCube(data) {
     if (data.length > 0) {
       // tslint:disable-next-line:triple-equals
-      if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))) {
+      //if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))) {
         if (this.previousData) {
 
           // Copy highlighted points to new data
@@ -76,7 +83,7 @@ export class CubeService {
         this.previousData = data;
         this.pointsOnCubeSubject.next(data);
       }
-    }
+    //}
   }
 
   getHighlightedPoints() {
@@ -126,7 +133,6 @@ export class CubeService {
   setSelectedPoint(points) {
     // tslint:disable-next-line:triple-equals
     if (points['points'][0] != undefined && points['points'][0].data.is_highlight == undefined) {
-      console.log(points['points'][0] );
       const pointData = points['points'][0];
       const point: Point = {
         x: Math.abs(pointData.x),
@@ -144,16 +150,42 @@ export class CubeService {
 
   }
 
+  setBoundaries(
+    xLowerLimit: number,
+    xUpperLimit: number,
+    yLowerLimit: number,
+    yUpperLimit: number,
+    zLowerLimit: number,
+    zUpperLimit: number,
+    vLowerLimit?: number,
+    vUpperLimit?: number) {
+
+      this.cubeParameters.xLowerLimit = xLowerLimit;
+      this.cubeParameters.xUpperLimit = xUpperLimit;
+      this.cubeParameters.yLowerLimit = yLowerLimit;
+      this.cubeParameters.yUpperLimit = yUpperLimit;
+      this.cubeParameters.zLowerLimit = zLowerLimit;
+      this.cubeParameters.zUpperLimit = zUpperLimit;
+      this.cubeParameters.vLowerLimit = vLowerLimit;
+      this.cubeParameters.vUpperLimit = vUpperLimit;
+      this.setCubeParameters(this.cubeParameters);
+  }
+
+  setCubeParameters(cubeParameters) {
+    this.cubeParameters = cubeParameters;
+    this.cubeParametersSubject.next(cubeParameters);
+  }
+
+  getCubeParameters() {
+    return this.cubeParametersSubject;
+  }
+
+  setColorScheme(value) {
+    this.cubeParameters.colorScheme = value;
+    this.setCubeParameters(this.cubeParameters);
+  }
+
   getSelectedPoint() {
     return this.selectedPointSubject;
   }
-
-  setCubeLimits(cubeLimits) {
-    this.cubeLimitsSubject.next(cubeLimits);
-  }
-
-  getCubeLimits() {
-    return this.cubeLimitsSubject;
-  }
-
 }

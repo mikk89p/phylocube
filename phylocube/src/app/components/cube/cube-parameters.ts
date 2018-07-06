@@ -1,4 +1,4 @@
-export class CubeLimits {
+export class CubeParameters {
 
   constructor(
     private _xLowerLimit: number,
@@ -7,8 +7,9 @@ export class CubeLimits {
     private _yUpperLimit: number,
     private _zLowerLimit: number,
     private _zUpperLimit: number,
+    private _colorScheme: number,
     private _vLowerLimit?: number,
-    private _vUpperLimit?: number ) {}
+    private _vUpperLimit?: number, ) {}
 
     get xLowerLimit () {
       return this._xLowerLimit;
@@ -22,7 +23,6 @@ export class CubeLimits {
     set xUpperLimit (value) {
       this._xUpperLimit = value;
     }
-
     get yLowerLimit () {
       return this._yLowerLimit;
     }
@@ -35,7 +35,6 @@ export class CubeLimits {
     set yUpperLimit (value) {
       this._yUpperLimit = value;
     }
-
     get zLowerLimit () {
       return this._zLowerLimit;
     }
@@ -48,7 +47,6 @@ export class CubeLimits {
     set zUpperLimit (value) {
       this._zUpperLimit = value;
     }
-
     get vLowerLimit () {
       return this._vLowerLimit;
     }
@@ -60,5 +58,11 @@ export class CubeLimits {
     }
     set vUpperLimit (value) {
       this._vUpperLimit = value;
+    }
+    get colorScheme () {
+      return this._colorScheme;
+    }
+    set colorScheme (value) {
+      this._colorScheme = value;
     }
 }

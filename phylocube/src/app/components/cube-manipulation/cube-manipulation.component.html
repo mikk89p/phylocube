@@ -33,7 +33,15 @@
       
     </div>
   </mat-card-content>
-  <mat-card-actions>
-    <button  mat-raised-button color="primary" (click)="seToDefault();">Default</button>
+  <mat-card-actions fxLayoutAlign="center" fxLayoutGap="12px">
+
+    <button  mat-raised-button color="primary" (click)="seToDefault();">
+      Reset Limits
+    </button>
+
+    <button mat-raised-button color="primary" (click)="clearHighlight()">
+        Clear HighLight
+    </button>
+
   </mat-card-actions>
 </mat-card>
