@@ -1,6 +1,23 @@
 <!-- <button mat-raised-button color="primary" type="button" style="margin:10px;" (click)="clearHighlight()">Clear HighLight</button> -->
-<mat-card fxLayoutAlign="center" >
-    <mat-spinner [diameter]="30" color='primary' *ngIf="!ready"></mat-spinner>
-    <div #chart></div>
+<mat-card fxLayoutAlign="center" fxLayout="column" >
+  <mat-spinner [diameter]="30" color='primary' *ngIf="!ready"></mat-spinner>
+  <div #chart></div>
+
+  <div fxLayoutAlign="center" fxLayoutGap="10px" fxLayout="row" >
+
+    <button mat-raised-button color="primary" (click)="clearHighlight()">
+        Clear HighLight
+    </button>
+
+    <button mat-raised-button color="primary" (click)="toggleDensity()">
+        {{showDensity?'Hide Density':'Show density'}}
+    </button>
+
+    <button mat-raised-button color="primary" (click)="toggleDynamic()" >
+        {{dynamicAxes?'Disable Dynamic axes':'Enable Dynamic axes'}}
+    </button>
+
+  </div>
+
 </mat-card>
 

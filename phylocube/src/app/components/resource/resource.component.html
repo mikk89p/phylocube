@@ -7,7 +7,7 @@
         fxLayoutGap="20px"
     >
     <div fxFlex>
-      <mat-card-title>{{activeResource.name}}</mat-card-title>
+      <mat-card-title [matTooltip]="activeResource.description" >{{activeResource.name}}</mat-card-title>
       <mat-card-subtitle>Version: {{activeResource.version}}</mat-card-subtitle>
     </div>
     <div fxFlex >
@@ -27,7 +27,7 @@
   </mat-card-header>
   <mat-card-content>
     <p><b>Url: </b> <a target="_blank"  href="{{activeResource.url}}">{{activeResource.url}}</a></p>
-    <p><b>Description: </b>{{activeResource.description}}</p>
+    <!-- <p><b>Description: </b>{{activeResource.description}}</p> -->
     <div *ngIf="activeResource.cellular_genomes_version == activeResource.viral_genomes_version">
         <p><b>Genomes: </b>{{activeResource.cellular_genomes_version}}</p>
     </div>

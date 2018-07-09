@@ -17,6 +17,7 @@ export interface Point {
   acc: string;
   description: string;
   highlighted: boolean;
+  size?: number;
 }
 
 
@@ -122,7 +123,7 @@ export class ResourceService {
                 v: element.virus,
                 acc: element.acc,
                 description: element.description,
-                highlighted: false
+                highlighted: false,
               };
               dataset.push(obj);
             });

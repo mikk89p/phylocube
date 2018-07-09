@@ -3,8 +3,8 @@
 
 <div 
   class="defaultBackground"
-  fxLayout.gt-md="row"
-  fxLayout="column"
+  fxLayout="row"
+  fxLayout.lt-lg="column"
   fxLayoutAlign="center"
   fxLayoutGap="5px"
   fxLayoutGap.xs="0"
@@ -13,41 +13,25 @@
 
 
   <!-- left section  -->
-  <div fxFlexOrder.lt-md="2" fxFlex="70" fxFlex.gt-lg="67" fxLayout.gt-sm="row" fxLayoutGap="5px" fxLayout="column">
+  <div fxFlexOrder.lt-md="2" fxFlex="70" fxFlex.gt-md="75" fxLayout.gt-sm="row" fxLayoutGap="5px" fxLayout="column">
     
         <!-- left sidebar -->
         <div fxFlexOrder.lt-md="2" fxFlex="30" fxFlex.lt-lg="35" fxLayoutGap="5px"  fxLayout="column" >
-
-          <app-cube-manipulation></app-cube-manipulation>
+          <app-protein-domain-info></app-protein-domain-info>
           <app-color-scheme></app-color-scheme>
-          <mat-card>
-              <mat-card-header>
-                  <img mat-card-avatar src="assets/icons/search.png" alt="search">
-                    <mat-card-title>Search</mat-card-title>
-                    <mat-card-subtitle>Get accessions by taxonomy Id or UniProt Id</mat-card-subtitle>
-              </mat-card-header>
-              
-              <mat-card-content>
-                <app-taxonomy-search></app-taxonomy-search>
-                <app-uniprot-search></app-uniprot-search>
-              </mat-card-content>
-
-          </mat-card>
-
-          
+          <app-cube-manipulation></app-cube-manipulation>
         
         </div>
         <!-- left sidebar -->
 
-
-
-        <!-- cube -->
         <div fxFlexOrder.lt-md="1" fxFlex="70" fxFlex.lt-lg="65" fxLayoutGap="5px" fxLayout="column">
-          <app-protein-domain-info></app-protein-domain-info>
+          <!-- cube -->
           <app-cube></app-cube>
-          
+          <!-- cube -->
+          <app-protein-domain-table></app-protein-domain-table>
+
         </div>
-        <!-- cube -->
+        
 
 
   </div>
@@ -56,10 +40,25 @@
 
 
   <!-- right section  -->
-  <div fxFlexOrder.lt-md="1" fxFlex="30" fxFlex.gt-lg="33" fxLayoutGap="5px" fxLayout="column" >
+  <div fxFlexOrder.lt-md="1" fxFlex="30" fxFlex.gt-md="25" fxLayoutGap="5px" fxLayout="column" >
       <app-resource></app-resource>
+
+      <mat-card>
+          <mat-card-header>
+              <img mat-card-avatar src="assets/icons/search.png" alt="search">
+                <mat-card-title>Search</mat-card-title>
+                <mat-card-subtitle>Get accessions by taxonomy Id or UniProt Id</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <app-taxonomy-search></app-taxonomy-search>
+            <app-uniprot-search></app-uniprot-search>
+          </mat-card-content>
+
+      </mat-card>
+
       <app-search-result></app-search-result>
-      <app-protein-domain-table></app-protein-domain-table>
+      
   </div>
   <!-- right section -->
 

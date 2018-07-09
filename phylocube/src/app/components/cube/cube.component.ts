@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@an
 // import {Config , Data, Layout} from 'plotly.js';
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
-import { ResourceService } from '../../services/resource.service';
+import { ResourceService, Point  } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { CubeParameters } from './cube-parameters';
 import { MatSnackBar } from '@angular/material';
@@ -21,6 +21,8 @@ export class CubeComponent implements OnInit, OnDestroy {
   type = 'scatter3d';
   defaultColor = 'rgb(0, 0, 0)';
   ready = false;
+  dynamicAxes = false;
+  showDensity = false;
 
   fullDataSet;
   currentDataSet; // filtered Dataset
@@ -57,6 +59,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       resource => {
         // console.log('Cube component getActiveResource()');
         this.activeResource = resource;
+        this.showDensity = false;
       }
     );
 
@@ -241,7 +244,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     const layout = {
       title: resource.name ? resource.name + ' ' + resource.version : 'Loading...',
       autosize: true,
-      height: (window.innerHeight * 0.7),
+      height: (window.innerHeight * 0.6),
       paper_bgcolor : 'rgba(0,0,0,0)',
       plot_bgcolor : 'rgba(0,0,0,0)',
       margin: {l: 0, r: 0, b: 0, t: 0},
@@ -254,6 +257,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         },
         xaxis: {
           title: 'Eukaryota',
+          autorange: false,
           range: [-resource.xMax, 0],  // workaround
           tickmode : 'array', // workaround
           tickvals : tickvals,  // workaround
@@ -266,6 +270,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         },
         yaxis: {
           title: 'Archaea',
+          autorange: false,
           range: [0, resource.yMax],
           titlefont: {
             family: 'Courier New, monospace',
@@ -275,6 +280,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         },
         zaxis: {
           title: 'Bacteria',
+          autorange: false,
           range: [0, resource.zMax],
           titlefont: {
             family: 'Courier New, monospace',
@@ -319,40 +325,84 @@ export class CubeComponent implements OnInit, OnDestroy {
     });
   }
 
+  getHoverDensityText(dataset) {
+    return dataset.map(function(point) {
+      if ((point.x + point.y + point.z) === 0) {
+        return 'Count : ' + point.count  + '<br>' +
+        '(0,0,0)';
+      }
+      return 'Count : ' + point.count  + '<br>' +
+      'x : (' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + '] <br>' +
+      'y : (' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + '] <br>' +
+      'z : (' + (point.z - point.stepZ / 2).toFixed(0) + ' ; ' + (point.z + point.stepZ / 2).toFixed(0) + ']';
+    });
+  }
+
   drawChart(dataset, cubeService) {
 
-    const size = 3;
-    const opacity = 0.5;
-    const text = this.getHoverText(dataset);
+    const size: any = 3;
+    const opacity = 0.7;
     const layout = this.getLayout(this.activeResource);
-    const trace1 = {
-      x: this.unpack(dataset, 'x'),
-      y: this.unpack(dataset, 'y'),
-      z: this.unpack(dataset, 'z'),
-      v: this.unpack(dataset, 'v'),
-      description: this.unpack(dataset, 'description'),
-      acc: this.unpack(dataset, 'acc'),
-      highlighted: this.unpack(dataset, 'highlighted'),
-      name: this.activeResource.name + ' data',
-      mode: 'markers',
-      hoverinfo: 'text',
-      text: text,
-      marker: {
-        size: size,
-        name: this.unpack(dataset, 'acc'),
-        color: this.unpack(dataset, 'color'),
-        opacity: opacity},
-      type: this.type
-    };
+    let trace1;
+
+    // Density
+    if (dataset[0].density != undefined) {
+      this.showDensity = true;
+      const text = this.getHoverDensityText(dataset);
+      trace1 = {
+        x: this.unpack(dataset, 'x'),
+        y: this.unpack(dataset, 'y'),
+        z: this.unpack(dataset, 'z'),
+        v: this.unpack(dataset, 'v'),
+        count: this.unpack(dataset, 'count'),
+        mode: 'markers',
+        hoverinfo: 'text',
+        text: text,
+        marker: {
+          size: this.unpack(dataset, 'size'),
+          color: this.defaultColor,
+          opacity: opacity},
+        type: this.type
+      };
+
+    } else {
+      const text = this.getHoverText(dataset);
+      this.showDensity = false;
+      trace1 = {
+        x: this.unpack(dataset, 'x'),
+        y: this.unpack(dataset, 'y'),
+        z: this.unpack(dataset, 'z'),
+        v: this.unpack(dataset, 'v'),
+        description: this.unpack(dataset, 'description'),
+        acc: this.unpack(dataset, 'acc'),
+        highlighted: this.unpack(dataset, 'highlighted'),
+        name: this.activeResource.name + ' data',
+        mode: 'markers',
+        hoverinfo: 'text',
+        text: text,
+        marker: {
+          size: size,
+          name: this.unpack(dataset, 'acc'),
+          color: this.unpack(dataset, 'color'),
+          opacity: opacity},
+        type: this.type
+      };
+
+    }
+
+
     const data = [trace1];
     const element = this.el.nativeElement;
 
     Plotly.purge(element);
     Plotly.newPlot(element, data, layout, [0]);
 
-    element.on('plotly_click', function(point) {
-      cubeService.setSelectedPoint(point);
-    });
+    // Do not listen click on density dataset
+    if (dataset[0].density == undefined) {
+      element.on('plotly_click', function(point) {
+        cubeService.setSelectedPoint(point);
+      });
+    }
 
     // Apply copied highlighted points to new data
     dataset.forEach(point => {
@@ -365,17 +415,10 @@ export class CubeComponent implements OnInit, OnDestroy {
   }
 
   applyParameters(cubeParameters: CubeParameters) {
-    /*
-    if (this.cubeParameters && JSON.stringify(this.cubeParameters) == JSON.stringify(cubeParameters) &&
-    JSON.stringify(this.activeResource) == JSON.stringify(this.previousResource) ) {
-      return this.activeDataSet;
-    }*/
-   
     this.previousResource = this.activeResource;
 
     // Make deep copy and remove points from the copyed dataset
     const dataset = JSON.parse(JSON.stringify(this.fullDataSet));
-
 
     // Array of indexes
     const indexes = [];
@@ -465,6 +508,151 @@ export class CubeComponent implements OnInit, OnDestroy {
     });
   }
 
+
+getMin (arg1, arg2) {
+  if (arg1 <= arg2) {
+    return arg1;
+  } else {
+    return arg2;
+  }
+}
+
+getMax (arg1, arg2) {
+  if (arg1 >= arg2) {
+    return arg1;
+  } else {
+    return arg2;
+  }
+}
+
+getDensityRadius (rawVal) {
+  return Math.log2(rawVal) + Math.log2(rawVal) + 2;
+}
+
+getMinMaxXYZ (dataset) {
+  const array = [];
+  // Default values
+  const result = {
+    minX: 99999,
+    minY: 99999,
+    minZ: 99999,
+    maxX: 0,
+    maxY: 0,
+    maxZ: 0
+  };
+
+  dataset.forEach(point => {
+    result.minX = this.getMin(point.x, result.minX);
+    result.minY = this.getMin(point.y, result.minY);
+    result.minZ = this.getMin(point.z, result.minZ);
+    result.maxX = this.getMax(point.x, result.maxX);
+    result.maxY = this.getMax(point.y, result.maxY);
+    result.maxZ = this.getMax(point.z, result.maxZ);
+  });
+
+  return result;
+}
+
+toggleDensity() {
+
+  if (this.showDensity) {
+    this.cubeService.setPointsOnCube(this.currentDataSet);
+    return;
+  }
+
+  const bins = 10;
+
+  const minMaxXYZ = this.getMinMaxXYZ(this.currentDataSet);
+  const minX = minMaxXYZ.minX;
+  const maxX = minMaxXYZ.maxX;
+  const minY = minMaxXYZ.minY;
+  const maxY = minMaxXYZ.maxY;
+  const minZ = minMaxXYZ.minZ;
+  const maxZ = minMaxXYZ.maxZ;
+
+  const stepX = (maxX - minX) / bins;
+  const stepY = (maxY - minY) / bins;
+  const stepZ = (maxZ - minZ) / bins;
+
+  const dict = {};
+  this.currentDataSet.forEach(point => {
+    let key;
+    let x = Math.round(point.x / stepX);
+    let y = Math.round(point.y / stepY);
+    let z = Math.round(point.z / stepZ);
+    if ((point.x + point.y + point.z) === 0) {
+      key = 'zero_corner';
+      x = 0;
+      y = 0;
+      z = 0;
+    } else {
+      key = x + '' + y + '' + z;
+      x = x * stepX + stepX / 2;
+      y = y * stepY + stepY / 2;
+      z = z * stepZ + stepZ / 2;
+    }
+
+    if (dict[key]) {
+      dict[key].points.push(point);
+      dict[key].size = this.getDensityRadius (dict[key].points.length);
+      dict[key].count = dict[key].count + 1;
+    } else {
+      let densityPoint: DensityPoint;
+      densityPoint = {
+        x: x,
+        y: y,
+        z: z,
+        stepX: stepX,
+        stepY: stepY,
+        stepZ: stepZ,
+        size: this.getDensityRadius (1),
+        count: 1,
+        points: [point],
+        density: true
+      };
+      dict[key] = densityPoint;
+    }
+
+  });
+
+  const array = [];
+  Object.keys(dict).forEach(function(key) {
+    const value = dict[key];
+    array.push(value);
+});
+  this.cubeService.setPointsOnCube(array);
+
+
+}
+
+toggleDynamic() {
+  const element = this.el.nativeElement;
+  if (this.dynamicAxes === false) {
+    Plotly.relayout(element, 'scene.xaxis.autorange', true);
+    Plotly.relayout(element, 'scene.yaxis.autorange', true);
+    Plotly.relayout(element, 'scene.zaxis.autorange', true);
+    this.dynamicAxes = true;
+  } else {
+    Plotly.relayout(element, 'scene.xaxis.autorange', false);
+    Plotly.relayout(element, 'scene.yaxis.autorange', false);
+    Plotly.relayout(element, 'scene.zaxis.autorange', false);
+    this.dynamicAxes = false;
+  }
+}
+
+}
+
+export interface DensityPoint {
+  x: number;
+  y: number;
+  z: number;
+  stepX: number;
+  stepY: number;
+  stepZ: number;
+  size: number;
+  count: number;
+  points: Point[];
+  density: boolean;
 
 }
 

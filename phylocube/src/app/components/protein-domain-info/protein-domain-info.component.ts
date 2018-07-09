@@ -36,6 +36,7 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
+        this.selectedPoint = undefined;
       },
     );
 

@@ -62,10 +62,7 @@ export class CubeService {
 
   setPointsOnCube(data) {
     if (data.length > 0) {
-      // tslint:disable-next-line:triple-equals
-      //if (this.previousData.length == 0 || (this.previousData && this.previousData.join('') != data.join(''))) {
-        if (this.previousData) {
-
+       if (this.previousData) {
           // Copy highlighted points to new data
           this.previousData.forEach(oldPoint => {
               // Set highlight from current currentDataset
@@ -83,7 +80,6 @@ export class CubeService {
         this.previousData = data;
         this.pointsOnCubeSubject.next(data);
       }
-    //}
   }
 
   getHighlightedPoints() {
@@ -141,7 +137,7 @@ export class CubeService {
         v: pointData.data.v[pointData.pointNumber],
         acc: pointData.data.acc[pointData.pointNumber],
         description: pointData.data.description[pointData.pointNumber],
-        highlighted: pointData.data.highlighted[pointData.pointNumber],
+        highlighted: pointData.data.highlighted[pointData.pointNumber]
       };
 
       this.selectedPointSubject.next(point);
