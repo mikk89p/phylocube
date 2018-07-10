@@ -22,6 +22,7 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
   resourceSubscription;
   pointsOnCubeSubscription;
+  cubeParametersSubscription;
 
 
   constructor(
@@ -31,6 +32,7 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.resourceSubscription.unsubscribe();
+    this.cubeParametersSubscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -39,6 +41,15 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
         this.activeResource = resource;
       },
     );
+
+    // If user comes back from about page
+    this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
+        cubeParameters => {
+          if (cubeParameters && Object.keys(cubeParameters).length !== 0) {
+            this.activeColorScheme = cubeParameters.colorScheme;
+          }
+        }
+      );
   }
 
   radioChange(event) {

@@ -15,7 +15,7 @@
         </mat-form-field>
         <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="center">
 
-            <button mat-raised-button color="primary" type="button" (click)="getPointsFromCube()">
+            <button mat-raised-button color="primary" type="button" [disabled]="density" (click)="getPointsFromCube()">
               Get visible acc
             </button>
 

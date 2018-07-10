@@ -41,7 +41,6 @@ export class TaxonomySearchComponent implements OnInit, OnDestroy {
 
     this.filteredTaxons$ = this.taxon.valueChanges
     .pipe( // A pipe takes in data as input and transforms it to a desired output
-      startWith(''), // Emits given value first
       debounceTime(150), // Discard emitted values that take less than the specified time between output.
       distinctUntilChanged(), // distinctUntilChanged uses === comparison by default, object references must match
       switchMap(input => { // switch to a new observable

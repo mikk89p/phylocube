@@ -19,7 +19,8 @@ import {
     MatDialogModule,
     MatSnackBarModule,
     MatRadioModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSlideToggleModule
 } from '@angular/material';
 
 
@@ -44,7 +45,8 @@ import {
     MatDialogModule,
     MatSnackBarModule,
     MatRadioModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSlideToggleModule
 ],
   exports: [
     MatInputModule,
@@ -65,7 +67,8 @@ import {
     MatDialogModule,
     MatSnackBarModule,
     MatRadioModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSlideToggleModule
 ],
 })
 export class MaterialModule { }

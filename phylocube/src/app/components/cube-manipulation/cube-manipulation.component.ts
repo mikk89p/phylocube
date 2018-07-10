@@ -111,4 +111,8 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
       this.zRange[1] = cubeParameters.zUpperLimit;
   }
 
+  clearHighlight() {
+    this.cubeService.setHighlightedPoints(false);
+  }
+
 }

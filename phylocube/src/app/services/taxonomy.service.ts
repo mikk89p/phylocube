@@ -25,7 +25,7 @@ export class TaxonomyService {
 
 
   public getTaxons(value: string): Observable<Taxon[]> {
-    const url = this.url + 'taxonomy/nameorid/' + value;
+    const url = this.url + 'taxonomy/namelikeorid/' + value;
     return this.http.get<Taxon[]>(url);
   }
 
