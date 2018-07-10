@@ -2,11 +2,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 // import {Config , Data, Layout} from 'plotly.js';
 import * as _ from 'lodash';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { ResourceService, Point  } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { CubeParameters } from './cube-parameters';
 import { MatSnackBar } from '@angular/material';
+import { FormControl } from '../../../../node_modules/@angular/forms';
 
 @Component({
   selector: 'app-cube',
@@ -20,9 +21,16 @@ export class CubeComponent implements OnInit, OnDestroy {
   // chart options
   type = 'scatter3d';
   defaultColor = 'rgb(0, 0, 0)';
+
+  // Loading
   ready = false;
-  dynamicAxes = false;
-  showDensity = false;
+
+  // Toggle Buttons
+  dynamicAxes;
+  dynamicAxesCtrl = new FormControl(false, []);
+  densityCtrl = new FormControl(false, []);
+  densityOptions = [2, 5, 10, 20];
+  densityBins = 5;
 
   fullDataSet;
   currentDataSet; // filtered Dataset
@@ -55,11 +63,11 @@ export class CubeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         // console.log('Cube component getActiveResource()');
         this.activeResource = resource;
-        this.showDensity = false;
       }
     );
 
@@ -73,7 +81,9 @@ export class CubeComponent implements OnInit, OnDestroy {
               if (cubeParameters) {
                 this.previousCubeParameters = cubeParameters;
                 this.applyParameters(cubeParameters);
+                this.densityCtrl.setValue(false);
                 this.cubeService.setPointsOnCube(this.currentDataSet);
+                
               }
             }
           );
@@ -126,6 +136,28 @@ export class CubeComponent implements OnInit, OnDestroy {
         if (point.acc !== undefined) {
           // this.openSnackBar(point);
         }
+      }
+    );
+
+    this.cubeService.getDynamicAxes().subscribe(
+      value => {
+        this.dynamicAxes = value;
+      }
+    );
+
+    this.densityCtrl.valueChanges.subscribe(
+      value => {
+        if (value === true) {
+          this.showDensity();
+        } else {
+          this.cubeService.setPointsOnCube(this.currentDataSet);
+        }
+      }
+    );
+
+    this.dynamicAxesCtrl.valueChanges.subscribe(
+      value => {
+        this.setDynamic(value);
       }
     );
   }
@@ -241,6 +273,13 @@ export class CubeComponent implements OnInit, OnDestroy {
       ticktext.push(Math.abs(currentStep));
     }
 
+
+    // if dynamic axes
+    let autorange = false;
+    if (this.dynamicAxes) {
+      autorange = true;
+    }
+
     const layout = {
       title: resource.name ? resource.name + ' ' + resource.version : 'Loading...',
       autosize: true,
@@ -257,7 +296,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         },
         xaxis: {
           title: 'Eukaryota',
-          autorange: false,
+          autorange: autorange,
           range: [-resource.xMax, 0],  // workaround
           tickmode : 'array', // workaround
           tickvals : tickvals,  // workaround
@@ -270,7 +309,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         },
         yaxis: {
           title: 'Archaea',
-          autorange: false,
+          autorange: autorange,
           range: [0, resource.yMax],
           titlefont: {
             family: 'Courier New, monospace',
@@ -280,7 +319,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         },
         zaxis: {
           title: 'Bacteria',
-          autorange: false,
+          autorange: autorange,
           range: [0, resource.zMax],
           titlefont: {
             family: 'Courier New, monospace',
@@ -347,7 +386,6 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     // Density
     if (dataset[0].density != undefined) {
-      this.showDensity = true;
       const text = this.getHoverDensityText(dataset);
       trace1 = {
         x: this.unpack(dataset, 'x'),
@@ -367,7 +405,6 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     } else {
       const text = this.getHoverText(dataset);
-      this.showDensity = false;
       trace1 = {
         x: this.unpack(dataset, 'x'),
         y: this.unpack(dataset, 'y'),
@@ -553,14 +590,14 @@ getMinMaxXYZ (dataset) {
   return result;
 }
 
-toggleDensity() {
-
-  if (this.showDensity) {
+showDensity() {
+/*
+  if (value === false) {
     this.cubeService.setPointsOnCube(this.currentDataSet);
     return;
   }
-
-  const bins = 10;
+*/
+  const bins = this.densityBins;
 
   const minMaxXYZ = this.getMinMaxXYZ(this.currentDataSet);
   const minX = minMaxXYZ.minX;
@@ -608,7 +645,7 @@ toggleDensity() {
         size: this.getDensityRadius (1),
         count: 1,
         points: [point],
-        density: true
+        density: true // DO NOT REMOVE. IT IS USED TO CHECK IF DATA IS DENSITY
       };
       dict[key] = densityPoint;
     }
@@ -625,18 +662,25 @@ toggleDensity() {
 
 }
 
-toggleDynamic() {
+setDynamic(value: boolean) {
   const element = this.el.nativeElement;
-  if (this.dynamicAxes === false) {
+  if (value === true) {
     Plotly.relayout(element, 'scene.xaxis.autorange', true);
     Plotly.relayout(element, 'scene.yaxis.autorange', true);
     Plotly.relayout(element, 'scene.zaxis.autorange', true);
-    this.dynamicAxes = true;
+    this.cubeService.setDynamicAxes(true);
   } else {
     Plotly.relayout(element, 'scene.xaxis.autorange', false);
     Plotly.relayout(element, 'scene.yaxis.autorange', false);
     Plotly.relayout(element, 'scene.zaxis.autorange', false);
-    this.dynamicAxes = false;
+    this.cubeService.setDynamicAxes(false);
+  }
+}
+
+
+setDensityOption(event, densityOption) {
+  if (event.isUserInput) {
+    this.densityBins = densityOption;
   }
 }
 
@@ -652,7 +696,7 @@ export interface DensityPoint {
   size: number;
   count: number;
   points: Point[];
-  density: boolean;
+  density: boolean; // DO NOT REMOVE. IT IS USED TO CHECK IF DATA IS DENSITY
 
 }
 

@@ -1,23 +1,35 @@
-<!-- <button mat-raised-button color="primary" type="button" style="margin:10px;" (click)="clearHighlight()">Clear HighLight</button> -->
 <mat-card fxLayoutAlign="center" fxLayout="column" >
-  <mat-spinner [diameter]="30" color='primary' *ngIf="!ready"></mat-spinner>
-  <div #chart></div>
+  
+  <div fxLayoutAlign="start" fxLayoutGap="10px" fxLayout="row" >
 
-  <div fxLayoutAlign="center" fxLayoutGap="10px" fxLayout="row" >
-
-    <button mat-raised-button color="primary" (click)="clearHighlight()">
+<!--     <button mat-raised-button color="primary" (click)="clearHighlight()">
         Clear HighLight
-    </button>
+    </button> -->
 
-    <button mat-raised-button color="primary" (click)="toggleDensity()">
-        {{showDensity?'Hide Density':'Show density'}}
-    </button>
 
-    <button mat-raised-button color="primary" (click)="toggleDynamic()" >
-        {{dynamicAxes?'Disable Dynamic axes':'Enable Dynamic axes'}}
-    </button>
+    <mat-select [disabled]="densityCtrl.value" [(ngModel)]="densityBins" style="width:50px;">
+      <mat-option 
+        *ngFor="let option of densityOptions" 
+        [value]="option"
+      >
+        {{option}}
+      </mat-option>
+    </mat-select>
+
+    <mat-slide-toggle [formControl]="densityCtrl">
+      Show density ({{densityBins}})
+   </mat-slide-toggle>
+
+
+    <mat-slide-toggle [formControl]="dynamicAxesCtrl" >
+      Dynamic axes: {{dynamicAxes?'enabled':'disabled'}}
+    </mat-slide-toggle>
 
   </div>
+
+  <mat-spinner [diameter]="30" color='primary' *ngIf="!ready"></mat-spinner>
+
+  <div #chart></div>
 
 </mat-card>
 

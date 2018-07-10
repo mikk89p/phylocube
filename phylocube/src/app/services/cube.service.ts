@@ -25,6 +25,10 @@ export class CubeService {
   private fullDataSubject;
   private pointsOnCubeSubject;
   private colorSchemeSubject;
+  private dynamicAxesSubject;
+
+
+  
   private previousData = [];
 
   constructor(
@@ -37,6 +41,7 @@ export class CubeService {
     this.selectedPointSubject =  new BehaviorSubject<Object>({});
     this.cubeParametersSubject =  new BehaviorSubject<Object>(this.cubeParameters);
     this.colorSchemeSubject = new BehaviorSubject<number>(undefined);
+    this.dynamicAxesSubject = new BehaviorSubject<boolean>(false);
    }
 
    getFullData() {
@@ -183,5 +188,13 @@ export class CubeService {
 
   getSelectedPoint() {
     return this.selectedPointSubject;
+  }
+
+  getDynamicAxes() {
+    return this.dynamicAxesSubject;
+  }
+
+  setDynamicAxes(value: boolean) {
+    this.dynamicAxesSubject.next(value);
   }
 }
