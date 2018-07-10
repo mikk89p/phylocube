@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import { LoadingService } from './loading.service';
 // import * as xml2js from 'xml2js';
+import { CubeComponent } from '../components/cube/cube.component';
 
 
 
@@ -30,8 +31,8 @@ export class ResourceService {
 
   private url: String = 'http://localhost:3000/v1/';
   // private url: String = 'http://bioinfo.ut.ee:3000/v1/';
-  private activeResourceType;
-  private previousResourceType;
+  private activeResource;
+  private previousResource;
 
 
   // BehaviorSubject
@@ -55,16 +56,17 @@ export class ResourceService {
   }
 
   setActiveResource(type: string) {
-    // console.log ('setActiveResource(' + type + ')');
-    this.activeResourceType = type;
+    // tslint:disable-next-line:triple-equals
+    if (type == undefined || type == '' || (this.activeResource && this.activeResource.type == type)) {return; }
     this.loadingService.setLoading('resource_setActiveResource', 'Getting resource');
-    this.getResourceByType(this.activeResourceType).subscribe(
+    this.getResourceByType(type).subscribe(
       resource => {
         // tslint:disable-next-line:max-line-length
         resource = this.addCubeMaxValuesToResource(resource, resource.eukaryota_genomes, resource.archaea_genomes, resource.bacteria_genomes, resource.virus_genomes);
         resource = this.addAxesTitlesToResource(resource, 'Eukaryota', 'Archaea', 'Bacteria', 'Virus');
         this.loadingService.removeLoading('resource_setActiveResource');
-        this.activeResourceSubject.next(resource);
+        this.activeResource = resource;
+        this.activeResourceSubject.next(this.activeResource);
       },
 
       err => {
@@ -97,20 +99,128 @@ export class ResourceService {
     return resource;
   }
 
-  addCubeAxesToResource() {
+  
+  getDataWithCountsByTaxonomyId (taxid: number) {
+    const uri = this.url + 'assignment/proteindomain/resource/' + this.activeResourceSubject.value.type + '/taxonomy/' + taxid;
+    return this.http.get(uri);
+  }
+
+
+  setAxesByTaxonomyId(taxIdX: number, nameX: string, taxIdY: number, nameY: string, taxIdZ: number, nameZ: string) {
+    this.loadingService.setLoading('resource_setAxesByTaxonomyId', 'Getting data');
+    const taxonX = this.getDataWithCountsByTaxonomyId(taxIdX);
+    const taxonY = this.getDataWithCountsByTaxonomyId(taxIdY);
+    const taxonZ = this.getDataWithCountsByTaxonomyId(taxIdZ);
+    const taxonV = this.getDataWithCountsByTaxonomyId(10239); 
+
+    const dataset: Point[] = [];
+    forkJoin([taxonX, taxonY, taxonZ, taxonV]).subscribe(results => {
+      // Papillomaviridae | Taxonomy ID: 151340
+      let xMax = 0;
+      let yMax = 0;
+      let zMax = 0;
+      let vMax = 0;
+      Object.keys(results[0]).forEach(function(key) {
+        const el = results[0][key];
+        const count = Number(el.count);
+        xMax = (count > xMax) ? count : xMax;
+        const point: Point = {
+          x: count,
+          y: 0,
+          z: 0,
+          v: 0,
+          acc: el.acc,
+          description: el.description,
+          highlighted: false,
+
+        };
+        dataset.push(point);
+      });
+
+      Object.keys(results[1]).forEach(function(key) {
+        const el = results[1][key];
+        const count = Number(el.count);
+        yMax = (count > yMax) ? count : yMax;
+
+        const found = dataset.find(function(element) {
+          if (element.acc == el.acc) {
+            element.y = count;
+          }
+          return element.acc == el.acc;
+        });
+
+        if (!found) {
+          const point: Point = {
+            x: 0,
+            y: count,
+            z: 0,
+            v: 0,
+            acc: el.acc,
+            description: el.description,
+            highlighted: false,
+          };
+          dataset.push(point);
+        }
+      });
+
+      Object.keys(results[2]).forEach(function(key) {
+        const el = results[2][key];
+        const count = Number(el.count);
+        zMax = (count > zMax) ? count : zMax;
+
+        const found = dataset.find(function(element) {
+          if (element.acc == el.acc) {
+            element.z = el.count;
+          }
+          return element.acc == el.acc;
+        });
+
+        if (!found) {
+          const point: Point = {
+            x: 0,
+            y: 0,
+            z: count,
+            v: 0,
+            acc: el.acc,
+            description: el.description,
+            highlighted: false,
+          };
+          dataset.push(point);
+        }
+      });
+
+      Object.keys(results[3]).forEach(function(key) {
+        const el = results[3][key];
+        const count = Number(el.count);
+        vMax = (count > vMax) ? count : vMax;
+
+        dataset.find(function(element) {
+          if (element.acc == el.acc) {
+            element.v = el.count;
+          }
+          return element.acc == el.acc;
+        });
+      });
+
+
+      // Bacteria | Taxonomy ID: 2
+      this.activeResource = this.addCubeMaxValuesToResource(this.activeResourceSubject.value, xMax, yMax, zMax, vMax);
+      this.activeResource = this.addAxesTitlesToResource(this.activeResource, nameX, nameY, nameZ);
+      this.activeDatasetSubject.next(dataset);
+      this.loadingService.removeLoading('resource_setAxesByTaxonomyId');
+    });
 
   }
 
   // Get data based on active resource
   getData() {
-    // Console.log ('getData()');
-    // Get current active resource
     this.getActiveResource().subscribe(
       resource => {
+        // TODO use .pipe(mergeMap...
         // tslint:disable-next-line:triple-equals
-        if (resource.type == undefined || resource.type == this.previousResourceType) { return; }
+        if (resource.type == undefined || JSON.stringify(resource) == JSON.stringify(this.previousResource)) { return; }
         this.loadingService.setLoading('resource_getData', 'Getting data');
-        this.previousResourceType = resource.type; // set current type to previous
+        this.previousResource = resource;
         this.getDataByResourceType(resource.type).subscribe(
           response => {
             const dataset: Point[] = [];
@@ -271,7 +381,7 @@ export class ResourceService {
     if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
       obj = xml.childNodes[0].nodeValue;
     } else if (xml.hasChildNodes()) {
-      for( let i = 0; i < xml.childNodes.length; i++) {
+      for ( let i = 0; i < xml.childNodes.length; i++) {
         const item = xml.childNodes.item(i);
         const nodeName = item.nodeName;
         if (typeof(obj[nodeName]) == 'undefined') {

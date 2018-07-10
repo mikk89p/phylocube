@@ -46,6 +46,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   pointsOnCubeSubscription;
   highlightSubscription;
   selectedPointSubscription;
+  cubeParametersSubscription;
 
   constructor(
     private resourceService: ResourceService,
@@ -60,6 +61,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.pointsOnCubeSubscription.unsubscribe();
     this.highlightSubscription.unsubscribe();
     this.selectedPointSubscription.unsubscribe();
+    if(this.cubeParametersSubscription) {this.cubeParametersSubscription.unsubscribe();}
   }
 
   ngOnInit() {
@@ -76,14 +78,14 @@ export class CubeComponent implements OnInit, OnDestroy {
       data => {
         if (data.length > 0) {
           this.fullDataSet = data;
-          this.cubeService.getCubeParameters().subscribe(
+          if (this.cubeParametersSubscription) { this.cubeParametersSubscription.unsubscribe(); }
+          this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
             cubeParameters => {
-              if (cubeParameters) {
+              if (cubeParameters /*&& this.previousCubeParameters != cubeParameters*/) {
                 this.previousCubeParameters = cubeParameters;
                 this.applyParameters(cubeParameters);
                 this.densityCtrl.setValue(false);
                 this.cubeService.setPointsOnCube(this.currentDataSet);
-                
               }
             }
           );
@@ -287,7 +289,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       paper_bgcolor : 'rgba(0,0,0,0)',
       plot_bgcolor : 'rgba(0,0,0,0)',
       margin: {l: 0, r: 0, b: 0, t: 0},
-      showlegend: false,
+      showlegend: true,
       legend: {'orientation': 'h'},
 
       scene: {
@@ -295,7 +297,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           eye: {x: 2.1, y: 0.9, z: 0.9}
         },
         xaxis: {
-          title: 'Eukaryota',
+          title: resource.xTitle,
           autorange: autorange,
           range: [-resource.xMax, 0],  // workaround
           tickmode : 'array', // workaround
@@ -308,7 +310,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           }
         },
         yaxis: {
-          title: 'Archaea',
+          title: resource.yTitle,
           autorange: autorange,
           range: [0, resource.yMax],
           titlefont: {
@@ -318,7 +320,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           }
         },
         zaxis: {
-          title: 'Bacteria',
+          title: resource.zTitle,
           autorange: autorange,
           range: [0, resource.zMax],
           titlefont: {
@@ -432,7 +434,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     const element = this.el.nativeElement;
 
     Plotly.purge(element);
-    Plotly.newPlot(element, data, layout, [0]);
+    Plotly.plot(element, data, layout, [0]);
 
     // Do not listen click on density dataset
     if (dataset[0].density == undefined) {

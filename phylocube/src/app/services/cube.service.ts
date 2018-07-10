@@ -161,15 +161,16 @@ export class CubeService {
     vLowerLimit?: number,
     vUpperLimit?: number) {
 
-      this.cubeParameters.xLowerLimit = xLowerLimit;
-      this.cubeParameters.xUpperLimit = xUpperLimit;
-      this.cubeParameters.yLowerLimit = yLowerLimit;
-      this.cubeParameters.yUpperLimit = yUpperLimit;
-      this.cubeParameters.zLowerLimit = zLowerLimit;
-      this.cubeParameters.zUpperLimit = zUpperLimit;
-      this.cubeParameters.vLowerLimit = vLowerLimit;
-      this.cubeParameters.vUpperLimit = vUpperLimit;
-      this.setCubeParameters(this.cubeParameters);
+      const params = this.cubeParametersSubject.value;
+      params.xLowerLimit = xLowerLimit;
+      params.xUpperLimit = xUpperLimit;
+      params.yLowerLimit = yLowerLimit;
+      params.yUpperLimit = yUpperLimit;
+      params.zLowerLimit = zLowerLimit;
+      params.zUpperLimit = zUpperLimit;
+      params.vLowerLimit = vLowerLimit;
+      params.vUpperLimit = vUpperLimit;
+      this.setCubeParameters(params);
   }
 
   setCubeParameters(cubeParameters) {
@@ -182,8 +183,9 @@ export class CubeService {
   }
 
   setColorScheme(value) {
-    this.cubeParameters.colorScheme = value;
-    this.setCubeParameters(this.cubeParameters);
+    const newParams = this.cubeParametersSubject.value;
+    newParams.colorScheme = value;
+    this.setCubeParameters(newParams);
   }
 
   getSelectedPoint() {
