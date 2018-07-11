@@ -10,32 +10,32 @@ import { LoadingService } from '../../services/loading.service';
 export class LoadingComponent implements OnInit, OnDestroy {
 
   loadingText  = 'Loading';
-  innerHeight: any;
+  height: any;
 
-    // Subscriptions
+  // Subscriptions
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
   loadingSubscription;
 
-  constructor(private loadingService: LoadingService) {
-    // TODO
-    //this.innerHeight = (screen.height) + 'px';
-  }
+  constructor(private loadingService: LoadingService) {}
 
   ngOnDestroy() {
     this.loadingSubscription.unsubscribe();
   }
   ngOnInit() {
-    this.innerHeight = (window.innerHeight) + 'px';
+
+    this.height = this.getHeight() - 64 +  'px';
     this.loadingSubscription = this.loadingService.getLoading().subscribe(
       result => {
 
         // tslint:disable-next-line:triple-equals
         if (result.length != 0) {
           const loadingText = result[0].text;
+          this.height = this.getHeight() - 64 + 'px';
           this.setLoadingText(loadingText);
 
         } else {
           this.setLoadingText('Loading');
+          this.height = this.getHeight() - 64 + 'px';
         }
       }
     );
@@ -45,4 +45,17 @@ export class LoadingComponent implements OnInit, OnDestroy {
     this.loadingText = text;
   }
 
+  getHeight(): number {
+    const body = document.body;
+    const html = document.documentElement;
+    const height = Math.max( body.scrollHeight,
+      body.offsetHeight,
+      html.clientHeight,
+      html.scrollHeight,
+      html.offsetHeight,
+      window.innerHeight
+    );
+    console.log('height' + height);
+    return height;
+  }
 }
