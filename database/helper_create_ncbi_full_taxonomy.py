@@ -43,23 +43,23 @@ def getParentId(tax_id):
 def findFullTaxonomy(tax_id):
 
 	result = getParentId(tax_id)
-	if(result):
+	if (result):
 		if (result == 1):
-			return ""
+				return ""
 		else:
-			return str(findFullTaxonomy(result)) + ";" + str(tax_dict.get(result)) + ";" + str(tax_dict.get(tax_id))
+			return str(findFullTaxonomy(result)) + ";" + str(tax_dict.get(result)) #+ ";" + str(tax_dict.get(tax_id))
 	else:
-		return ""
+			return ""
  
 
 
 def findFullTaxonomyIds(tax_id):
 	result = getParentId(tax_id)
-	if(result):
+	if (result):
 		if (result == 1):
 			return ""
 		else:
-			return str(findFullTaxonomyIds(result)) + ";" + str(result) + ";" + str(tax_id)
+			return str(findFullTaxonomyIds(result)) + ";" + str(result) #+ ";" + str(tax_id)
 	else:
 		return ""
 	
@@ -72,23 +72,28 @@ def addFulltaxonomy(input):
 		lineList = line.split("\t")
 	
 		tax_id = lineList[0]
-		name = lineList[1].split("\n")
-		name = name[0]
+		tax_name = lineList[1].split("\n")
+		tax_name = tax_name[0]
 	
 		if(is_number(tax_id)):
 			tax_id = int(tax_id)
 			rank = rank_dict.get(tax_id)
-			parent_id = getParentId(tax_id)
+			parent_id = int(getParentId(tax_id))
 			if (not parent_id):
-				print (tax_id)
-				continue #Some taxons do not have parent in nodes.dmp. However, parent id is in uniprot taxonomy
-			full_taxonomy = findFullTaxonomy(parent_id)
-			full_taxonomy_id = findFullTaxonomyIds(parent_id)
+				#print (tax_id)
+				continue # Some taxons do not have parent in nodes.dmp. However, parent id is in uniprot taxonomy
+			
+			parent_name = tax_dict.get(parent_id)
+			if (parent_name is None):
+				parent_name = "None"
+			full_taxonomy = findFullTaxonomy(parent_id) + ";" + str(parent_name)
+			full_taxonomy_id = findFullTaxonomyIds(parent_id) + ";" + str(parent_id)
 			full_taxonomy = full_taxonomy.strip(";")
 			full_taxonomy_id = full_taxonomy_id.strip(";")
 			
-			value = str(tax_id) + '\t' + name + '\t' + str(rank) + '\t' + str(parent_id) + '\t' + full_taxonomy + '\t' + full_taxonomy_id
+			value = str(tax_id) + '\t' + tax_name + '\t' + str(rank) + '\t' + str(parent_id) + '\t' + full_taxonomy + '\t' + full_taxonomy_id
 			result[tax_id] = value
+			print(value)
 			
 			
 			#Is current taxon_id merged with some old taxon_id
@@ -101,8 +106,9 @@ def addFulltaxonomy(input):
 					old_tax_id = int(old_tax_id)
 					is_in_tax_dict = tax_dict.get(old_tax_id)
 					if(is_in_tax_dict is None):
-						value =  str(old_tax_id) + '\t' + name + '\t' + str(rank) + '\t' + str(parent_id) + '\t' + full_taxonomy + '\t' + full_taxonomy_id
+						value =  str(old_tax_id) + '\t' + tax_name + '\t' + str(rank) + '\t' + str(parent_id) + '\t' + full_taxonomy + '\t' + full_taxonomy_id
 						result[old_tax_id] = value
+						print(value)
 		
 
 	if(uniprotTaxonomy):
@@ -114,7 +120,7 @@ def addFulltaxonomy(input):
 			is_in_result = result.get(tax_id)
 
 			if(is_in_result is None):
-				name = arr[1]
+				tax_name = arr[1]
 				rank = arr[2]
 				parent_id = int(arr[4])
 				if (rank == ""):
@@ -123,14 +129,16 @@ def addFulltaxonomy(input):
 				taxonomy_arr = full_taxonomy.split(';')
 				taxonomy_arr = striplist(taxonomy_arr)
 				full_taxonomy = ';'.join(taxonomy_arr)
-				full_taxonomy_id = findFullTaxonomyIds(parent_id)
+				full_taxonomy_id = findFullTaxonomyIds(parent_id)   
+				full_taxonomy = full_taxonomy.strip(";")
 				full_taxonomy_id = full_taxonomy_id.strip(";")
-				value =  str(tax_id) + '\t' + name + '\t' + str(rank) + '\t' + str(parent_id) + '\t' + full_taxonomy + '\t' + full_taxonomy_id
+				value =  str(tax_id) + '\t' + tax_name + '\t' + str(rank) + '\t' + str(parent_id) + '\t' + full_taxonomy + '\t' + full_taxonomy_id
 				result[tax_id] = value
+				print(value)
 
 
 
-	printDict(result)
+	#printDict(result)
 
 def readFileToDictionaryMultipleValues(filePath, split, key_column,value_column):
 	dictionary = {}
@@ -169,6 +177,8 @@ def readFileToDictionary(filePath, split, key_column,value_column):
 		if(is_number(key)):
 			key = int(key)
 			value = (lineList[value_column]).strip()
+			if (is_number(value)):
+				value = int(value)
 			dictionary[key] = value
 	return dictionary
 	
@@ -226,8 +236,8 @@ if __name__ == '__main__':
 	main()
 
 	merged_dict_multiple = readFileToDictionaryMultipleValues(merged,"\t",1,0)
-	node_dict = readFileToDictionary(input, "	|	", 0,1)
-	rank_dict = readFileToDictionary(input, "	|	", 0,2)
+	node_dict = readFileToDictionary(input, "|", 0,1)
+	rank_dict = readFileToDictionary(input, "|", 0,2)
 	tax_dict = readFileToDictionary(taxonomy, "\t", 0,1)
 	addFulltaxonomy(taxonomy)
 
