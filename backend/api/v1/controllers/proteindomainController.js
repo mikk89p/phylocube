@@ -31,17 +31,17 @@ exports.getProteinDomainWithDistributionByAcc = function(req, res, next) {
 	} 
 };
 
-exports.getAllProteinDomainsByResourceType = function(req, res, next) {  
+exports.getDataByResourceType = function(req, res, next) {  
 	if (req.params.type) {  
-		ProteinDomain.getAllProteinDomainsByResourceType(req.params.type, function(err, rows) { 
+		ProteinDomain.getDataByResourceType(req.params.type, function(err, rows) { 
 			sendDefaultResponse(res, err, rows);
 		});  
 	} 
 };
 
-exports.getAllProteinDomainsWithDistributionByResourceType = function(req, res, next) {  
+exports.getDataWithDistributionByResourceType = function(req, res, next) {  
 	if (req.params.type) {  
-		ProteinDomain.getAllProteinDomainsWithDistributionByResourceType(req.params.type, function(err, rows) { 
+		ProteinDomain.getDataWithDistributionByResourceType(req.params.type, function(err, rows) { 
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} 

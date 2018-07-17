@@ -46,3 +46,11 @@ exports.getTaxonByNameOrIdLike = function(req, res, next) {
 	} 
 };
 
+exports.getTaxonByNameLikeOrId = function(req, res, next) {  
+	if (req.params.query) {  
+		Taxonomy.getByNameLikeOrId(req.params.query, function(err, rows) { 
+			sendDefaultResponse(res, err, rows);
+		});  
+	} 
+};
+

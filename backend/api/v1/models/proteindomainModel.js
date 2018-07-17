@@ -2,37 +2,37 @@ var db = require('../dbconnection');
 
 var ProteinDomain = {  
 	getAll: function(callback) {  
-			return db.query("SELECT * FROM protein_domain", callback);  
+			return db.sqlQuery("SELECT * FROM protein_domain",[], callback);  
 	},
 	getByAcc: function(acc, callback) {  
-		return db.query("SELECT * FROM protein_domain WHERE acc=?", [acc], callback);  
+		return db.sqlQuery("SELECT * FROM protein_domain WHERE acc=?", [acc], callback);  
 	},
 
 	getProteinDomainWithDistributionByAcc: function(acc, callback) {  
-		return db.query("SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id WHERE protein_domain.acc=?", [acc], callback);  
+		return db.sqlQuery("SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id WHERE protein_domain.acc=?", [acc], callback);  
 	},
 
-	getAllProteinDomainsByResourceType: function(type, callback) {  
-    columns = "acc,protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
-    sql = "SELECT " + columns + " FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?";
+	getDataByResourceType: function(type, callback) {  
+    var columns = "acc,protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
+    var sql = "SELECT " + columns + " FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?";
     if (type == 'clanpfam') {
       sql = "SELECT " + columns + " FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id " + 
             "LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " + 
             "WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL";
     }
-    return db.query(sql, [type], callback);  
+    return db.sqlQuery(sql, [type], callback);  
 	},
 
-	getAllProteinDomainsWithDistributionByResourceType: function(type, callback) { 
-    columns = "acc,protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
-    sql = "SELECT " + columns + " FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?"
+	getDataWithDistributionByResourceType: function(type, callback) { 
+    var columns = "acc,protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
+    var sql = "SELECT " + columns + " FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?"
     if (type == 'clanpfam') {
       sql = "SELECT " + columns + " FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id " +
             "JOIN resource ON protein_domain.resource_id = resource.id " + 
             "LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " + 
             "WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL";
     } 
-		return db.query(sql, [type], callback);  
+		return db.sqlQuery(sql, [type], callback);  
   }
   
   

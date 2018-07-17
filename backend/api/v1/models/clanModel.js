@@ -8,7 +8,7 @@ function lengthInUtf8Bytes(str) {
 
 var Clan = {  
 	getClanByPfamAcc: function(acc, callback) {  
-		return db.query("SELECT clan_acc FROM clan_membership WHERE pfam_acc=?", [acc], callback);  
+		return db.sqlQuery("SELECT clan_acc FROM clan_membership WHERE pfam_acc=?", [acc], callback);  
   },
 
 };  

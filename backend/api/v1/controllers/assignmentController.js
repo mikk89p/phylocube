@@ -22,9 +22,18 @@ exports.getAssignmentByAcc = function(req, res, next) {
 	}  
 };  
 
-exports.getByResourceTypeAndTaxonomyId = function(req, res, next) {  
+exports.getDataWithDistributionByResourceTypeAndTaxonomyId = function(req, res, next) {  
 	if (req.params.type && req.params.id) {  
-		Assignment.getByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
+		Assignment.getDataWithDistributionByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
+			sendDefaultResponse(res, err, rows); 
+		});  
+	} 
+};
+
+exports.getDataByResourceTypeAndTaxonomyId = function(req, res, next) {  
+	if (req.params.type && req.params.id) {  
+		Assignment.getDataByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
+      console.log('end : ', req.params.id, new Date() );
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} 
@@ -33,6 +42,7 @@ exports.getByResourceTypeAndTaxonomyId = function(req, res, next) {
 exports.getAccByResourceTypeAndTaxonomyId = function(req, res, next) {  
 	if (req.params.type && req.params.id) {  
 		Assignment.getAccByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
+      console.log('end : ', req.params.id, new Date() );
 			sendDefaultResponse(res, err, rows); 
 		});  
 	} 
