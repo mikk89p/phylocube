@@ -23,26 +23,33 @@ var pool  = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
+  
   password: process.env.DB_PASS,
   database: process.env.DB_NAME
 });
 
 var getDbConnection = function(callback) {
   pool.getConnection(function(err, connection) {
-      callback(err, connection);
+      callback(err, connection); // If connetion is aquired -> function call 
   });
 };
 
+
 var sqlQuery = function (sql, params, callback) {
   var result;
-  getDbConnection(function(err, dbConnection){
+  getDbConnection(function(err, dbConnection) {
     if (params && params.length > 0) {
-      result = dbConnection.query(sql, params, callback);
+      dbConnection.query(sql, params, (err, res) => {
+        callback(err,res);
+        dbConnection.release();
+      });
     } else {
-      result = dbConnection.query(sql, callback);
+       dbConnection.query(sql, (err, res) => {
+        callback(err,res);
+        dbConnection.release();
+      });
     }
-    dbConnection.release();
-    return result;
+    
   }); 
 }
 

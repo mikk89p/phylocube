@@ -1,20 +1,11 @@
-var Clan = require('../models/clanModel')
-
-function sendDefaultResponse(res, err, data){
-	if (err) {
-		//Service not available
-		res.statusCode = 503;
-		res.send(err);
-	}
-	res.statusCode = 200;
-	res.json(data);
-}
+var Clan = require('../models/clanModel');
+var BaseController = require('./baseController');
  
 
-exports.getClanByPfamAcc = function(req, res, next) {  
+exports.getClanByPfamAcc = function(req, res) {  
 	if (req.params.pfam ) {  
 		Clan.getClanByPfamAcc(req.params.pfam, function(err, rows) { 
-			sendDefaultResponse(res, err, rows); 
+			BaseController.sendDefaultResponse(res, err, rows); 
 		});  
 	} 
 };

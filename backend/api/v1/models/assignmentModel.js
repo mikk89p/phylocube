@@ -12,10 +12,10 @@ function lengthInUtf8Bytes(str) {
 
 var Assignment = {  
 	getAll: function(callback) {  
-    return db.sqlQuery("SELECT * FROM assignment", [], callback); 
+    db.sqlQuery("SELECT * FROM assignment", [], callback); 
 	},
 	getByAcc: function(acc, callback) {  
-		return db.sqlQuery("SELECT * FROM assignment JOIN protein_domain ON assignment.protein_domain_id = protein_domain.id WHERE protein_domain.acc=?", [acc], callback);  
+		db.sqlQuery("SELECT * FROM assignment JOIN protein_domain ON assignment.protein_domain_id = protein_domain.id WHERE protein_domain.acc=?", [acc], callback);  
 
   },
 /*
@@ -73,7 +73,7 @@ var Assignment = {
       " WHERE resource.type=?"+
       " AND assignment.taxonomy_id IN (" + ids + ");";
     }
-      return db.sqlQuery(sql, [type, id, '%;' +id+ ';%', id+ ';%'], callback);
+      db.sqlQuery(sql, [type, id, '%;' +id+ ';%', id+ ';%'], callback);
 
   });
 },
@@ -117,9 +117,9 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
      }
  
      if (ids_arr.length == 0 || bytes > bytes_limit) {
-       return db.sqlQuery(sql, [ id, '%;' +id+ ';%', id+ ';%', type], callback);
+       db.sqlQuery(sql, [ id, '%;' +id+ ';%', id+ ';%', type], callback);
      } else {
-      return db.sqlQuery(sql, [type], callback);
+      db.sqlQuery(sql, [type], callback);
      }
 
    });
@@ -148,7 +148,7 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
           " AND assignment.taxonomy_id IN (" + ids_sub_query + ") GROUP BY protein_domain.acc;";
         }
 
-        return db.sqlQuery(sql, [ type, id, '%;' +id+ ';%', id+ ';%' ], callback);   
+        db.sqlQuery(sql, [ type, id, '%;' +id+ ';%', id+ ';%' ], callback);   
     },
 
     getAccByResourceTypeAndTaxonomyId: function(type, id, callback) { 
@@ -187,7 +187,7 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
               " WHERE resource.type=?"+
               " AND assignment.taxonomy_id IN (" + ids + ");";
             }
-            return db.sqlQuery(sql, [type, id, '%;' +id+ ';%', id + ';%'], callback);
+            db.sqlQuery(sql, [type, id, '%;' +id+ ';%', id + ';%'], callback);
           });
     }
 };  

@@ -16,12 +16,14 @@ app.use(cors())
 /*
 Node.js body parsing middleware.
 Parse incoming request bodies in a middleware before your handlers.
-As req.body's shape is based on user-controlled input, all properties and values in this object are untrusted and should be validated before trusting
+As req.body's shape is based on user-controlled input, 
+all properties and values in this object are untrusted and should be validated before trusting
 */
 app.use(bodyParser.json());
 
 /*
-he extended option allows to choose between parsing the URL-encoded data with the querystring library (when false) 
+he extended option allows to choose between parsing the 
+URL-encoded data with the querystring library (when false) 
 or the qs library (when true).
 */
 app.use(bodyParser.urlencoded({ extended: false }));

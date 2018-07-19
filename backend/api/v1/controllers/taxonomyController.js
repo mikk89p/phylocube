@@ -1,23 +1,14 @@
 var Taxonomy = require('../models/taxonomyModel')
-
-function sendDefaultResponse(res, err, data){
-	if (err) {
-		//Service not available
-		res.statusCode = 503;
-		res.send(err);
-	}
-	res.statusCode = 200;
-	res.json(data);
-}
+var BaseController = require('./baseController');
 
 exports.getTaxonByTaxonomyId = function(req, res, next) {  
 	if (req.params.id) {  
 		Taxonomy.getById(req.params.id, function(err, rows) {  
-			sendDefaultResponse(res, err, rows);  
+			BaseController.sendDefaultResponse(res, err, rows);  
 		});  
 	} else {  
 		Taxonomy.getAll(function(err, rows) {  
-			sendDefaultResponse(res, err, rows);  
+			BaseController.sendDefaultResponse(res, err, rows);  
 		});  
 	}  
 };  
@@ -25,7 +16,7 @@ exports.getTaxonByTaxonomyId = function(req, res, next) {
 exports.getTaxonByIdLike = function(req, res, next) {  
 	if (req.params.id) {  
 		Taxonomy.getByIdLike(req.params.id, function(err, rows) { 
-			sendDefaultResponse(res, err, rows);
+			BaseController.sendDefaultResponse(res, err, rows);
     });  
   }
 };
@@ -33,7 +24,7 @@ exports.getTaxonByIdLike = function(req, res, next) {
 exports.getTaxonByNameLike = function(req, res, next) {  
 	if (req.params.name) {  
 		Taxonomy.getByNameLike(req.params.name, function(err, rows) { 
-			sendDefaultResponse(res, err, rows);
+			BaseController.sendDefaultResponse(res, err, rows);
 		});  
 	} 
 };
@@ -41,7 +32,7 @@ exports.getTaxonByNameLike = function(req, res, next) {
 exports.getTaxonByNameOrIdLike = function(req, res, next) {  
 	if (req.params.query) {  
 		Taxonomy.getByNameOrIdLike(req.params.query, function(err, rows) { 
-			sendDefaultResponse(res, err, rows);
+			BaseController.sendDefaultResponse(res, err, rows);
 		});  
 	} 
 };
@@ -49,7 +40,7 @@ exports.getTaxonByNameOrIdLike = function(req, res, next) {
 exports.getTaxonByNameLikeOrId = function(req, res, next) {  
 	if (req.params.query) {  
 		Taxonomy.getByNameLikeOrId(req.params.query, function(err, rows) { 
-			sendDefaultResponse(res, err, rows);
+			BaseController.sendDefaultResponse(res, err, rows);
 		});  
 	} 
 };

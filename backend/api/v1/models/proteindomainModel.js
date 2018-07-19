@@ -2,14 +2,14 @@ var db = require('../dbconnection');
 
 var ProteinDomain = {  
 	getAll: function(callback) {  
-			return db.sqlQuery("SELECT * FROM protein_domain",[], callback);  
+		db.sqlQuery("SELECT * FROM protein_domain",[], callback);  
 	},
 	getByAcc: function(acc, callback) {  
-		return db.sqlQuery("SELECT * FROM protein_domain WHERE acc=?", [acc], callback);  
+		db.sqlQuery("SELECT * FROM protein_domain WHERE acc=?", [acc], callback);  
 	},
 
 	getProteinDomainWithDistributionByAcc: function(acc, callback) {  
-		return db.sqlQuery("SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id WHERE protein_domain.acc=?", [acc], callback);  
+		db.sqlQuery("SELECT * FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id WHERE protein_domain.acc=?", [acc], callback);  
 	},
 
 	getDataByResourceType: function(type, callback) {  
@@ -20,7 +20,7 @@ var ProteinDomain = {
             "LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " + 
             "WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL";
     }
-    return db.sqlQuery(sql, [type], callback);  
+    db.sqlQuery(sql, [type], callback);  
 	},
 
 	getDataWithDistributionByResourceType: function(type, callback) { 
@@ -32,7 +32,7 @@ var ProteinDomain = {
             "LEFT JOIN clan_membership ON protein_domain.acc = clan_membership.pfam_acc " + 
             "WHERE (resource.type='clan' OR resource.type='pfam') AND clan_membership.clan_acc IS NULL";
     } 
-		return db.sqlQuery(sql, [type], callback);  
+		db.sqlQuery(sql, [type], callback);  
   }
   
   

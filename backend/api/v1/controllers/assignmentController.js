@@ -1,23 +1,16 @@
-var Assignment = require('../models/assignmentModel')
+var Assignment = require('../models/assignmentModel');
+var BaseController = require('./baseController');
 
-function sendDefaultResponse(res, err, data){
-	if (err) {
-		//Service not available
-		res.statusCode = 503;
-		res.send(err);
-	}
-	res.statusCode = 200;
-	res.json(data);
-}
+
 
 exports.getAssignmentByAcc = function(req, res, next) {  
 	if (req.params.acc) {  
 		Assignment.getByAcc(req.params.acc, function(err, rows) {  
-			sendDefaultResponse(res, err, rows);  
+			BaseController.sendDefaultResponse(res, err, rows);  
 		});  
 	} else {  
 		Assignment.getAll(function(err, rows) {  
-			sendDefaultResponse(res, err, rows);  
+			BaseController.sendDefaultResponse(res, err, rows);  
 		});  
 	}  
 };  
@@ -25,7 +18,7 @@ exports.getAssignmentByAcc = function(req, res, next) {
 exports.getDataWithDistributionByResourceTypeAndTaxonomyId = function(req, res, next) {  
 	if (req.params.type && req.params.id) {  
 		Assignment.getDataWithDistributionByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
-			sendDefaultResponse(res, err, rows); 
+			BaseController.sendDefaultResponse(res, err, rows); 
 		});  
 	} 
 };
@@ -34,7 +27,7 @@ exports.getDataByResourceTypeAndTaxonomyId = function(req, res, next) {
 	if (req.params.type && req.params.id) {  
 		Assignment.getDataByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
       console.log('end : ', req.params.id, new Date() );
-			sendDefaultResponse(res, err, rows); 
+			BaseController.sendDefaultResponse(res, err, rows); 
 		});  
 	} 
 };
@@ -43,7 +36,7 @@ exports.getAccByResourceTypeAndTaxonomyId = function(req, res, next) {
 	if (req.params.type && req.params.id) {  
 		Assignment.getAccByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
       console.log('end : ', req.params.id, new Date() );
-			sendDefaultResponse(res, err, rows); 
+			BaseController.sendDefaultResponse(res, err, rows); 
 		});  
 	} 
 };
