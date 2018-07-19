@@ -1,12 +1,8 @@
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
-// import {Config , Data, Layout} from 'plotly.js';
-import * as _ from 'lodash';
-import { map, tap } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ResourceService, Point  } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { CubeParameters } from './cube-parameters';
-import { MatSnackBar } from '@angular/material';
 import { FormControl } from '../../../../node_modules/@angular/forms';
 
 @Component({
@@ -51,8 +47,6 @@ export class CubeComponent implements OnInit, OnDestroy {
   constructor(
     private resourceService: ResourceService,
     private cubeService: CubeService,
-    private snackBar: MatSnackBar,
-    private zone: NgZone
   ) {}
 
   ngOnDestroy() {
@@ -61,10 +55,11 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.pointsOnCubeSubscription.unsubscribe();
     this.highlightSubscription.unsubscribe();
     this.selectedPointSubscription.unsubscribe();
-    if(this.cubeParametersSubscription) {this.cubeParametersSubscription.unsubscribe();}
+    if ( this.cubeParametersSubscription ) {this.cubeParametersSubscription.unsubscribe(); }
   }
 
   ngOnInit() {
+
 
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
@@ -73,29 +68,38 @@ export class CubeComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
+      cubeParameters => {
+        if (cubeParameters !== undefined) {
+          this.previousCubeParameters = cubeParameters;
+          if (this.currentDataSet !== undefined) {
+            this.currentDataSet = this.applyParameters(cubeParameters);
+            this.densityCtrl.setValue(false);
+            this.cubeService.setPointsOnCube(this.currentDataSet);
+          }
+        }
+      }
+    );
+
     /* Full data is needed for sliders faster interaction */
     this.fullDataSubscription = this.cubeService.getFullData().subscribe(
       data => {
         if (data.length > 0) {
           this.fullDataSet = data;
-          if (this.cubeParametersSubscription) { this.cubeParametersSubscription.unsubscribe(); }
-          this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
-            cubeParameters => {
-              if (cubeParameters /*&& this.previousCubeParameters != cubeParameters*/) {
-                this.previousCubeParameters = cubeParameters;
-                this.applyParameters(cubeParameters);
-                this.densityCtrl.setValue(false);
-                this.cubeService.setPointsOnCube(this.currentDataSet);
-              }
-            }
-          );
+          this.currentDataSet = this.applyParameters(this.cubeService.getCubeParameters().value);
+          this.densityCtrl.setValue(false);
+          this.cubeService.setPointsOnCube(this.currentDataSet);
         }
       }
+
     );
+
+
 
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
         if (data !== undefined && data.length !== 0) {
+
           this.drawChart(data, this.cubeService);
           this.ready = true;
         }
@@ -289,7 +293,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       paper_bgcolor : 'rgba(0,0,0,0)',
       plot_bgcolor : 'rgba(0,0,0,0)',
       margin: {l: 0, r: 0, b: 0, t: 0},
-      showlegend: true,
+      showlegend: false,
       legend: {'orientation': 'h'},
 
       scene: {
@@ -381,13 +385,14 @@ export class CubeComponent implements OnInit, OnDestroy {
 
   drawChart(dataset, cubeService) {
 
+
     const size: any = 3;
     const opacity = 0.7;
     const layout = this.getLayout(this.activeResource);
     let trace1;
 
     // Density
-    if (dataset[0].density != undefined) {
+    if (dataset[0].density !== undefined) {
       const text = this.getHoverDensityText(dataset);
       trace1 = {
         x: this.unpack(dataset, 'x'),
@@ -429,15 +434,15 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     }
 
-
     const data = [trace1];
     const element = this.el.nativeElement;
 
-    Plotly.purge(element);
-    Plotly.plot(element, data, layout, [0]);
+    // USE react
+    Plotly.react(element, data, layout, [0]);
+
 
     // Do not listen click on density dataset
-    if (dataset[0].density == undefined) {
+    if (dataset[0].density === undefined) {
       element.on('plotly_click', function(point) {
         cubeService.setSelectedPoint(point);
       });
@@ -455,6 +460,7 @@ export class CubeComponent implements OnInit, OnDestroy {
 
   applyParameters(cubeParameters: CubeParameters) {
     this.previousResource = this.activeResource;
+
 
     // Make deep copy and remove points from the copyed dataset
     const dataset = JSON.parse(JSON.stringify(this.fullDataSet));
@@ -508,8 +514,6 @@ export class CubeComponent implements OnInit, OnDestroy {
         if (index !== -1) {dataset.splice(index, 1); }
       });
     }
-
-    this.currentDataSet = dataset;
     return dataset;
   }
 
@@ -530,21 +534,6 @@ export class CubeComponent implements OnInit, OnDestroy {
     }
     // Delete all traces
     Plotly.deleteTraces(element, indexes);
-  }
-
-  public openSnackBar(point): void {
-    this.zone.run(() => {
-      const text = point.acc;
-      const snackBar = this.snackBar.open(text, 'Highlight', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'right',
-      });
-      snackBar.onAction().subscribe(() => {
-        this.cubeService.setHighlightedPoints([point]);
-        snackBar.dismiss();
-      });
-    });
   }
 
 
@@ -593,12 +582,6 @@ getMinMaxXYZ (dataset) {
 }
 
 showDensity() {
-/*
-  if (value === false) {
-    this.cubeService.setPointsOnCube(this.currentDataSet);
-    return;
-  }
-*/
   const bins = this.densityBins;
 
   const minMaxXYZ = this.getMinMaxXYZ(this.currentDataSet);
