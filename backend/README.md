@@ -9,6 +9,8 @@
 <code>/v1/taxonomy/idlike/:id?</code>
 ### Get taxon by name using SQL LIKE LIKE %...% (LIMIT 100)
 <code>/v1/taxonomy/namelike/:name?</code>
+### Get taxon by NCBI taxonomy Id or by name using SQL LIKE LIKE %...% (LIMIT 100)
+<code>/v1/taxonomy/namelikeorid/:query?</code>
 ### Get taxon by name or id using SQL LIKE LIKE %...% (LIMIT 100)
 <code>/v1/taxonomy/nameorid/:query?</code>
 ### Get all protein domains
@@ -27,4 +29,6 @@
 <code>v1/assignment/proteindomain/acc/resource/:type?/taxonomy/:taxid?</code>
 ### Get protein domains by resource type and taxonomy id
 <code>v1/assignment/proteindomain/distribution/resource/:type?/taxonomy/:taxid?</code>
+### Get protein domains acc with counts in the taxon by resource type and taxonomy id
+<code>v1/assignment/proteindomain/resource/:type?/taxonomy/:id?</code>
 

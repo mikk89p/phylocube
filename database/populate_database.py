@@ -332,7 +332,6 @@ if __name__ == '__main__':
 
 	#Taxonomy should be last as it uses assignment table
 	initList = ["gene3d","supfam","pfam","clan","clanpfam","taxonomy"]
-	initList = ["taxonomy"]
 
 	for resource in initList:
 		if (resource == "taxonomy"):
@@ -355,7 +354,7 @@ if __name__ == '__main__':
 			
 	
 	print("Adding index to assignment and taxonomy table (takes several minutes)")
-	#addIndex(db,cursor,resource)
+	addIndex(db,cursor,resource)
 
 	# Close the connection
 	db.close()
