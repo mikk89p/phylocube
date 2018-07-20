@@ -2,10 +2,23 @@
   <mat-toolbar-row>
       <img mat-card-avatar src="assets/icons/cube.png" alt="image">
       <span>PhyloCube</span>
-      <span class="example-spacer"></span>
-      <button mat-icon-button [mat-menu-trigger-for]="menu">
+      <div fxFlex="grow" class="spacer" ></div>
+      <button fxHide.gt-xs="true" mat-icon-button [mat-menu-trigger-for]="menu">
           <mat-icon>more_vert</mat-icon>
       </button>
+
+      <div fxFlex="grow" fxLayoutAlign="end" fxHide.lt-sm="true" fxLayout="row">
+          <button  mat-menu-item routerLink="" class="btn-style" *ngIf="(router.url === '/about')">
+            <mat-icon>arrow_back</mat-icon>
+            Back
+          </button>
+          <button mat-menu-item routerLink="about" class="btn-style" *ngIf="(router.url !== '/about')">
+            <mat-icon>info</mat-icon>
+            About
+          </button>
+      </div>
+
+
 </mat-toolbar-row>
 
 </mat-toolbar>
