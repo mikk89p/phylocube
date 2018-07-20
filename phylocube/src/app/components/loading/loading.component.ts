@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoadingService } from '../../services/loading.service';
+import { MainComponent } from '../main/main.component';
 
 
 @Component({
@@ -16,7 +17,7 @@ export class LoadingComponent implements OnInit, OnDestroy {
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
   loadingSubscription;
 
-  constructor(private loadingService: LoadingService) {}
+  constructor(private loadingService: LoadingService, public parent: MainComponent) {}
 
   ngOnDestroy() {
     this.loadingSubscription.unsubscribe();
@@ -55,7 +56,7 @@ export class LoadingComponent implements OnInit, OnDestroy {
       html.offsetHeight,
       window.innerHeight
     );
-    console.log('height' + height);
+    // console.log('height' + height);
     return height;
   }
 }

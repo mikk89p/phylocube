@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject, forkJoin, ReplaySubject } from 'rxjs';
 import { LoadingService } from './loading.service';
-// import * as xml2js from 'xml2js';
-import { CubeComponent } from '../components/cube/cube.component';
+
 
 
 
@@ -35,7 +34,7 @@ export class ResourceService {
   private previousResource;
 
 
-  // BehaviorSubject
+  // Subject
   public activeResourceSubject;
   public activeDatasetSubject;
   public searchResultSubject;
@@ -44,9 +43,9 @@ export class ResourceService {
     private http: HttpClient,
     private loadingService: LoadingService
   ) {
-    this.activeDatasetSubject =  new BehaviorSubject([]);
-    this.activeResourceSubject =  new BehaviorSubject<Object>({});
-    this.searchResultSubject =  new BehaviorSubject<string[]>(undefined);
+    this.activeDatasetSubject =  new ReplaySubject(1); // new BehaviorSubject<Object[]>([]);
+    this.activeResourceSubject =  new BehaviorSubject<Object>({xTitle: '', yTitle: '', zTytle: '' , vTytle: ''});
+    this.searchResultSubject =  new ReplaySubject(1); // new BehaviorSubject<string[]>(undefined);
   }
 
 
@@ -99,10 +98,17 @@ export class ResourceService {
     return resource;
   }
 
-  
   getDataWithCountsByTaxonomyId (taxid: number) {
+    // console.log(taxid);
     const uri = this.url + 'assignment/proteindomain/resource/' + this.activeResourceSubject.value.type + '/taxonomy/' + taxid;
-    return this.http.get(uri);
+    const start = new Date().getTime();
+    return this.http.get(uri).map(res => {
+      const end = new Date().getTime();
+      this.loadingService.openSnackBar('Taxonomy ID: ' + taxid + ' data acquired (' + ((end - start) / 1000) + 's)', 15000);
+      return res;
+    });
+
+
   }
 
 
@@ -111,20 +117,22 @@ export class ResourceService {
     const taxonX = this.getDataWithCountsByTaxonomyId(taxIdX);
     const taxonY = this.getDataWithCountsByTaxonomyId(taxIdY);
     const taxonZ = this.getDataWithCountsByTaxonomyId(taxIdZ);
-    const taxonV = this.getDataWithCountsByTaxonomyId(10239); 
+    const taxonV = this.getDataWithCountsByTaxonomyId(10239);
 
     const dataset: Point[] = [];
+
     forkJoin([taxonX, taxonY, taxonZ, taxonV]).subscribe(results => {
-      // Papillomaviridae | Taxonomy ID: 151340
       let xMax = 0;
       let yMax = 0;
       let zMax = 0;
       let vMax = 0;
+      let point: Point;
       Object.keys(results[0]).forEach(function(key) {
         const el = results[0][key];
         const count = Number(el.count);
         xMax = (count > xMax) ? count : xMax;
-        const point: Point = {
+
+        point = {
           x: count,
           y: 0,
           z: 0,
@@ -143,14 +151,14 @@ export class ResourceService {
         yMax = (count > yMax) ? count : yMax;
 
         const found = dataset.find(function(element) {
-          if (element.acc == el.acc) {
+          if (element.acc === el.acc) {
             element.y = count;
           }
-          return element.acc == el.acc;
+          return element.acc === el.acc;
         });
 
         if (!found) {
-          const point: Point = {
+          point = {
             x: 0,
             y: count,
             z: 0,
@@ -169,14 +177,14 @@ export class ResourceService {
         zMax = (count > zMax) ? count : zMax;
 
         const found = dataset.find(function(element) {
-          if (element.acc == el.acc) {
+          if (element.acc === el.acc) {
             element.z = el.count;
           }
-          return element.acc == el.acc;
+          return element.acc === el.acc;
         });
 
         if (!found) {
-          const point: Point = {
+          point = {
             x: 0,
             y: 0,
             z: count,
@@ -195,10 +203,10 @@ export class ResourceService {
         vMax = (count > vMax) ? count : vMax;
 
         dataset.find(function(element) {
-          if (element.acc == el.acc) {
+          if (element.acc === el.acc) {
             element.v = el.count;
           }
-          return element.acc == el.acc;
+          return element.acc === el.acc;
         });
       });
 
@@ -360,9 +368,10 @@ export class ResourceService {
 
   xmlToJson(xml) {
 
+    // TODO borrowed funct
     // Create the return object
     let obj = {};
-    if (xml.nodeType == 1) { // element
+    if (xml.nodeType === 1) { // element
       // do attributes
       if (xml.attributes.length > 0) {
       obj['@attributes'] = {};
@@ -384,10 +393,10 @@ export class ResourceService {
       for ( let i = 0; i < xml.childNodes.length; i++) {
         const item = xml.childNodes.item(i);
         const nodeName = item.nodeName;
-        if (typeof(obj[nodeName]) == 'undefined') {
+        if (typeof(obj[nodeName]) === 'undefined') {
           obj[nodeName] = this.xmlToJson(item);
         } else {
-          if (typeof(obj[nodeName].push) == 'undefined') {
+          if (typeof(obj[nodeName].push) === 'undefined') {
             const old = obj[nodeName];
             obj[nodeName] = [];
             obj[nodeName].push(old);

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { ResourceService } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { LoadingService } from '../../services/loading.service';
@@ -10,7 +10,7 @@ import { LoadingService } from '../../services/loading.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit, OnDestroy {
-
+  @Input()
   showLoading = false;
   loadingSubscription;
 

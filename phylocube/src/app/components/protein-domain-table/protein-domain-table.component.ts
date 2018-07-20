@@ -43,10 +43,8 @@ export class ProteinDomainTableComponent implements OnInit, OnDestroy {
     this.dataSource.paginator = this.paginator;
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
-          // tslint:disable-next-line:triple-equals
-          if (data != undefined && data.length > 0) {
-            if (data[0].density != undefined) {
-              // TODO
+          if (data !== undefined && data.length > 0) {
+            if (data[0].density !== undefined) {
             } else {
               this.dataSource.data = Object.values(data);
             }

@@ -22,9 +22,12 @@ export class CubeComponent implements OnInit, OnDestroy {
   ready = false;
 
   // Toggle Buttons
-  dynamicAxes;
+  dynamicAxes = false;
+  is2Dplot = false;
+  isDensity = false;
   dynamicAxesCtrl = new FormControl(false, []);
   densityCtrl = new FormControl(false, []);
+  plotTypeCtrl = new FormControl(false, []);
   densityOptions = [2, 5, 10, 20];
   densityBins = 5;
 
@@ -41,8 +44,9 @@ export class CubeComponent implements OnInit, OnDestroy {
   fullDataSubscription;
   pointsOnCubeSubscription;
   highlightSubscription;
-  selectedPointSubscription;
   cubeParametersSubscription;
+  dynamicAxesSubscription;
+  plotTypeSubscription;
 
   constructor(
     private resourceService: ResourceService,
@@ -54,16 +58,18 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.fullDataSubscription.unsubscribe();
     this.pointsOnCubeSubscription.unsubscribe();
     this.highlightSubscription.unsubscribe();
-    this.selectedPointSubscription.unsubscribe();
+    this.dynamicAxesSubscription.unsubscribe();
+    this.plotTypeSubscription.unsubscribe();
     if ( this.cubeParametersSubscription ) {this.cubeParametersSubscription.unsubscribe(); }
   }
 
   ngOnInit() {
 
 
+    // Subscriptions
+
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
-        // console.log('Cube component getActiveResource()');
         this.activeResource = resource;
       }
     );
@@ -99,9 +105,8 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
         if (data !== undefined && data.length !== 0) {
-
-          this.drawChart(data, this.cubeService);
-          this.ready = true;
+        this.drawChart(data);
+        this.ready = true;
         }
       }
     );
@@ -137,20 +142,35 @@ export class CubeComponent implements OnInit, OnDestroy {
     );
 
 
-    this.selectedPointSubscription = this.cubeService.getSelectedPoint().subscribe(
-      point => {
-        if (point.acc !== undefined) {
-          // this.openSnackBar(point);
+    this.dynamicAxesSubscription = this.cubeService.getDynamicAxes().subscribe(
+      value => {
+        this.setDynamic(value);
+        this.dynamicAxes = value;
+        //  A control is dirty if the user has changed the value in the UI.
+        if (!this.dynamicAxesCtrl.dirty ) {
+          this.dynamicAxesCtrl.setValue(value);
         }
       }
     );
 
-    this.cubeService.getDynamicAxes().subscribe(
-      value => {
-        this.dynamicAxes = value;
+    this.plotTypeSubscription = this.cubeService.getPlotType().subscribe(
+      type => {
+        this.type = type;
+        this.is2Dplot = (type === 'scatter') ? true : false;
+        if (this.isDensity) {
+          this.densityCtrl.setValue (false);
+        }
+
+        if (!this.plotTypeCtrl.dirty ) {
+          this.plotTypeCtrl.setValue(this.is2Dplot);
+        }
+
+        this.drawChart(this.currentDataSet);
+
       }
     );
 
+    // Subscribe to form controls
     this.densityCtrl.valueChanges.subscribe(
       value => {
         if (value === true) {
@@ -158,14 +178,24 @@ export class CubeComponent implements OnInit, OnDestroy {
         } else {
           this.cubeService.setPointsOnCube(this.currentDataSet);
         }
+        this.isDensity = value;
       }
     );
 
     this.dynamicAxesCtrl.valueChanges.subscribe(
       value => {
-        this.setDynamic(value);
+        this.cubeService.setDynamicAxes(value);
       }
     );
+
+    this.plotTypeCtrl.valueChanges.subscribe(
+      value => {
+        this.togglePlotType(value);
+
+      }
+    );
+
+
   }
 
   unpack(rows, key) {
@@ -239,17 +269,14 @@ export class CubeComponent implements OnInit, OnDestroy {
         let index = 0;
         const indexes = [];
         element.data.forEach(trace => {
-          // tslint:disable-next-line:triple-equals
-          if (trace.name == point.acc) {
+          if (trace.name === point.acc) {
             indexes.push(index);
           }
           index ++;
         });
         // Remove highlight
-        // console.log('Delete index: ' + index);
-        // console.log('Delete array length ' + element.data.length);
         Plotly.deleteTraces(element, indexes);
-        point.highlighted = false; // Toggle ighlight
+        point.highlighted = false;
       }, 0);
     }
   }
@@ -260,16 +287,29 @@ export class CubeComponent implements OnInit, OnDestroy {
     // x-axis is reversed by default and it cannot be changd with autorange: 'reversed',
     // As reversed is not implemented in plotly 3D scatter *-1 is a workaround
     // Therefore, also tickvals should be fixed
-    const steps = 5;
+    let steps = 5;
+    if (resource.xMax < steps) {
+      steps = resource.xMax;
+    } if (resource.yMax < steps) {
+      steps = resource.yMax;
+    } if (!this.is2Dplot && resource.zMax < steps) {
+      steps = resource.zMax;
+    }
+
     let stepSize = Math.round(resource.xMax / steps);
+
     let length = stepSize.toString().length;
     // tslint:disable-next-line:triple-equals
-    if (length == 2) {
+    if (length == 1) {
+      length = 1 ;
+      stepSize = 1;
+    } else if (length === 2) {
       length = stepSize.toString().length - 1 ;
+      stepSize = Math.round(stepSize / Math.pow(10, length)) * Math.pow(10, length);
     } else {
       length = stepSize.toString().length - 2;
+      stepSize = Math.round(stepSize / Math.pow(10, length)) * Math.pow(10, length);
     }
-    stepSize = Math.round(stepSize / Math.pow(10, length)) * Math.pow(10, length);
 
     const tickvals = [];
     const ticktext = [];
@@ -286,54 +326,92 @@ export class CubeComponent implements OnInit, OnDestroy {
       autorange = true;
     }
 
-    const layout = {
-      title: resource.name ? resource.name + ' ' + resource.version : 'Loading...',
-      autosize: true,
-      height: (window.innerHeight * 0.6),
-      paper_bgcolor : 'rgba(0,0,0,0)',
-      plot_bgcolor : 'rgba(0,0,0,0)',
-      margin: {l: 0, r: 0, b: 0, t: 0},
-      showlegend: false,
-      legend: {'orientation': 'h'},
+    // Plot params
+    const title = resource.name ? resource.name + ' ' + resource.version : 'Loading...';
+    const autosize = true;
+    const height = (window.innerHeight * 0.6);
+    const paper_bgcolor  = 'rgba(0,0,0,0)';
+    const plot_bgcolor  = 'rgba(0,0,0,0)';
+    const margin = {l: 0, r: 0, b: 0, t: 0};
+    const showlegend = false;
+    const legend = {'orientation': 'h'};
+    const hovermode = 'closest';
 
-      scene: {
-        camera: {
-          eye: {x: 2.1, y: 0.9, z: 0.9}
-        },
-        xaxis: {
-          title: resource.xTitle,
-          autorange: autorange,
-          range: [-resource.xMax, 0],  // workaround
-          tickmode : 'array', // workaround
-          tickvals : tickvals,  // workaround
-          ticktext : ticktext,  // workaround
-          titlefont: {
-            family: 'Courier New, monospace',
-            size: 18,
-            color: '#7f7f7f'
-          }
-        },
-        yaxis: {
-          title: resource.yTitle,
-          autorange: autorange,
-          range: [0, resource.yMax],
-          titlefont: {
-            family: 'Courier New, monospace',
-            size: 18,
-            color: '#7f7f7f'
-          }
-        },
-        zaxis: {
-          title: resource.zTitle,
-          autorange: autorange,
-          range: [0, resource.zMax],
-          titlefont: {
-            family: 'Courier New, monospace',
-            size: 18,
-            color: '#7f7f7f'
-          }
-        },
+    const xaxis = {
+      title: resource.xTitle,
+      autorange: autorange,
+      range: [-resource.xMax, 0],  // workaround
+      tickmode : 'array', // workaround
+      tickvals : tickvals,  // workaround
+      ticktext : ticktext,  // workaround
+      titlefont: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    };
+    const yaxis = {
+      title: resource.yTitle,
+      autorange: autorange,
+      range: [0, resource.yMax],
+      titlefont: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    };
+    const zaxis = {
+      title: resource.zTitle,
+      autorange: autorange,
+      range: [0, resource.zMax],
+      titlefont: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    };
 
+    let layout;
+    if (this.is2Dplot) {
+      layout = {
+        title: title,
+        autosize: autosize,
+        height: height,
+        paper_bgcolor : paper_bgcolor,
+        plot_bgcolor : plot_bgcolor,
+        margin: margin,
+        showlegend: showlegend,
+        legend: legend,
+        hovermode : hovermode,
+        xaxis: xaxis,
+        yaxis: yaxis,
+        scene: {
+          zaxis: zaxis,
+        }
+      };
+
+    } else {
+      layout = {
+        title: title,
+        autosize: autosize,
+        height: height,
+        paper_bgcolor : paper_bgcolor,
+        plot_bgcolor : plot_bgcolor,
+        margin: margin,
+        showlegend: showlegend,
+        legend: legend,
+        hovermode: hovermode,
+        scene: {
+          camera: {
+            eye: {x: 2.1, y: 0.9, z: 0.9}
+          },
+          xaxis: xaxis,
+          yaxis: yaxis,
+          zaxis: zaxis,
+        }
+      };
+
+    }
         /*annotations: [{
           x: -resource.xMax,
           y: resource.yMax,
@@ -345,8 +423,6 @@ export class CubeComponent implements OnInit, OnDestroy {
           xanchor: 'top',
           yanchor: 'bottom'
         }] */
-      }
-    };
     return layout;
   }
 
@@ -360,33 +436,43 @@ export class CubeComponent implements OnInit, OnDestroy {
     const yMax = this.activeResource.yMax;
     const zMax = this.activeResource.zMax;
     const vMax = this.activeResource.vMax;
+    const is2Dplot = this.is2Dplot;
+
     return dataset.map(function(point) {
-      return point.description + '<br>' +
+      let result = point.description + '<br>' +
       'Acc : ' + point.acc  + '<br>' +
       xTitle + ' : ' +  point.x + ' (' + ((point.x / xMax) * 100).toFixed(1) + '%)<br>' +
-      yTitle + ' : ' +  point.y + ' (' + ((point.y / yMax) * 100).toFixed(1) + '%)<br>' +
-      zTitle + ' : ' +  point.z + ' (' + ((point.z / zMax) * 100).toFixed(1) + '%)<br>' +
-      vTitle + ' : ' +  point.v + ' (' + ((point.y / vMax) * 100).toFixed(1) + '%)<br>';
+      yTitle + ' : ' +  point.y + ' (' + ((point.y / yMax) * 100).toFixed(1) + '%)<br>';
+      result = is2Dplot ? result : result + (zTitle + ' : ' +  point.z + ' (' + ((point.z / zMax) * 100).toFixed(1) + '%)<br>');
+      return result + vTitle + ' : ' +  point.v + ' (' + ((point.y / vMax) * 100).toFixed(1) + '%)<br>';
     });
   }
 
   getHoverDensityText(dataset) {
+    const xTitle = this.activeResource.xTitle;
+    const yTitle = this.activeResource.yTitle;
+    const is2Dplot = this.is2Dplot;
     return dataset.map(function(point) {
       if ((point.x + point.y + point.z) === 0) {
         return 'Count : ' + point.count  + '<br>' +
         '(0,0,0)';
       }
-      return 'Count : ' + point.count  + '<br>' +
-      'x : (' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + '] <br>' +
-      'y : (' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + '] <br>' +
-      'z : (' + (point.z - point.stepZ / 2).toFixed(0) + ' ; ' + (point.z + point.stepZ / 2).toFixed(0) + ']';
+      let result = 'Count : ' + point.count  + '<br>' +
+      xTitle + ' : (' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + '] <br>' +
+      yTitle + ' : (' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + '] <br>';
+      // tslint:disable-next-line:max-line-length
+      result = is2Dplot ? result : result + 'z : (' + (point.z - point.stepZ / 2).toFixed(0) + ' ; ' + (point.z + point.stepZ / 2).toFixed(0) + ']';
+      return result;
     });
   }
 
-  drawChart(dataset, cubeService) {
+  drawChart(dataset) {
 
 
-    const size: any = 3;
+    let size = 3;
+    if (this.is2Dplot) {
+      size = 6;
+    }
     const opacity = 0.7;
     const layout = this.getLayout(this.activeResource);
     let trace1;
@@ -440,8 +526,9 @@ export class CubeComponent implements OnInit, OnDestroy {
     // USE react
     Plotly.react(element, data, layout, [0]);
 
-
-    // Do not listen click on density dataset
+    // TODO At the moment removes previous click listener, should be added once
+    element.removeAllListeners('plotly_click');
+    const cubeService = this.cubeService;
     if (dataset[0].density === undefined) {
       element.on('plotly_click', function(point) {
         cubeService.setSelectedPoint(point);
@@ -601,17 +688,17 @@ showDensity() {
     let key;
     let x = Math.round(point.x / stepX);
     let y = Math.round(point.y / stepY);
-    let z = Math.round(point.z / stepZ);
+    let z = this.is2Dplot ? 0 : Math.round(point.z / stepZ);
     if ((point.x + point.y + point.z) === 0) {
       key = 'zero_corner';
       x = 0;
       y = 0;
       z = 0;
     } else {
-      key = x + '' + y + '' + z;
+      key = this.is2Dplot ? x + '' + y : x + '' + y + '' + z;
       x = x * stepX + stepX / 2;
       y = y * stepY + stepY / 2;
-      z = z * stepZ + stepZ / 2;
+      z = this.is2Dplot ? 0 : (z * stepZ + stepZ / 2);
     }
 
     if (dict[key]) {
@@ -623,10 +710,10 @@ showDensity() {
       densityPoint = {
         x: x,
         y: y,
-        z: z,
+        z: this.is2Dplot ? 0 : z,
         stepX: stepX,
         stepY: stepY,
-        stepZ: stepZ,
+        stepZ: this.is2Dplot ? 0 : stepZ,
         size: this.getDensityRadius (1),
         count: 1,
         points: [point],
@@ -650,15 +737,33 @@ showDensity() {
 setDynamic(value: boolean) {
   const element = this.el.nativeElement;
   if (value === true) {
-    Plotly.relayout(element, 'scene.xaxis.autorange', true);
-    Plotly.relayout(element, 'scene.yaxis.autorange', true);
-    Plotly.relayout(element, 'scene.zaxis.autorange', true);
-    this.cubeService.setDynamicAxes(true);
+    if (this.is2Dplot) {
+      Plotly.relayout(element, 'xaxis.autorange', true);
+      Plotly.relayout(element, 'yaxis.autorange', true);
+    } else {
+      Plotly.relayout(element, 'scene.xaxis.autorange', true);
+      Plotly.relayout(element, 'scene.yaxis.autorange', true);
+      Plotly.relayout(element, 'scene.zaxis.autorange', true);
+    }
   } else {
-    Plotly.relayout(element, 'scene.xaxis.autorange', false);
-    Plotly.relayout(element, 'scene.yaxis.autorange', false);
-    Plotly.relayout(element, 'scene.zaxis.autorange', false);
-    this.cubeService.setDynamicAxes(false);
+    if (this.is2Dplot) {
+
+      Plotly.relayout(element, 'xaxis.autorange', false);
+      Plotly.relayout(element, 'yaxis.autorange', false);
+    } else {
+      Plotly.relayout(element, 'scene.xaxis.autorange', false);
+      Plotly.relayout(element, 'scene.yaxis.autorange', false);
+      Plotly.relayout(element, 'scene.zaxis.autorange', false);
+    }
+  }
+}
+
+togglePlotType(value: boolean) {
+
+  if (value === true) {
+    this.cubeService.setPlotType('scatter');
+  } else {
+    this.cubeService.setPlotType('scatter3d');
   }
 }
 

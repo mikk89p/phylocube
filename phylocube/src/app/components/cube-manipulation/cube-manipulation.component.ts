@@ -11,8 +11,8 @@ import { CubeParameters } from '../../components/cube/cube-parameters';
 export class CubeManipulationComponent implements OnInit, OnDestroy {
 
   activeResource;
-  activeDataSet;
-  pointsOnCube;
+  activeDataSet = [];
+  pointsOnCube = [];
   cubeParameters: CubeParameters;
 
   xRange = [0, 100];
@@ -51,7 +51,7 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
     this.resourceSubscription.unsubscribe();
     this.dataSubscription.unsubscribe();
     this.pointsOnCubeSubscription.unsubscribe();
-    this.cubeParametersSubscription.unsubscribe();
+    // this.cubeParametersSubscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -73,15 +73,9 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
       }
     );
 
-    // If user comes back from about page, sliders must be updated
-    this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
-      cubeParameters => {
-        if (cubeParameters && Object.keys(cubeParameters).length !== 0) {
-          this.cubeParameters = cubeParameters;
-          this.updateRange(cubeParameters);
-        }
-      }
-    );
+
+    this.cubeParameters = this.cubeService.getCubeParameters().value;
+    this.updateRange(this.cubeParameters);
 
   }
 

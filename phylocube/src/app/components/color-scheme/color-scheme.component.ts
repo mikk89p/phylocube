@@ -10,13 +10,24 @@ import { CubeService } from '../../services/cube.service';
 export class ColorSchemeComponent implements OnInit, OnDestroy {
 
   activeResource;
-  public colorSchemes: Object[] = [
-    {id: 0, name: 'None',  description: 'Default color scheme'},
-    {id: 1, name: 'Binary', description: 'Red : Domain is present in at least one virus genome'},
-    // tslint:disable-next-line:max-line-length
-    {id: 2, name: 'Multiple', description: 'Blue: In more than 1 virus genome. Red: At least in one virus genome.'}
+  public colorSchemes = [
+    {
+      id: 0,
+      name: 'None',
+      description: 'Default color scheme'
+    },
+    {
+      id: 1,
+      name: 'Binary',
+      description: 'Red : Domain is present in at least one virus genome'
+    },
+    {
+      id: 2,
+      name: 'Multiple',
+      description: 'Blue: In more than 1 virus genome. Red: At least in one virus genome.'
+    }
   ];
-  private activeColorScheme = 0;
+  public activeColorScheme = 0;
 
   // Subscriptions
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually

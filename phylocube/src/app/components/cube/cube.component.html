@@ -21,8 +21,12 @@
    </mat-slide-toggle>
 
 
-    <mat-slide-toggle [formControl]="dynamicAxesCtrl" >
+    <mat-slide-toggle [formControl]="dynamicAxesCtrl"  >
       Dynamic axes: {{dynamicAxes?'enabled':'disabled'}}
+    </mat-slide-toggle>
+
+    <mat-slide-toggle [formControl]="plotTypeCtrl" >
+        {{is2Dplot?'Return to 3D':'2D scatter'}}
     </mat-slide-toggle>
 
   </div>

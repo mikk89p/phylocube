@@ -10,7 +10,7 @@
       <mat-card-content *ngIf='(selectedPoint)'>
               <b>{{activeResource.xTitle}}: </b>{{selectedPoint.x}} ({{((selectedPoint.x/activeResource.xMax)*100).toFixed(1)}}%)<br>
               <b>{{activeResource.yTitle}}: </b>{{selectedPoint.y}} ({{((selectedPoint.y/activeResource.yMax)*100).toFixed(1)}}%)<br>
-              <b>{{activeResource.zTitle}}: </b>{{selectedPoint.z}} ({{((selectedPoint.z/activeResource.zMax)*100).toFixed(1)}}%)<br>
+              <div *ngIf="!hideZ" ><b >{{activeResource.zTitle}}: </b>{{selectedPoint.z}} ({{((selectedPoint.z/activeResource.zMax)*100).toFixed(1)}}%)<br></div>
               <b>{{activeResource.vTitle}}: </b>{{selectedPoint.v}} ({{((selectedPoint.v/activeResource.vMax)*100).toFixed(1)}}%)
       </mat-card-content>
   </div>

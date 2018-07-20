@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { MatDialog, MatDialogConfig} from '@angular/material';
 import { ErrorDialogComponent } from '../components/error-dialog/error-dialog.component';
+import { MatSnackBar } from '@angular/material';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,11 @@ export class LoadingService {
   public loadingSubject; // Show loading screen with caller text
   private loadingArray = [];
 
-  constructor(private dialog: MatDialog) {
-    this.loadingSubject =  new BehaviorSubject([]);
+  constructor(
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private zone: NgZone) {
+    this.loadingSubject =  new ReplaySubject(1); // new BehaviorSubject([]);
   }
 
   getLoading() {
@@ -46,6 +50,19 @@ export class LoadingService {
     };
 
     this.dialog.open(ErrorDialogComponent, dialogConfig);
+  }
+
+  openSnackBar(text, duration): void {
+    this.zone.run(() => {
+      const snackBar = this.snackBar.open(text, 'Close', {
+        duration: duration,
+        verticalPosition: 'top',
+        horizontalPosition: 'right',
+      });
+      snackBar.onAction().subscribe(() => {
+        snackBar.dismiss();
+      });
+    });
   }
 
 }

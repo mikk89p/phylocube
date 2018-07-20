@@ -2,7 +2,7 @@ import { CubeParameters } from './../components/cube/cube-parameters';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { ResourceService } from './resource.service';
 import { Point } from './resource.service';
 import { LoadingService } from './loading.service';
@@ -24,11 +24,10 @@ export class CubeService {
   private cubeParametersSubject;
   private fullDataSubject;
   private pointsOnCubeSubject;
-  private colorSchemeSubject;
   private dynamicAxesSubject;
+  private plotTypeSubject;
 
 
-  
   private previousData = [];
 
   constructor(
@@ -36,24 +35,26 @@ export class CubeService {
     private resourceService: ResourceService,
     private loadingService: LoadingService
   ) {
-    this.pointsOnCubeSubject =  new BehaviorSubject<Object[]>([]);
-    this.highlightedPointSubject =  new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
-    this.selectedPointSubject =  new BehaviorSubject<Object>({});
+    // ReplaySubject
+    this.pointsOnCubeSubject =  new ReplaySubject(1); // new BehaviorSubject<Object[]>([]);
+    this.highlightedPointSubject =  new ReplaySubject(1); // new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
+    this.selectedPointSubject =  new ReplaySubject(1); // new BehaviorSubject<Object>({});
     this.cubeParametersSubject =  new BehaviorSubject<Object>(this.cubeParameters);
-    this.colorSchemeSubject = new BehaviorSubject<number>(undefined);
-    this.dynamicAxesSubject = new BehaviorSubject<boolean>(false);
+    this.dynamicAxesSubject = new ReplaySubject(1);
+    this.fullDataSubject =  new ReplaySubject(1);
+    this.plotTypeSubject =  new ReplaySubject(1);
+
+    this.resourceService.getData().subscribe(
+      data => {
+        this.fullDataSubject.next(data);
+      }
+    );
+
    }
 
-   getFullData() {
-    // tslint:disable-next-line:triple-equals
-    if (this.fullDataSubject == undefined) {
-      this.fullDataSubject =  new BehaviorSubject([]);
-      this.resourceService.getData().subscribe(
-        data => {
-          this.fullDataSubject.next(data);
-        }
-      );
-    }
+
+
+  getFullData() {
     return this.fullDataSubject;
   }
 
@@ -174,7 +175,6 @@ export class CubeService {
   }
 
   setCubeParameters(cubeParameters) {
-    this.cubeParameters = cubeParameters;
     this.cubeParametersSubject.next(cubeParameters);
   }
 
@@ -198,5 +198,13 @@ export class CubeService {
 
   setDynamicAxes(value: boolean) {
     this.dynamicAxesSubject.next(value);
+  }
+
+  getPlotType() {
+    return this.plotTypeSubject;
+  }
+
+  setPlotType(type: string) {
+    this.plotTypeSubject.next(type);
   }
 }

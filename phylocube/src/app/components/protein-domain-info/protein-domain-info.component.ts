@@ -12,6 +12,7 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
   selectedPoint;
   activeResource;
   currentDataSet;
+  hideZ = false;
 
   // Subscriptions
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
@@ -48,9 +49,15 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
 
     this.selectedPointSubscription = this.cubeService.getSelectedPoint().subscribe(
       point => {
-        if (point.x != undefined) {
+        if (point.x !== undefined) {
           this.selectedPoint = point;
         }
+      }
+    );
+
+    this.cubeService.getPlotType().subscribe(
+      type => {
+        this.hideZ = (type === 'scatter') ? true : false;
       }
     );
   }

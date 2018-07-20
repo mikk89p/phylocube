@@ -14,13 +14,16 @@ import { Taxon } from '../../services/taxonomy.service';
 })
 export class AxesSelectionComponent implements OnInit {
 
-  filteredTaxonsX$: Observable<Taxon[]>;   // $ suffix (popularized by Cycle.js) is used to indicate that the variable is an Observable.
-  taxonX = new FormControl('Papillomaviridae | Taxonomy ID: 151340', [Validators.required, Validators.minLength(5)]);
 
-  taxonY = new FormControl('Papillomaviridae | Taxonomy ID: 151340', [Validators.required, Validators.minLength(5)]);
+
+
+  filteredTaxonsX$: Observable<Taxon[]>;   // $ suffix (popularized by Cycle.js) is used to indicate that the variable is an Observable.
+  taxonX = new FormControl('Viridiplantae | Taxonomy ID: 33090', [Validators.required, Validators.minLength(5)]);
+
+  taxonY = new FormControl('Archaea | Taxonomy ID: 2157', [Validators.required, Validators.minLength(5)]);
   filteredTaxonsY$: Observable<Taxon[]>;
 
-  taxonZ = new FormControl('Papillomaviridae | Taxonomy ID: 151340', [Validators.required, Validators.minLength(5)]);
+  taxonZ = new FormControl('Fungi | Taxonomy ID: 4751', [Validators.required, Validators.minLength(5)]);
   filteredTaxonsZ$: Observable<Taxon[]>;
 
   form;

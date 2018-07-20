@@ -74,7 +74,8 @@ import { ColorSchemeComponent } from './components/color-scheme/color-scheme.com
     NouisliderModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production
-    })
+    }),
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [ResourceService, CubeService, LoadingService],
   bootstrap: [AppComponent],

@@ -33,7 +33,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
   
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
-        if (JSON.stringify(resource) !== JSON.stringify({})) {
+        if (JSON.stringify(resource.id) !== undefined) {
           this.activeResource = resource;
         } else {
           this.resourceService.setActiveResource(this.defaultResourceType);

@@ -42,6 +42,25 @@
           </p>
       </div>
 
+      <!-- <br><mat-divider></mat-divider><br> -->
+      <h1>Datasets:</h1>
+
+      <mat-card class="alert">
+          <b>Important!</b> Initial data also includes protein domain accessions that are only found in viruses. 
+          Therefore, custom search with Archaea, Bacteria and Eukaryota will give different results.
+      </mat-card>
+
+      <mat-list>
+          <mat-list-item *ngFor="let resource of resources | async">
+            <mat-icon mat-list-icon>note</mat-icon>
+            <h4 mat-line>{{resource.name}} {{resource.version}}</h4>
+            <p mat-line> {{resource.description}} </p>
+          </mat-list-item>
+      </mat-list>
+
+
+
+
       
       <h1>Developement</h1>
       <p>
