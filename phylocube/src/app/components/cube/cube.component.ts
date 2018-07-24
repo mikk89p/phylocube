@@ -31,12 +31,14 @@ export class CubeComponent implements OnInit, OnDestroy {
   densityOptions = [2, 5, 10, 20];
   densityBins = 5;
 
+
   fullDataSet;
   currentDataSet; // filtered Dataset
   activeResource;
   previousResource = {};
   previousCubeParameters;
   plotlyEvents = [];
+  layout;
 
   // Subscriptions
   // When a component/directive is destroyed, all custom Observables need to be unsubscribed manually
@@ -90,11 +92,11 @@ export class CubeComponent implements OnInit, OnDestroy {
     /* Full data is needed for sliders faster interaction */
     this.fullDataSubscription = this.cubeService.getFullData().subscribe(
       data => {
-        if (data.length > 0) {
+        if (data !== undefined && data.length !== 0) {
           this.fullDataSet = data;
           this.currentDataSet = this.applyParameters(this.cubeService.getCubeParameters().value);
           this.densityCtrl.setValue(false);
-          this.cubeService.setPointsOnCube(this.currentDataSet);
+          this.cubeService.setPointsOnCube(this.currentDataSet, true);
         }
       }
 
@@ -104,9 +106,16 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
-        if (data !== undefined && data.length !== 0) {
-        this.drawChart(data);
-        this.ready = true;
+        const points = data[0];
+        const redraw = data[1];
+        if (points !== undefined && points.length !== 0) {
+          if (redraw) {
+            this.drawChart(points);
+          } else {
+            this.updateChart(points);
+          }
+
+          this.ready = true;
         }
       }
     );
@@ -115,8 +124,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       result => {
         const points = result.data;
         const description = result.description;
-        // tslint:disable-next-line:triple-equals
-        if (points != undefined) {
+        if (points !== undefined) {
           // if false -> clear all highlight
           if (points === false) {
             this.clearHighlight();
@@ -124,8 +132,7 @@ export class CubeComponent implements OnInit, OnDestroy {
             if (points.length < 150) {
               this.currentDataSet.forEach(pointOnCube => {
                 for (let i = 0; i < points.length; i++) {
-                  // tslint:disable-next-line:triple-equals
-                  if (pointOnCube.acc == points[i].acc) {
+                  if (pointOnCube.acc === points[i].acc) {
                     this.highlightPoint(points[i]);
                   }
                 }
@@ -144,11 +151,12 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     this.dynamicAxesSubscription = this.cubeService.getDynamicAxes().subscribe(
       value => {
+        this.dynamicAxes = value; // Before setDynamic
         this.setDynamic(value);
-        this.dynamicAxes = value;
         //  A control is dirty if the user has changed the value in the UI.
         if (!this.dynamicAxesCtrl.dirty ) {
           this.dynamicAxesCtrl.setValue(value);
+          this.setDynamic(value);
         }
       }
     );
@@ -156,7 +164,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.plotTypeSubscription = this.cubeService.getPlotType().subscribe(
       type => {
         this.type = type;
-        this.is2Dplot = (type === 'scatter') ? true : false;
+        this.is2Dplot = (type === 'scatter3d') ? false : true;
         if (this.isDensity) {
           this.densityCtrl.setValue (false);
         }
@@ -165,7 +173,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           this.plotTypeCtrl.setValue(this.is2Dplot);
         }
 
-        this.drawChart(this.currentDataSet);
+        this.cubeService.setPointsOnCube(this.currentDataSet, true);
 
       }
     );
@@ -175,8 +183,9 @@ export class CubeComponent implements OnInit, OnDestroy {
       value => {
         if (value === true) {
           this.showDensity();
-        } else {
-          this.cubeService.setPointsOnCube(this.currentDataSet);
+        // From true to false
+        } else if (this.isDensity === true && value === false) {
+          this.cubeService.setPointsOnCube(this.currentDataSet, true);
         }
         this.isDensity = value;
       }
@@ -199,13 +208,14 @@ export class CubeComponent implements OnInit, OnDestroy {
   }
 
   unpack(rows, key) {
-    return rows.map(function(row) {
-      // tslint:disable-next-line:triple-equals
-      if (key == 'x') {
+    const result = rows.map(function(row) {
+      if (key === 'x') {
         return -1 * row[key];
       }
       return row[key];
     });
+
+    return result;
   }
 
 
@@ -238,8 +248,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   highlightPoint(point) {
     if (point === undefined || JSON.stringify(point) === JSON.stringify({})) {return; }
     const element = this.el.nativeElement;
-    // tslint:disable-next-line:triple-equals
-    if (point.highlighted == undefined || !point.highlighted) {
+    if (point.highlighted === undefined || !point.highlighted) {
       const highlight = {
         x: this.unpack([point], 'x'),
         y: this.unpack([point], 'y'),
@@ -259,11 +268,9 @@ export class CubeComponent implements OnInit, OnDestroy {
           type: this.type
       };
 
-      while ( true ) {
-        Plotly.plot(element, [highlight]);
-        point.highlighted = true; // Toggle highlight
-      break;
-     }
+      Plotly.plot(element, [highlight]);
+      point.highlighted = true; // Toggle highlight
+
     } else {
       setTimeout(function() {
         let index = 0;
@@ -281,9 +288,13 @@ export class CubeComponent implements OnInit, OnDestroy {
     }
   }
 
+  getAxis(resource) {
 
-  getLayout(resource) {
-
+    const result = {
+      xaxis: {},
+      yaxis: {},
+      zaxis: {}
+    };
     // x-axis is reversed by default and it cannot be changd with autorange: 'reversed',
     // As reversed is not implemented in plotly 3D scatter *-1 is a workaround
     // Therefore, also tickvals should be fixed
@@ -299,8 +310,8 @@ export class CubeComponent implements OnInit, OnDestroy {
     let stepSize = Math.round(resource.xMax / steps);
 
     let length = stepSize.toString().length;
-    // tslint:disable-next-line:triple-equals
-    if (length == 1) {
+
+    if (length === 1) {
       length = 1 ;
       stepSize = 1;
     } else if (length === 2) {
@@ -326,18 +337,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       autorange = true;
     }
 
-    // Plot params
-    const title = resource.name ? resource.name + ' ' + resource.version : 'Loading...';
-    const autosize = true;
-    const height = (window.innerHeight * 0.6);
-    const paper_bgcolor  = 'rgba(0,0,0,0)';
-    const plot_bgcolor  = 'rgba(0,0,0,0)';
-    const margin = {l: 0, r: 0, b: 0, t: 0};
-    const showlegend = false;
-    const legend = {'orientation': 'h'};
-    const hovermode = 'closest';
-
-    const xaxis = {
+    result.xaxis = {
       title: resource.xTitle,
       autorange: autorange,
       range: [-resource.xMax, 0],  // workaround
@@ -350,7 +350,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         color: '#7f7f7f'
       }
     };
-    const yaxis = {
+    result.yaxis = {
       title: resource.yTitle,
       autorange: autorange,
       range: [0, resource.yMax],
@@ -360,7 +360,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         color: '#7f7f7f'
       }
     };
-    const zaxis = {
+    result.zaxis = {
       title: resource.zTitle,
       autorange: autorange,
       range: [0, resource.zMax],
@@ -371,9 +371,30 @@ export class CubeComponent implements OnInit, OnDestroy {
       }
     };
 
-    let layout;
+    return result;
+  }
+
+
+  getLayout(resource) {
+
+
+    // Get z,y,z axis
+    const axes = this.getAxis(resource);
+
+    // Plot params
+    const title = resource.name ? resource.name + ' ' + resource.version : 'Loading...';
+    const autosize = true;
+    const height = (window.innerHeight * 0.6);
+    const paper_bgcolor  = 'rgba(0,0,0,0)';
+    const plot_bgcolor  = 'rgba(0,0,0,0)';
+    const margin = {l: 0, r: 0, b: 0, t: 0};
+    const showlegend = false;
+    const legend = {'orientation': 'h'};
+    const hovermode = 'closest';
+
+
     if (this.is2Dplot) {
-      layout = {
+      return {
         title: title,
         autosize: autosize,
         height: height,
@@ -383,15 +404,12 @@ export class CubeComponent implements OnInit, OnDestroy {
         showlegend: showlegend,
         legend: legend,
         hovermode : hovermode,
-        xaxis: xaxis,
-        yaxis: yaxis,
-        scene: {
-          zaxis: zaxis,
-        }
+        xaxis: axes.xaxis,
+        yaxis: axes.yaxis,
       };
 
     } else {
-      layout = {
+      return {
         title: title,
         autosize: autosize,
         height: height,
@@ -405,9 +423,9 @@ export class CubeComponent implements OnInit, OnDestroy {
           camera: {
             eye: {x: 2.1, y: 0.9, z: 0.9}
           },
-          xaxis: xaxis,
-          yaxis: yaxis,
-          zaxis: zaxis,
+          xaxis: axes.xaxis,
+          yaxis: axes.yaxis,
+          zaxis: axes.zaxis,
         }
       };
 
@@ -423,7 +441,6 @@ export class CubeComponent implements OnInit, OnDestroy {
           xanchor: 'top',
           yanchor: 'bottom'
         }] */
-    return layout;
   }
 
 
@@ -466,21 +483,67 @@ export class CubeComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateChart(dataset) {
+
+    let size = 3;
+    if (this.is2Dplot) {
+      size = 6;
+      this.drawChart(dataset);
+      return;
+    }
+
+    // If chart do not exist, then drawChart
+    const element = this.el.nativeElement;
+    if (element.data === undefined) {
+      this.drawChart(dataset);
+      return;
+    }
+    const axes = this.getAxis(this.activeResource);
+
+    const updatedTrace = {
+      x: [this.unpack(dataset, 'x')],
+      y: [this.unpack(dataset, 'y')],
+      z: [this.unpack(dataset, 'z')],
+      v: [this.unpack(dataset, 'v')],
+      /*description: [this.unpack(dataset, 'description')],
+      acc: [this.unpack(dataset, 'acc')],
+      highlighted: [this.unpack(dataset, 'highlighted')],
+      name: this.activeResource.name + ' data',
+      mode: 'markers',
+      hoverinfo: 'text',
+      text: [this.getHoverText(dataset)],
+      xaxis: axes.xaxis, // Plotly.deleteTraces -> ERROR TypeError: t.match is not a function
+      yaxis: axes.yaxis, // Plotly.deleteTraces -> ERROR TypeError: t.match is not a function
+      scene: {
+        xaxis: axes.xaxis,
+        yaxis: axes.yaxis,
+        zaxis: axes.zaxis,
+      },*/
+      marker: {
+        size: size,
+        // name: this.unpack(dataset, 'acc'),
+        color: this.unpack(dataset, 'color'),
+     },
+      type: this.type
+    };
+
+    Plotly.restyle(element, updatedTrace, [0]);
+  }
+
   drawChart(dataset) {
 
+    const element = this.el.nativeElement;
 
     let size = 3;
     if (this.is2Dplot) {
       size = 6;
     }
-    const opacity = 0.7;
-    const layout = this.getLayout(this.activeResource);
-    let trace1;
+    const opacity = 1;
+    let trace;
 
     // Density
     if (dataset[0].density !== undefined) {
-      const text = this.getHoverDensityText(dataset);
-      trace1 = {
+      trace = {
         x: this.unpack(dataset, 'x'),
         y: this.unpack(dataset, 'y'),
         z: this.unpack(dataset, 'z'),
@@ -488,7 +551,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         count: this.unpack(dataset, 'count'),
         mode: 'markers',
         hoverinfo: 'text',
-        text: text,
+        text: this.getHoverDensityText(dataset),
         marker: {
           size: this.unpack(dataset, 'size'),
           color: this.defaultColor,
@@ -497,8 +560,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       };
 
     } else {
-      const text = this.getHoverText(dataset);
-      trace1 = {
+      trace = {
         x: this.unpack(dataset, 'x'),
         y: this.unpack(dataset, 'y'),
         z: this.unpack(dataset, 'z'),
@@ -509,7 +571,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         name: this.activeResource.name + ' data',
         mode: 'markers',
         hoverinfo: 'text',
-        text: text,
+        text: this.getHoverText(dataset),
         marker: {
           size: size,
           name: this.unpack(dataset, 'acc'),
@@ -519,14 +581,12 @@ export class CubeComponent implements OnInit, OnDestroy {
       };
 
     }
-
-    const data = [trace1];
-    const element = this.el.nativeElement;
-
     // USE react
-    Plotly.react(element, data, layout, [0]);
+    this.layout = this.getLayout(this.activeResource);
+    Plotly.react(element, [trace], this.layout, [0]);
 
-    // TODO At the moment removes previous click listener, should be added once
+
+    // Remove previous click listener, should be added once
     element.removeAllListeners('plotly_click');
     const cubeService = this.cubeService;
     if (dataset[0].density === undefined) {
@@ -537,10 +597,11 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     // Apply copied highlighted points to new data
     dataset.forEach(point => {
-      // tslint:disable-next-line:triple-equals
       if (point.highlighted) {
-      point.highlighted = false; // highlightPoint(point) sets it true again
-       this.highlightPoint(point);
+       setTimeout(() => {
+        point.highlighted = false;
+        this.highlightPoint(point);
+        }, 2);
       }
     });
   }
@@ -611,11 +672,9 @@ export class CubeComponent implements OnInit, OnDestroy {
     for (let i = 1; i < length; i++) {
       indexes.push(i);
       const point = this.currentDataSet.filter(function( obj ) {
-        // tslint:disable-next-line:triple-equals
-        return obj.acc == element.data[i].name;
+        return obj.acc === element.data[i].name;
       });
-      // tslint:disable-next-line:triple-equals
-      if (point[0] != undefined) {
+      if (point[0] !== undefined) {
         point[0].highlighted = false; // set highlight false
       }
     }
@@ -729,7 +788,7 @@ showDensity() {
     const value = dict[key];
     array.push(value);
 });
-  this.cubeService.setPointsOnCube(array);
+  this.cubeService.setPointsOnCube(array, true);
 
 
 }
@@ -747,9 +806,9 @@ setDynamic(value: boolean) {
     }
   } else {
     if (this.is2Dplot) {
-
       Plotly.relayout(element, 'xaxis.autorange', false);
       Plotly.relayout(element, 'yaxis.autorange', false);
+      this.drawChart(this.currentDataSet);
     } else {
       Plotly.relayout(element, 'scene.xaxis.autorange', false);
       Plotly.relayout(element, 'scene.yaxis.autorange', false);

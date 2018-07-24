@@ -83,7 +83,8 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
 
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
-      points => {
+      data => {
+        const points = data[0];
         if (points !== undefined && points.length > 0) {
           this.pointsOnCube = points;
           if (points[0].density !== undefined) {

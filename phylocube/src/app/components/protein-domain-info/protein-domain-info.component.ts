@@ -43,7 +43,8 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
 
     this.currentDataSetSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
-        this.currentDataSet = data;
+        const points = data[0];
+        this.currentDataSet = points;
       }
     );
 
@@ -79,7 +80,7 @@ export class ProteinDomainInfoComponent implements OnInit, OnDestroy {
 
   highlightSelectedPoint() {
     this.currentDataSet.forEach(pointInData => {
-      if (pointInData.acc == this.selectedPoint.acc) {
+      if (pointInData.acc === this.selectedPoint.acc) {
         this.cubeService.setHighlightedPoints([pointInData]);
       }
     });
