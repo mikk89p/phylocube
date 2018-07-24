@@ -11,8 +11,8 @@ import { CubeParameters } from '../../components/cube/cube-parameters';
 export class CubeManipulationComponent implements OnInit, OnDestroy {
 
   activeResource;
-  activeDataSet = [];
-  pointsOnCube = [];
+  numberOfPointsInactiveDataSet = 0;
+  numberOfPointsOnCube = 0;
   cubeParameters: CubeParameters;
 
   xRange = [0, 100];
@@ -51,7 +51,6 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
     this.resourceSubscription.unsubscribe();
     this.dataSubscription.unsubscribe();
     this.pointsOnCubeSubscription.unsubscribe();
-    // this.cubeParametersSubscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -63,13 +62,16 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
 
     this.dataSubscription = this.resourceService.getData().subscribe(
       data => {
-        this.activeDataSet = data;
+        this.numberOfPointsInactiveDataSet = data.length;
       }
     );
 
     this.pointsOnCubeSubscription = this.cubeService.getPointsOnCube().subscribe(
       data => {
-        this.pointsOnCube = data;
+        const points = data[0];
+        if (points !== undefined) {
+          this.numberOfPointsOnCube = points.length;
+        }
       }
     );
 
@@ -80,6 +82,7 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
   }
 
   updateCube() {
+
     this.cubeService.setBoundaries(
       this.xRange[0],
       this.xRange[1],

@@ -1,8 +1,8 @@
 <mat-card>
   <mat-card-header>
     <img mat-card-avatar src="assets/icons/selected_object.png" alt="database">
-    <mat-card-title>Initial domains: {{activeDataSet.length}}</mat-card-title>
-    <mat-card-subtitle>Selected domains:{{pointsOnCube.length}}</mat-card-subtitle>
+    <mat-card-title>Initial domains: {{numberOfPointsInactiveDataSet}}</mat-card-title>
+    <mat-card-subtitle>Selected domains:{{numberOfPointsOnCube}}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <div style="padding-bottom:20px;padding-top:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
@@ -10,7 +10,8 @@
       <nouislider fxFlex="100%"
                   [config]="sliderConfig"
                   [(ngModel)]="xRange"
-                  (mouseup)="updateCube();">
+                  (mouseup)="updateCube();"
+                  (mouseleave)="updateCube();">
       </nouislider>
     </div>
 
@@ -19,7 +20,8 @@
       <nouislider fxFlex="100%"
                   [config]="sliderConfig"
                   [(ngModel)]="yRange"
-                  (mouseup)="updateCube();">
+                  (mouseup)="updateCube();"
+                  (mouseleave)="updateCube();">
       </nouislider>
     </div>
 
@@ -28,7 +30,8 @@
       <nouislider fxFlex="100%"
                   [config]="sliderConfig"
                   [(ngModel)]="zRange"
-                  (mouseup)="updateCube();">
+                  (mouseup)="updateCube();"
+                  (mouseleave)="updateCube();">
       </nouislider>
       
     </div>
