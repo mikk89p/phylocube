@@ -39,6 +39,7 @@ import { UniprotSearchComponent } from './components/uniprot-search/uniprot-sear
 import { SearchResultComponent } from './components/search-result/search-result.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { ColorSchemeComponent } from './components/color-scheme/color-scheme.component';
+import { BrowserCompatibilityComponent } from './components/browser-compatibility/browser-compatibility.component';
 
 
 @NgModule({
@@ -60,7 +61,8 @@ import { ColorSchemeComponent } from './components/color-scheme/color-scheme.com
     UniprotSearchComponent,
     SearchResultComponent,
     ErrorDialogComponent,
-    ColorSchemeComponent
+    ColorSchemeComponent,
+    BrowserCompatibilityComponent
   ],
   imports: [
     BrowserModule,
