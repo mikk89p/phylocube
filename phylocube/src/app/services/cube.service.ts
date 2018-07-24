@@ -36,12 +36,12 @@ export class CubeService {
     private loadingService: LoadingService
   ) {
     // ReplaySubject
-    this.pointsOnCubeSubject =  new ReplaySubject(1); // new BehaviorSubject<Object[]>([]);
+    this.pointsOnCubeSubject =   new ReplaySubject(1); // new BehaviorSubject([]);
     this.highlightedPointSubject =  new ReplaySubject(1); // new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
     this.selectedPointSubject =  new ReplaySubject(1); // new BehaviorSubject<Object>({});
     this.cubeParametersSubject =  new BehaviorSubject<Object>(this.cubeParameters);
     this.dynamicAxesSubject = new ReplaySubject(1);
-    this.fullDataSubject =  new ReplaySubject(1);
+    this.fullDataSubject =   new ReplaySubject(1); // new BehaviorSubject([]);
     this.plotTypeSubject =  new ReplaySubject(1);
 
     this.resourceService.getData().subscribe(
@@ -66,7 +66,7 @@ export class CubeService {
     return this.pointsOnCubeSubject;
   }
 
-  setPointsOnCube(data) {
+  setPointsOnCube(data, redraw = false) {
     if (data.length > 0) {
        if (this.previousData) {
           // Copy highlighted points to new data
@@ -75,8 +75,7 @@ export class CubeService {
               if (oldPoint.highlighted) {
                 const acc = oldPoint.acc;
                 data.forEach(point => {
-                  // tslint:disable-next-line:triple-equals
-                  if (acc == point.acc) {
+                  if (acc === point.acc) {
                     point.highlighted = true;
                   }
                 });
@@ -84,7 +83,7 @@ export class CubeService {
           });
         }
         this.previousData = data;
-        this.pointsOnCubeSubject.next(data);
+        this.pointsOnCubeSubject.next([data, redraw]);
       }
   }
 
@@ -133,8 +132,7 @@ export class CubeService {
 
 
   setSelectedPoint(points) {
-    // tslint:disable-next-line:triple-equals
-    if (points['points'][0] != undefined && points['points'][0].data.is_highlight == undefined) {
+    if (points['points'][0] !== undefined && points['points'][0].data.is_highlight === undefined) {
       const pointData = points['points'][0];
       const point: Point = {
         x: Math.abs(pointData.x),
@@ -162,6 +160,9 @@ export class CubeService {
     vLowerLimit?: number,
     vUpperLimit?: number) {
 
+
+      const oldParams = JSON.parse(JSON.stringify(this.cubeParametersSubject.value)); // Deep copy
+      
       const params = this.cubeParametersSubject.value;
       params.xLowerLimit = xLowerLimit;
       params.xUpperLimit = xUpperLimit;
@@ -171,7 +172,10 @@ export class CubeService {
       params.zUpperLimit = zUpperLimit;
       params.vLowerLimit = vLowerLimit;
       params.vUpperLimit = vUpperLimit;
-      this.setCubeParameters(params);
+
+      if (JSON.stringify(params) !== JSON.stringify(oldParams)) {
+        this.setCubeParameters(params);
+      }
   }
 
   setCubeParameters(cubeParameters) {
