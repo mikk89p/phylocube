@@ -1,6 +1,17 @@
 @import "~nouislider/distribute/nouislider.min.css";
 
 $primary_background : #e9ebee;
+
+
+/* nav height same in desktop and mobile */
+@media screen and (max-width: 599px) {
+  .mat-toolbar-row, .mat-toolbar-single-row {
+    height: 64px !important; 
+  }
+
+}
+
+
 body{
     margin:0;
     height:100%;
@@ -44,7 +55,7 @@ body{
 .loadingDefault {
   color: rgb(240, 238, 238);
   background: $primary_background;
-  height: 100vh;
+  height: calc(100vh - 2*64px);
   width: 100vw;
 }
 .loadingText {
