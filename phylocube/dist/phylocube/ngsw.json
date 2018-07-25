@@ -1,0 +1,93 @@
+{
+  "configVersion": 1,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "urls": [
+        "/favicon.ico",
+        "/index.html",
+        "/main.801a4a33292550992f37.js",
+        "/polyfills.b1a77fa0c49a060217c1.js",
+        "/runtime.a66f828dca56eeb90e02.js",
+        "/scripts.c0c569c9335cc536d9cb.js",
+        "/styles.bf47a47c0c4992d91f40.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "urls": [
+        "/assets/figures/figure1.jpg",
+        "/assets/icons/3daxes.png",
+        "/assets/icons/color.png",
+        "/assets/icons/cube.png",
+        "/assets/icons/database.png",
+        "/assets/icons/icon-128x128.png",
+        "/assets/icons/icon-144x144.png",
+        "/assets/icons/icon-152x152.png",
+        "/assets/icons/icon-192x192.png",
+        "/assets/icons/icon-384x384.png",
+        "/assets/icons/icon-512x512.png",
+        "/assets/icons/icon-72x72.png",
+        "/assets/icons/icon-96x96.png",
+        "/assets/icons/manipulation.png",
+        "/assets/icons/search.png",
+        "/assets/icons/selected_point.png",
+        "/assets/logos/elixir.png",
+        "/assets/logos/white-elixir.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/assets/figures/figure1.jpg": "53db97f00422242f0cb8a0a96f6908681b615e9f",
+    "/assets/icons/3daxes.png": "a0767b72472c3a8ced7627491779069921cbce45",
+    "/assets/icons/color.png": "ddfe0a27db9169908fe12af70bb5ec5d8da48364",
+    "/assets/icons/cube.png": "cf5b04fd6f82333f9cc57c55b172aa05c6fcbb8f",
+    "/assets/icons/database.png": "1eaa431f14fe35d9e8d249b4bc009d9f275c915d",
+    "/assets/icons/icon-128x128.png": "0c1b0a60afcc90ed91f832f156053df299e58249",
+    "/assets/icons/icon-144x144.png": "a06e54cc22cb9bba8df89e889f6a4d88aff7fee9",
+    "/assets/icons/icon-152x152.png": "cf171f833e5f8c6222dbb5fd2bc3b73f2b6de354",
+    "/assets/icons/icon-192x192.png": "4e1c061bdb549ba9daf06e8e928f5271213d881f",
+    "/assets/icons/icon-384x384.png": "223490feb76c0e25e8b565354e835484468f3e9b",
+    "/assets/icons/icon-512x512.png": "74b9946dc6c65a8d4d871d11e0c3bf5c02e98230",
+    "/assets/icons/icon-72x72.png": "4f8893db7d706bc979ffa97a6138d4a07b1e61e1",
+    "/assets/icons/icon-96x96.png": "e3a890a81a0f65dec2405eabbeb711a494d2823f",
+    "/assets/icons/manipulation.png": "03a2dc629d33ae1b030f4d86632c618a066aa76e",
+    "/assets/icons/search.png": "53869c72e197c7d450b4e3cb2e0eec0e2033f055",
+    "/assets/icons/selected_point.png": "f7d1f6f59775a3290acc66c2640020d5cc5cbacc",
+    "/assets/logos/elixir.png": "7f252fcb98dbff55d3a134bcabbd8aac5611e853",
+    "/assets/logos/white-elixir.png": "f6f2f0b818666875ab3acf95dc0fbf4308e6c1f0",
+    "/favicon.ico": "2cbfd3facc979e5cbfef90eee1f77b8e0531505f",
+    "/index.html": "c010be461932913c069f60fbe243a083b28111d8",
+    "/main.801a4a33292550992f37.js": "0d9ce40edec9b00ca9f4b8638a89b04e460b314c",
+    "/polyfills.b1a77fa0c49a060217c1.js": "2b228a92500cd46a54ecb4296ac74a1af170580b",
+    "/runtime.a66f828dca56eeb90e02.js": "078e320cc6fdaf355836c3b1c52b059cdd33fc7e",
+    "/scripts.c0c569c9335cc536d9cb.js": "ddc99d55a17c98e42d326c1b11a1cca11051beb2",
+    "/styles.bf47a47c0c4992d91f40.css": "737881bb58d9b98207f158f523c354b2bce33067"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^\\/]*\\.[^\\/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^\\/]*__[^\\/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^\\/]*__[^\\/]*\\/.*$"
+    }
+  ]
+}
