@@ -44,7 +44,7 @@ export class ResourceService {
     private loadingService: LoadingService
   ) {
     this.activeDatasetSubject =  new ReplaySubject(1); // new BehaviorSubject<Object[]>([]);
-    this.activeResourceSubject =  new BehaviorSubject<Object>({xTitle: '', yTitle: '', zTytle: '' , vTytle: ''});
+    this.activeResourceSubject =  new BehaviorSubject<Object>({xTitle: '', yTitle: '', zTitle: '' , vTitle: ''});
     this.searchResultSubject =  new ReplaySubject(1); // new BehaviorSubject<string[]>(undefined);
   }
 
@@ -265,9 +265,9 @@ export class ResourceService {
   getResources() {
     // console.log ('getResources()');
     const uri = this.url + 'resource';
-    return this.http.get(uri).map(res => {
+    return this.http.get(uri); /*.map(res => {
       return res;
-    });
+    });*/
   }
 
   getResourceByType(type: string) {
@@ -281,9 +281,9 @@ export class ResourceService {
   getDataByResourceType(type: string) {
     // console.log ('getDataByResourceType()');
     const uri = this.url + 'proteindomain/distribution/resource/' + type;
-    return this.http.get(uri).map(res => {
+    return this.http.get(uri); /*.map(res => {
       return res;
-    });
+    });*/
 
   }
 
