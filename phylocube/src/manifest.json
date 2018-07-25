@@ -1,8 +1,9 @@
 {
   "name": "phylocube",
   "short_name": "phylocube",
+  "description" : "A PhyloCube is a 3D scatterplot of the concurrence of protein domains in taxons",
   "theme_color": "#1976d2",
-  "background_color": "#fafafa",
+  "background_color": "#3f51b5",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
