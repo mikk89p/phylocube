@@ -265,9 +265,7 @@ export class ResourceService {
   getResources() {
     // console.log ('getResources()');
     const uri = this.url + 'resource';
-    return this.http.get(uri); /*.map(res => {
-      return res;
-    });*/
+    return this.http.get(uri);
   }
 
   getResourceByType(type: string) {
@@ -281,9 +279,7 @@ export class ResourceService {
   getDataByResourceType(type: string) {
     // console.log ('getDataByResourceType()');
     const uri = this.url + 'proteindomain/distribution/resource/' + type;
-    return this.http.get(uri); /*.map(res => {
-      return res;
-    });*/
+    return this.http.get(uri);
 
   }
 
