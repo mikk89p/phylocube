@@ -38,7 +38,9 @@ var getDbConnection = function(callback) {
 var sqlQuery = function (sql, params, callback) {
   var result;
   getDbConnection(function(err, dbConnection) {
-    if (params && params.length > 0) {
+    if (err) {
+      console.log('No Connection');
+    } else if (params && params.length > 0) {
       dbConnection.query(sql, params, (err, res) => {
         callback(err,res);
         dbConnection.release();
