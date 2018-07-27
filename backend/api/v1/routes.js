@@ -1,36 +1,33 @@
-module.exports = function(app) {
-  
-  // API REST END POINTS
-  // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
+module.exports = function(router) {
+
   // Resources
 	var resourceController = require('./controllers/resourceController');
-	app.route('/v1/resource/:type?').get(resourceController.getResource);
+	router.get('/resource/:type?',resourceController.getResource);
 
 	//Taxonomy Routes
   var taxonomyController = require('./controllers/taxonomyController');
-  app.route('/v1/taxonomy/:id?').get(taxonomyController.getTaxonByTaxonomyId);
-  app.route('/v1/taxonomy/idlike/:id?').get(taxonomyController.getTaxonByIdLike);
-  app.route('/v1/taxonomy/namelike/:name?').get(taxonomyController.getTaxonByNameLike);
-  app.route('/v1/taxonomy/nameorid/:query?').get(taxonomyController.getTaxonByNameOrIdLike)
-  app.route('/v1/taxonomy/namelikeorid/:query?').get(taxonomyController.getTaxonByNameLikeOrId)
+  router.get('/taxonomy/:id?',taxonomyController.getTaxonByTaxonomyId);
+  router.get('/taxonomy/idlike/:id?',taxonomyController.getTaxonByIdLike);
+  router.get('/taxonomy/namelike/:name?',taxonomyController.getTaxonByNameLike);
+  router.get('/taxonomy/nameorid/:query?',taxonomyController.getTaxonByNameOrIdLike)
+  router.get('/taxonomy/namelikeorid/:query?',taxonomyController.getTaxonByNameLikeOrId)
   
-  
-	
 	// Protein domain Routes
   var proteinDomainController = require('./controllers/proteindomainController');
-	app.route('/v1/proteindomain/:acc?').get(proteinDomainController.getProteinDomainByAcc)
-	app.route('/v1/proteindomain/:acc?/distribution').get(proteinDomainController.getProteinDomainWithDistributionByAcc)
-	app.route('/v1/proteindomain/resource/:type?').get(proteinDomainController.getDataByResourceType)
-	app.route('/v1/proteindomain/distribution/resource/:type?').get(proteinDomainController.getDataWithDistributionByResourceType)
+	router.get('/proteindomain/:acc?',proteinDomainController.getProteinDomainByAcc)
+	router.get('/proteindomain/:acc?/distribution',proteinDomainController.getProteinDomainWithDistributionByAcc)
+	router.get('/proteindomain/resource/:type?',proteinDomainController.getDataByResourceType)
+	router.get('/proteindomain/distribution/resource/:type?',proteinDomainController.getDataWithDistributionByResourceType)
 
  // Assignment routes
 	var assignmentController = require('./controllers/assignmentController');
-  app.route('/v1/assignment/:acc?').get(assignmentController.getAssignmentByAcc)
-  app.route('/v1/assignment/proteindomain/acc/resource/:type?/taxonomy/:id?').get(assignmentController.getAccByResourceTypeAndTaxonomyId)
-  app.route('/v1/assignment/proteindomain/distribution/resource/:type?/taxonomy/:id?').get(assignmentController.getDataWithDistributionByResourceTypeAndTaxonomyId)
-  app.route('/v1/assignment/proteindomain/resource/:type?/taxonomy/:id?').get(assignmentController.getDataByResourceTypeAndTaxonomyId)
+  router.get('/assignment/:acc?',assignmentController.getAssignmentByAcc)
+  router.get('/assignment/proteindomain/acc/resource/:type?/taxonomy/:id?',assignmentController.getAccByResourceTypeAndTaxonomyId)
+  router.get('/assignment/proteindomain/distribution/resource/:type?/taxonomy/:id?',assignmentController.getDataWithDistributionByResourceTypeAndTaxonomyId)
+  router.get('/assignment/proteindomain/resource/:type?/taxonomy/:id?',assignmentController.getDataByResourceTypeAndTaxonomyId)
 
   // Clan membership
   var clanController = require('./controllers/clanController');
-  app.route('/v1/clanmembership/:pfam?').get(clanController.getClanByPfamAcc)
+  router.get('/clanmembership/:pfam?',clanController.getClanByPfamAcc)
+
 };

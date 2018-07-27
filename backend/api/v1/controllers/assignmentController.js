@@ -26,7 +26,7 @@ exports.getDataWithDistributionByResourceTypeAndTaxonomyId = function(req, res, 
 exports.getDataByResourceTypeAndTaxonomyId = function(req, res, next) {  
 	if (req.params.type && req.params.id) {  
 		Assignment.getDataByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
-      console.log('end : ', req.params.id, new Date() );
+      // console.log('end : ', req.params.id, new Date() );
 			BaseController.sendDefaultResponse(res, err, rows); 
 		});  
 	} 
@@ -35,7 +35,7 @@ exports.getDataByResourceTypeAndTaxonomyId = function(req, res, next) {
 exports.getAccByResourceTypeAndTaxonomyId = function(req, res, next) {  
 	if (req.params.type && req.params.id) {  
 		Assignment.getAccByResourceTypeAndTaxonomyId(req.params.type, req.params.id, function(err, rows) { 
-      console.log('end : ', req.params.id, new Date() );
+      // console.log('end : ', req.params.id, new Date() );
 			BaseController.sendDefaultResponse(res, err, rows); 
 		});  
 	} 
