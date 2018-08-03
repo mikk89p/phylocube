@@ -44,6 +44,7 @@ export class CubeService {
     this.fullDataSubject =   new ReplaySubject(1); // new BehaviorSubject([]);
     this.plotTypeSubject =  new ReplaySubject(1);
 
+
     this.resourceService.getData().subscribe(
       data => {
         this.fullDataSubject.next(data);
@@ -162,7 +163,6 @@ export class CubeService {
 
 
       const oldParams = JSON.parse(JSON.stringify(this.cubeParametersSubject.value)); // Deep copy
-      
       const params = this.cubeParametersSubject.value;
       params.xLowerLimit = xLowerLimit;
       params.xUpperLimit = xUpperLimit;
@@ -211,4 +211,5 @@ export class CubeService {
   setPlotType(type: string) {
     this.plotTypeSubject.next(type);
   }
+
 }

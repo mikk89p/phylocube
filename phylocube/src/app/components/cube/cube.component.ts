@@ -28,6 +28,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   dynamicAxesCtrl = new FormControl(false, []);
   densityCtrl = new FormControl(false, []);
   plotTypeCtrl = new FormControl(false, []);
+  tooltipCtrl = new FormControl(true, []);
   densityOptions = [2, 5, 10, 20];
   densityBins = 5;
 
@@ -197,6 +198,12 @@ export class CubeComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.tooltipCtrl.valueChanges.subscribe(
+      value => {
+        this.toggleTooltip(value);
+      }
+    );
+
     this.plotTypeCtrl.valueChanges.subscribe(
       value => {
         this.togglePlotType(value);
@@ -290,6 +297,9 @@ export class CubeComponent implements OnInit, OnDestroy {
 
   getAxis(resource) {
 
+
+    const showspikes = this.tooltipCtrl.value ? true : false;
+
     const result = {
       xaxis: {},
       yaxis: {},
@@ -340,6 +350,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     result.xaxis = {
       title: resource.xTitle,
       autorange: autorange,
+      showspikes : showspikes,
       range: [-resource.xMax, 0],  // workaround
       tickmode : 'array', // workaround
       tickvals : tickvals,  // workaround
@@ -353,6 +364,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     result.yaxis = {
       title: resource.yTitle,
       autorange: autorange,
+      showspikes : showspikes,
       range: [0, resource.yMax],
       titlefont: {
         family: 'Courier New, monospace',
@@ -363,6 +375,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     result.zaxis = {
       title: resource.zTitle,
       autorange: autorange,
+      showspikes : showspikes,
       range: [0, resource.zMax],
       titlefont: {
         family: 'Courier New, monospace',
@@ -390,7 +403,8 @@ export class CubeComponent implements OnInit, OnDestroy {
     const margin = {l: 0, r: 0, b: 0, t: 0};
     const showlegend = false;
     const legend = {'orientation': 'h'};
-    const hovermode = 'closest';
+    const hovermode = this.tooltipCtrl.value ? 'closest' : false;
+    
 
 
     if (this.is2Dplot) {
@@ -824,6 +838,22 @@ togglePlotType(value: boolean) {
   } else {
     this.cubeService.setPlotType('scatter3d');
   }
+}
+
+toggleTooltip(value: boolean) {
+  const element = this.el.nativeElement;
+  if (value === true) {
+    Plotly.relayout(element, 'hovermode', 'closest');
+    Plotly.relayout(element, 'scene.xaxis.showspikes', true);
+    Plotly.relayout(element, 'scene.yaxis.showspikes', true);
+    Plotly.relayout(element, 'scene.zaxis.showspikes', true);
+  } else {
+    Plotly.relayout(element, 'hovermode', false);
+    Plotly.relayout(element, 'scene.xaxis.showspikes', false);
+    Plotly.relayout(element, 'scene.yaxis.showspikes', false);
+    Plotly.relayout(element, 'scene.zaxis.showspikes', false);
+  }
+
 }
 
 

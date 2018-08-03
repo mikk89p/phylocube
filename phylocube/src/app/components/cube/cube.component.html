@@ -29,6 +29,10 @@
         {{is2Dplot?'Return to 3D':'2D scatter'}}
     </mat-slide-toggle>
 
+    <mat-slide-toggle [formControl]="tooltipCtrl" >
+      Tooltip: {{tooltipCtrl.value?'enabled':'disabled'}}
+    </mat-slide-toggle>
+
   </div>
 
   <mat-spinner [diameter]="30" color='primary' *ngIf="!ready"></mat-spinner>
