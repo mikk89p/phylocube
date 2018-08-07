@@ -1,9 +1,8 @@
-# Minimal Node.js Docker Images alpine
-FROM node:10.7.0-alpine
+# Minimal Node 8 LTS Docker Images alpine
+FROM node:8.11.3-alpine
 
 # Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Rather than copying the entire working directory we are only copying the package.json and bundles.
 # This allows us to take advantage of cached Docker layers
@@ -14,7 +13,6 @@ RUN npm install
 
 # Bundle app source
 COPY . .
-
 
 # Expose port 3000
 EXPOSE 3000
