@@ -21,7 +21,7 @@ export class CubeManipulationComponent implements OnInit, OnDestroy {
   sliderConfig = {
     connect: true,
     start: [0, 100],
-    step: 0.5,
+    step: 1,
     range: {
       'min': [0],
       'max': [100]

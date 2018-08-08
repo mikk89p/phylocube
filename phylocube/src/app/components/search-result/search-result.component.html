@@ -13,18 +13,44 @@
               style="min-height:90px;">
             </textarea>
         </mat-form-field>
-        <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="center">
+        <div class="search-result-buttons" fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="space-evenly center">
 
-            <button mat-raised-button color="primary" type="button" [disabled]="density" (click)="getPointsFromCube()">
-              Get visible acc
+            <button 
+              mat-raised-button
+              matTooltip="Get all accessions that are visible on the scatter plot" 
+              color="primary" 
+              type="button" 
+              [disabled]="density" 
+              (click)="getPointsFromCube()">
+              Get acc
             </button>
 
-            <button mat-raised-button color="primary" type="button" (click)="highlight()" [disabled]="!form.valid">
+            <button 
+              mat-raised-button 
+              matTooltip="Highlight protein domains on the scatter plot by accession. Accessions must be separated by comma."
+              color="primary" 
+              type="button" 
+              (click)="highlight()" 
+              [disabled]="!form.valid">
               HighLight
             </button>
 
-            <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">
-              Show only
+            <button 
+              mat-raised-button 
+              matTooltip="Clear highlight"
+              color="primary" 
+              type="button" 
+              (click)="clearHighlight()">
+                Clear
+            </button>
+
+            <button 
+              mat-raised-button 
+              matTooltip="Show only domains that are in the input box. Accessions must be separated by comma."
+              color="primary" 
+              type="submit" 
+              [disabled]="!form.valid">
+              Show
             </button>
             
         </div>

@@ -74,9 +74,6 @@ import { BrowserCompatibilityComponent } from './components/browser-compatibilit
     FormsModule,
     ReactiveFormsModule,
     NouisliderModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', {
-      enabled: environment.production
-    }),
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [ResourceService, CubeService, LoadingService],

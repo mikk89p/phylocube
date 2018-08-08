@@ -2,13 +2,8 @@
   
   <div fxLayoutAlign="start" fxLayoutGap="10px" fxLayout="row"  fxLayout.lt-md="column">
 
-<!--     <button mat-raised-button color="primary" (click)="clearHighlight()">
-        Clear HighLight
-    </button> -->
-
-
     <mat-select [disabled]="densityCtrl.value" [(ngModel)]="densityBins" style="width:50px;">
-      <mat-option 
+      <mat-option
         *ngFor="let option of densityOptions" 
         [value]="option"
       >

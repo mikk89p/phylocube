@@ -1,28 +1,24 @@
 <mat-card  class="card" >
   <mat-card-header>
     <img mat-card-avatar src="assets/icons/database.png" alt="database">
-    <div fxLayout="row"
-        fxLayoutGap="20px"
-    >
-    <div fxFlex>
-      <mat-card-title [matTooltip]="activeResource.description" >{{activeResource.name}}</mat-card-title>
-      <mat-card-subtitle>Version: {{activeResource.version}}</mat-card-subtitle>
-    </div>
-    <div fxFlex >
-      <mat-form-field>
-          <mat-select [(value)]="activeResource.id" >
-            <mat-option 
-              *ngFor="let resource of resources | async" 
-              [value]="resource.id"
-              (onSelectionChange)="setActiveResource($event, resource)"
-            >
-              {{resource.name}}
-            </mat-option>
-          </mat-select>
-    </mat-form-field>
-  </div>
-  </div>
+    <mat-card-title [matTooltip]="activeResource.description" >Select Resource</mat-card-title>
+    <mat-card-subtitle>Active Resource: {{activeResource.name}} (Version: {{activeResource.version}})</mat-card-subtitle>
   </mat-card-header>
+
+  <mat-form-field >
+      <mat-select [(value)]="activeResource.id" >
+        <mat-option
+          *ngFor="let resource of resources | async" 
+          [value]="resource.id"
+          (onSelectionChange)="setActiveResource($event, resource)"
+        >
+          {{resource.name}}
+        </mat-option>
+      </mat-select>
+</mat-form-field>
+
+
+  
   <mat-card-content>
     <p><b>Url: </b> <a target="_blank"  href="{{activeResource.url}}">{{activeResource.url}}</a></p>
     <!-- <p><b>Description: </b>{{activeResource.description}}</p> -->

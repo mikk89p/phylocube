@@ -3,7 +3,7 @@
     <div fxFlex="grow">
       <mat-card-header>
         <img mat-card-avatar src="assets/icons/selected_point.png" alt="database">
-        <mat-card-title *ngIf='(!selectedPoint)'>Click on a point! </mat-card-title>
+        <mat-card-title *ngIf='(!selectedPoint)'>Click on a point on the cube! </mat-card-title>
         <mat-card-title *ngIf='(selectedPoint && selectedPoint.acc)'><b>Acc:</b> {{selectedPoint.acc}} </mat-card-title>
         <mat-card-subtitle *ngIf='(selectedPoint)'><b>{{selectedPoint.description}}</b></mat-card-subtitle>
       </mat-card-header>
