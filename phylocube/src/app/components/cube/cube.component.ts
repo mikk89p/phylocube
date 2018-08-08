@@ -30,7 +30,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   plotTypeCtrl = new FormControl(false, []);
   tooltipCtrl = new FormControl(true, []);
   densityOptions = [2, 5, 10, 20];
-  densityBins = 5;
+  densityBins = 10; // default
 
 
   fullDataSet;
@@ -298,7 +298,9 @@ export class CubeComponent implements OnInit, OnDestroy {
   getAxis(resource) {
 
 
-    const showspikes = this.tooltipCtrl.value ? true : false;
+    // const showspikes = this.tooltipCtrl.value ? true : false;
+    // Disable spikes
+    const showspikes = false;
 
     const result = {
       xaxis: {},
@@ -404,7 +406,6 @@ export class CubeComponent implements OnInit, OnDestroy {
     const showlegend = false;
     const legend = {'orientation': 'h'};
     const hovermode = this.tooltipCtrl.value ? 'closest' : false;
-    
 
 
     if (this.is2Dplot) {
@@ -489,10 +490,10 @@ export class CubeComponent implements OnInit, OnDestroy {
         '(0,0,0)';
       }
       let result = 'Count : ' + point.count  + '<br>' +
-      xTitle + ' : (' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + '] <br>' +
-      yTitle + ' : (' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + '] <br>';
+      xTitle + ' : [' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + ') <br>' +
+      yTitle + ' : [' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + ') <br>';
       // tslint:disable-next-line:max-line-length
-      result = is2Dplot ? result : result + 'z : (' + (point.z - point.stepZ / 2).toFixed(0) + ' ; ' + (point.z + point.stepZ / 2).toFixed(0) + ']';
+      result = is2Dplot ? result : result + 'z : [' + (point.z - point.stepZ / 2).toFixed(0) + ' ; ' + (point.z + point.stepZ / 2).toFixed(0) + ')';
       return result;
     });
   }
@@ -519,10 +520,11 @@ export class CubeComponent implements OnInit, OnDestroy {
       y: [this.unpack(dataset, 'y')],
       z: [this.unpack(dataset, 'z')],
       v: [this.unpack(dataset, 'v')],
-      /*description: [this.unpack(dataset, 'description')],
+      text: [this.getHoverText(dataset)],
       acc: [this.unpack(dataset, 'acc')],
+      description: [this.unpack(dataset, 'description')],
       highlighted: [this.unpack(dataset, 'highlighted')],
-      name: this.activeResource.name + ' data',
+      /*
       mode: 'markers',
       hoverinfo: 'text',
       text: [this.getHoverText(dataset)],
@@ -605,7 +607,9 @@ export class CubeComponent implements OnInit, OnDestroy {
     const cubeService = this.cubeService;
     if (dataset[0].density === undefined) {
       element.on('plotly_click', function(point) {
-        cubeService.setSelectedPoint(point);
+        if (point !== undefined) {
+          cubeService.setSelectedPoint(point);
+        }
       });
     }
 
@@ -741,6 +745,10 @@ getMinMaxXYZ (dataset) {
   return result;
 }
 
+isInt(n) {
+  return Number(n) === n && n % 1 === 0;
+}
+
 showDensity() {
   const bins = this.densityBins;
 
@@ -757,33 +765,48 @@ showDensity() {
   const stepZ = (maxZ - minZ) / bins;
 
   const dict = {};
+  // let test = '';
   this.currentDataSet.forEach(point => {
-    let key;
-    let x = Math.round(point.x / stepX);
-    let y = Math.round(point.y / stepY);
-    let z = this.is2Dplot ? 0 : Math.round(point.z / stepZ);
+    let key = '';
+
+
+    // Each density point includes lower [...) e.g. [0:10%), [10%:20%) etc.
+    // Last density point must include both [...] e.g., [90%:100%]
+    let x = point.x / stepX;
+    x = (point.x === maxX) ? x - 1 : Math.trunc(x);
+
+    let y = point.y / stepY;
+    y = (point.y === maxY) ? y - 1 : Math.trunc(y);
+
+    let z = this.is2Dplot ? 0 : point.z / stepZ;
+    z = (point.z === maxZ) ? z - 1 : Math.trunc(z);
+
+    let densityPointX;
+    let densityPointY;
+    let densityPointZ;
     if ((point.x + point.y + point.z) === 0) {
       key = 'zero_corner';
-      x = 0;
-      y = 0;
-      z = 0;
+      densityPointX = 0;
+      densityPointY = 0;
+      densityPointZ = 0;
     } else {
-      key = this.is2Dplot ? x + '' + y : x + '' + y + '' + z;
-      x = x * stepX + stepX / 2;
-      y = y * stepY + stepY / 2;
-      z = this.is2Dplot ? 0 : (z * stepZ + stepZ / 2);
+      key = x + '' + y + '' + z;
+      densityPointX = x * stepX + stepX / 2;
+      densityPointY = y * stepY + stepY / 2;
+      densityPointZ = this.is2Dplot ? 0 : (z * stepZ + stepZ / 2);
     }
 
-    if (dict[key]) {
+    if (key in dict) {
       dict[key].points.push(point);
       dict[key].size = this.getDensityRadius (dict[key].points.length);
       dict[key].count = dict[key].count + 1;
     } else {
+
       let densityPoint: DensityPoint;
       densityPoint = {
-        x: x,
-        y: y,
-        z: this.is2Dplot ? 0 : z,
+        x: densityPointX,
+        y: densityPointY,
+        z: densityPointZ,
         stepX: stepX,
         stepY: stepY,
         stepZ: this.is2Dplot ? 0 : stepZ,
@@ -795,7 +818,13 @@ showDensity() {
       dict[key] = densityPoint;
     }
 
+    /*if (key === '999') {
+      test += point.acc + ',';
+    }*/
+
   });
+
+  // console.log(test);
 
   const array = [];
   Object.keys(dict).forEach(function(key) {
@@ -803,8 +832,6 @@ showDensity() {
     array.push(value);
 });
   this.cubeService.setPointsOnCube(array, true);
-
-
 }
 
 setDynamic(value: boolean) {
@@ -844,14 +871,14 @@ toggleTooltip(value: boolean) {
   const element = this.el.nativeElement;
   if (value === true) {
     Plotly.relayout(element, 'hovermode', 'closest');
-    Plotly.relayout(element, 'scene.xaxis.showspikes', true);
+    /*Plotly.relayout(element, 'scene.xaxis.showspikes', true);
     Plotly.relayout(element, 'scene.yaxis.showspikes', true);
-    Plotly.relayout(element, 'scene.zaxis.showspikes', true);
+    Plotly.relayout(element, 'scene.zaxis.showspikes', true);*/
   } else {
     Plotly.relayout(element, 'hovermode', false);
-    Plotly.relayout(element, 'scene.xaxis.showspikes', false);
+    /*Plotly.relayout(element, 'scene.xaxis.showspikes', false);
     Plotly.relayout(element, 'scene.yaxis.showspikes', false);
-    Plotly.relayout(element, 'scene.zaxis.showspikes', false);
+    Plotly.relayout(element, 'scene.zaxis.showspikes', false);*/
   }
 
 }
