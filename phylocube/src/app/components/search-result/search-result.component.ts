@@ -119,13 +119,15 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
     // this.showLoading = true;
     // const start = new Date().getMilliseconds();
-    let accessions = this.proteinDomainsInput.value.split(',');
+    let accessions = this.proteinDomainsInput.value.trim();
+    accessions = accessions.replace(/(^,)|(,$)/g, ''); // trim comma
+    accessions = accessions.split(',');
     accessions = accessions.filter(function(n) { return n !== ''; } );
     const resultPoints = [];
 
     // Check if cube has points with acc
     this.pointsOnCube.forEach(point => {
-    if (accessions.includes(point.acc) ) {
+      if (accessions.includes(point.acc) ) {
         resultPoints.push(point);
       }
     });
@@ -133,7 +135,9 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     if (resultPoints.length == 0) {
       this.loadingService.openDialog('Message', 'Current dataset did not have protein domains with provided accessions');
     } else if (resultPoints.length !== accessions.length) {
-      this.loadingService.openDialog('Message', '' + resultPoints.length + ' accessions out of ' + accessions.length + ' was found.');
+      this.loadingService.openDialog('Message',
+        '' + resultPoints.length + ' accessions out of ' + accessions.length + ' was found.'
+    );
       this.cubeService.setFullData(resultPoints);
     } else {
       this.cubeService.setFullData(resultPoints);
@@ -143,7 +147,9 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   highlight() {
-    let accessions = this.proteinDomainsInput.value.split(',');
+    let accessions = this.proteinDomainsInput.value.trim();
+    accessions = accessions.replace(/(^,)|(,$)/g, ''); // trim comma
+    accessions = accessions.split(',');
     accessions = accessions.filter(function(n) { return n !== ''; } );
 
     const resultPoints = [];
@@ -156,10 +162,16 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     if (resultPoints.length === 0) {
       this.loadingService.openDialog('Message', 'Current dataset did not have protein domains with provided accessions');
     } else if (resultPoints.length !== accessions.length) {
-      this.loadingService.openDialog('Message', '' + resultPoints.length + ' accessions out of ' + accessions.length + ' was found.');
+      this.loadingService.openDialog('Message',
+      '' + resultPoints.length + ' accessions out of ' + accessions.length + ' was found.'
+    );
       this.cubeService.setHighlightedPoints(resultPoints, 'selection');
     } else {
       this.cubeService.setHighlightedPoints(resultPoints, 'selection');
     }
+  }
+
+  clearHighlight() {
+    this.cubeService.setHighlightedPoints(false);
   }
 }
