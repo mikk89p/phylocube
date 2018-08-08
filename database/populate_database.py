@@ -72,18 +72,16 @@ def insertTaxonomy(db,cursor,resource):
 	for row in rows:
 		taxonomy_set.add(int(row[0]))
 
-  #root
-	taxonomy_set.add(1)
-
+  
+	taxonomy_set.add(1) #root
 	version = resources[resource]['version']
 	taxonomy_file = resources[resource]['taxonomy_file']
 	values = []
 	with open(taxonomy_file, 'r') as f:
 		 content = f.readlines()
 	
-
 	contentLen = len(content)
-	maxNumberInsert = 3000
+	maxNumberInsert = 5000
 	count = 0
 	for line in content:
 		add = False # If a taxon should be added to the database
@@ -101,8 +99,9 @@ def insertTaxonomy(db,cursor,resource):
 		if (len(arr) > 5):
 			full_taxonomy_id = arr[5]
 
-		# 'order','family','genus' -> Min: 157.7 MiB	
-		if ((rank in ['kingdom','superkingdom','phylum','class']) or taxid in taxonomy_set or parent_id in taxonomy_set):
+    # 'no rank' must be added for Vertebrata etc. 
+    # Current settings 273.4 MiB
+		if ((rank in ['kingdom','superkingdom','phylum','class','order', 'family','genus','no rank']) or taxid in taxonomy_set or parent_id in taxonomy_set):
 			ids = full_taxonomy_id.split(';')
 			for id in ids:
 				if (is_number(id)):
@@ -164,7 +163,6 @@ def insertProteinDomain(db,cursor,resource):
 
 	uniqueAcc = Set([])
 	values = []
-	length = len(content)
 	for line in content:
 		line = line.strip() 
 		arr = line.split("\t")
@@ -313,9 +311,7 @@ def insertClanMembership(db,cursor,resource):
 
 def addIndex(db,cursor,resource):	
 	cursor.execute("CREATE INDEX assignment_taxid_index ON assignment (taxonomy_id)")
-	#cursor.execute("CREATE INDEX taxonomy_name ON taxonomy (name)") ALTER TABLE taxonomy DROP INDEX taxonomy_name;
 	cursor.execute("CREATE INDEX taxonomy_rank ON taxonomy (rank)")
-	#cursor.execute("CREATE INDEX taxonomy_parent_id ON taxonomy (parent_id)")
 	cursor.execute("CREATE INDEX clan_membership_pfam_acc ON clan_membership (pfam_acc)")
 	cursor.execute("CREATE INDEX acc_index ON protein_domain (acc)")
 	cursor.execute("CREATE INDEX description_index ON protein_domain (description)")
