@@ -2,12 +2,6 @@
 
 $primary_background : #e9ebee;
 
-.mat-toolbar-row, .mat-toolbar-single-row , .mat-toolbar-multiple-rows {
-  height: 56px !important; 
-  min-height: 56px !important; 
-}
-
-
 body{
     margin:0;
     height:100%;
@@ -15,11 +9,6 @@ body{
 
 .defaultBackground{
   background-color: $primary_background;
-}
-
-.mat-autocomplete-panel {
-  max-width: none !important;
-  min-width: 450px !important;
 }
 
 .fullscreen {
@@ -86,23 +75,41 @@ body{
   z-index: 1000;
 	margin: 0;
 	padding: 0;
-  }
+}
 
-  @keyframes dots {
-	50% {
-	  transform: translateY(-.4rem);
-	}
-	100% {
-	  transform: translateY(0);
-	}
-  }
+@keyframes dots {
+	50% {transform: translateY(-.4rem);}
+	100% {transform: translateY(0);}
+}
 
-  .d {
-	animation: dots 1.5s ease-out infinite;
-  }
-  .d-2 {
-	animation-delay: .5s;
-  }
-  .d-3 {
-	animation-delay: 1s;
-  }
+.d {animation: dots 1.5s ease-out infinite;}
+.d-2 {animation-delay: .5s;}
+.d-3 { animation-delay: 1s;}
+/* LOADING END */
+
+
+
+/* Material design custom css*/
+.mat-autocomplete-panel {
+  max-width: none !important;
+  min-width: 450px !important;
+}
+
+.mat-toolbar-row, .mat-toolbar-single-row , .mat-toolbar-multiple-rows {
+  height: 56px !important; 
+  min-height: 56px !important; 
+}
+
+.mat-card-title {
+  font-size: 120% !important;
+  margin-bottom:10px !important;
+}
+
+.mat-card {
+  padding:15px !important;
+}
+
+.mat-tooltip {
+  font-size: 14px !important;
+}
+
