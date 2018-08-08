@@ -3,9 +3,11 @@
     <img mat-card-avatar src="assets/icons/manipulation.png" alt="database">
     <mat-card-title>Initial domains: {{numberOfPointsInactiveDataSet}}</mat-card-title>
     <mat-card-subtitle>Selected domains:{{numberOfPointsOnCube}}</mat-card-subtitle>
+    
+
   </mat-card-header>
   <mat-card-content>
-    <div style="padding-bottom:20px;padding-top:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
+    <div style="padding:10px" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
       <div >{{activeResource.xTitle}} (x)</div>
       <nouislider fxFlex="100%"
                   [config]="sliderConfig"
@@ -15,7 +17,7 @@
       </nouislider>
     </div>
 
-    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
+    <div style="padding:10px" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
       <div>{{activeResource.yTitle}} (y)</div>
       <nouislider fxFlex="100%"
                   [config]="sliderConfig"
@@ -25,7 +27,7 @@
       </nouislider>
     </div>
 
-    <div style="padding-bottom:20px;" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
+    <div style="padding:10px" fxLayout="column" fxLayout.gt-md="column" fxLayoutGap="22px">
       <div>{{activeResource.zTitle}} (z)</div>
       <nouislider fxFlex="100%"
                   [config]="sliderConfig"
@@ -35,16 +37,7 @@
       </nouislider>
       
     </div>
+    <button style="margin-top:20px;"  mat-raised-button color="primary" (click)="seToDefault();">Reset sliders</button>
+
   </mat-card-content>
-  <mat-card-actions fxLayoutAlign="center" fxLayoutGap="12px" fxLayout="row" >
-
-  <button  mat-raised-button color="primary" (click)="seToDefault();">
-    Reset sliders
-  </button>
-
-  <button mat-raised-button color="primary" (click)="clearHighlight()">
-    Clear HighLight
- </button>
-
-  </mat-card-actions>
 </mat-card>
