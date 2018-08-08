@@ -30,6 +30,7 @@ var pool  = mysql.createPool({
 
 var getDbConnection = function(callback) {
   pool.getConnection(function(err, connection) {
+      console.log('Get connection threadId:', connection.threadId);
       callback(err, connection); // If connetion is aquired -> function call 
   });
 };
@@ -41,14 +42,14 @@ var sqlQuery = function (sql, params, callback) {
     if (err) {
       console.log('No Connection');
     } else if (params && params.length > 0) {
+      //console.log(sql);
       dbConnection.query(sql, params, (err, res) => {
-        callback(err,res);
-        dbConnection.release();
+        callback(err,res, dbConnection);
       });
     } else {
+      //console.log(sql);
        dbConnection.query(sql, (err, res) => {
-        callback(err,res);
-        dbConnection.release();
+        callback(err,res, dbConnection);
       });
     }
     

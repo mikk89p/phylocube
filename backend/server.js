@@ -4,7 +4,7 @@ const cors = require('cors')
 
 // Config
 const PORT = 3000;
-const HOST = '0.0.0.0'; // TODO
+const HOST = '127.0.0.1'; // TODO
 const name = process.env.NODE_NAME;
 
 // Init app

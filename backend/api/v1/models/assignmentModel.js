@@ -1,7 +1,7 @@
 var db = require('../dbconnection');
 
 
-const bytes_limit = 1000000; //982 819
+const bytes_limit = 2000000;
 
 function lengthInUtf8Bytes(str) {
   // Matches only the 10.. bytes that are non-initial characters in a multi-byte sequence.
@@ -40,7 +40,9 @@ var Assignment = {
   var ids_sub_query = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ? )" +
   " AND (rank = 'species' OR rank = 'no rank')";
   var ids_arr = []
-  db.sqlQuery(ids_sub_query, [id, '%;' +id+ ';%', id+ ';%'], function (err, rows) {
+  db.sqlQuery(ids_sub_query, [id, '%;' +id+ ';%', id+ ';%'], function (err, rows, dbConnection) {
+    console.log('Release connection threadId:', dbConnection.threadId);
+    dbConnection.release(); // release subquery connection to the pool
     if (err) {
       throw err;
     } else {
@@ -85,7 +87,11 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
    var sql = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ? )" +
    " AND (rank = 'species' OR rank = 'no rank')";
    var ids_arr = []
-   db.sqlQuery(sql, [id, '%;' +id+ ';%', id+ ';%'], function (err, rows) {
+   db.sqlQuery(sql, [id, '%;' +id+ ';%', id+ ';%'], function (err, rows, dbConnection) {
+
+    console.log('Release connection threadId:', dbConnection.threadId);
+    dbConnection.release(); // release subquery connection to the pool
+
      if (err) {
        throw err;
      } else {
@@ -95,11 +101,15 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
          ids_arr.push(json.id);
        }
      }
+
+     
      var ids = ids_arr.join(',');
      var bytes = lengthInUtf8Bytes(ids);
      if (ids_arr.length == 0 || bytes > bytes_limit) {
+       // console.log('Limit reached');
        ids = sql; 
      } 
+    
      if (type == 'clanpfam') {
        sql = "SELECT " + columns +
        " FROM (SELECT * FROM assignment WHERE assignment.taxonomy_id IN (" + ids + ")) AS assignment" +
@@ -157,7 +167,10 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
           var sql = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ?)" +
           " AND (rank = 'species' OR rank = 'no rank')";
           var ids_arr = []
-          db.sqlQuery(sql, [id, '%;' +id+ ';%', id + ';%'], function (err, rows) {
+          db.sqlQuery(sql, [id, '%;' +id+ ';%', id + ';%'], function (err, rows, dbConnection) {
+            
+            console.log('Release connection threadId:', dbConnection.threadId);
+            dbConnection.release(); // release subquery connection to the pool
             if (err) {
               throw err;
             } else {

@@ -4,12 +4,12 @@ var BaseController = require('./baseController');
 
 exports.getResource = function(req, res) {  
 	if (req.params.type) {  
-		Resource.getByType(req.params.type, function(err, rows) {  
-			BaseController.sendDefaultResponse(res, err, rows);  
+		Resource.getByType(req.params.type, function(err, rows, dbConnection) {  
+			BaseController.sendDefaultResponse(res, err, rows, dbConnection);  
 		});  
 	} else {  
-		Resource.getAll(function(err, rows) {  
-			BaseController.sendDefaultResponse(res, err, rows);  
+		Resource.getAll(function(err, rows, dbConnection) {  
+			BaseController.sendDefaultResponse(res, err, rows, dbConnection);  
 		});  
 	}  
 };  
