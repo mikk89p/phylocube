@@ -13,7 +13,7 @@ var ProteinDomain = {
 	},
 
 	getDataByResourceType: function(type, callback) {  
-    var columns = "acc,protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
+    var columns = "acc,protein_domain.description,protein_domain.classification,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
     var sql = "SELECT " + columns + " FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?";
     if (type == 'clanpfam') {
       sql = "SELECT " + columns + " FROM protein_domain JOIN resource ON protein_domain.resource_id = resource.id " + 
@@ -24,7 +24,7 @@ var ProteinDomain = {
 	},
 
 	getDataWithDistributionByResourceType: function(type, callback) { 
-    var columns = "acc,protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
+    var columns = "acc,protein_domain.description,protein_domain.classification,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
     var sql = "SELECT " + columns + " FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id JOIN resource ON protein_domain.resource_id = resource.id WHERE resource.type=?"
     if (type == 'clanpfam') {
       sql = "SELECT " + columns + " FROM protein_domain JOIN distribution ON protein_domain.id = distribution.protein_domain_id " +

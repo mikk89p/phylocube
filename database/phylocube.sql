@@ -16,16 +16,18 @@ CREATE TABLE resource (
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
 
+
 CREATE TABLE protein_domain (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   acc VARCHAR(30) NOT NULL UNIQUE, /* 54427, PF01812, 3.40.150.40,  CL0344 etc.. */
   description VARCHAR(250) DEFAULT 'None',
   resource_id SMALLINT UNSIGNED NOT NULL,
+  classification VARCHAR(20) NULL,
   PRIMARY KEY(id),
-  foreign key (resource_id) references resource (id) on delete cascade on update cascade
+  foreign key (resource_id) references resource (id) on delete cascade on update cascade,
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
-
 ALTER TABLE protein_domain AUTO_INCREMENT = 1
+
 
 CREATE TABLE distribution (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -37,10 +39,9 @@ CREATE TABLE distribution (
   PRIMARY KEY(id),
   foreign key (protein_domain_id) references protein_domain (id) on delete cascade on update cascade
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
-
 ALTER TABLE distribution AUTO_INCREMENT = 1
 
-/* TODO assignmentsq table*/
+
 CREATE TABLE assignment (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   taxonomy_id MEDIUMINT UNSIGNED NOT NULL,
@@ -50,8 +51,8 @@ CREATE TABLE assignment (
   PRIMARY KEY(id),
   foreign key (protein_domain_id) references protein_domain (id) on delete cascade on update cascade
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
-
 ALTER TABLE assignment AUTO_INCREMENT = 1
+
 
 CREATE TABLE taxonomy (
   id INT UNSIGNED NOT NULL,
@@ -62,8 +63,8 @@ CREATE TABLE taxonomy (
 	full_taxonomy_id VARCHAR(1000) NULL,
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
-/* CONSTRAINT `fk_taxon_parent_id` FOREIGN KEY (parent_id) REFERENCES taxonomy (id) ON DELETE NO ACTION ON UPDATE NO ACTION*/
 ALTER TABLE taxonomy AUTO_INCREMENT = 1
+
 
 CREATE TABLE clan_membership (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -71,5 +72,13 @@ CREATE TABLE clan_membership (
   pfam_acc VARCHAR(7) NOT NULL, 
   PRIMARY KEY(id)
 )engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
-
 ALTER TABLE clan_membership AUTO_INCREMENT = 1
+
+
+/* 
+CREATE TABLE fold_class (
+  id SMALLINT UNSIGNED NOT NULL,
+  description VARCHAR(250) DEFAULT 'None', 
+  PRIMARY KEY(id)
+)engine InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;
+*/

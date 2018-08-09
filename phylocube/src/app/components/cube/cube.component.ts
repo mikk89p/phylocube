@@ -353,6 +353,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       title: resource.xTitle,
       autorange: autorange,
       showspikes : showspikes,
+      ticklen: 5,
       range: [-resource.xMax, 0],  // workaround
       tickmode : 'array', // workaround
       tickvals : tickvals,  // workaround
@@ -523,11 +524,11 @@ export class CubeComponent implements OnInit, OnDestroy {
       text: [this.getHoverText(dataset)],
       acc: [this.unpack(dataset, 'acc')],
       description: [this.unpack(dataset, 'description')],
+      classification: [this.unpack(dataset, 'classification')],
       highlighted: [this.unpack(dataset, 'highlighted')],
       /*
       mode: 'markers',
       hoverinfo: 'text',
-      text: [this.getHoverText(dataset)],
       xaxis: axes.xaxis, // Plotly.deleteTraces -> ERROR TypeError: t.match is not a function
       yaxis: axes.yaxis, // Plotly.deleteTraces -> ERROR TypeError: t.match is not a function
       scene: {
@@ -535,11 +536,15 @@ export class CubeComponent implements OnInit, OnDestroy {
         yaxis: axes.yaxis,
         zaxis: axes.zaxis,
       },*/
+      hoverlabel: {
+        bgcolor: this.unpack(dataset, 'color'),
+       },
       marker: {
         size: size,
-        // name: this.unpack(dataset, 'acc'),
+        name: this.unpack(dataset, 'acc'),
         color: this.unpack(dataset, 'color'),
      },
+
       type: this.type
     };
 
@@ -582,12 +587,16 @@ export class CubeComponent implements OnInit, OnDestroy {
         z: this.unpack(dataset, 'z'),
         v: this.unpack(dataset, 'v'),
         description: this.unpack(dataset, 'description'),
+        classification: this.unpack(dataset, 'classification'),
         acc: this.unpack(dataset, 'acc'),
         highlighted: this.unpack(dataset, 'highlighted'),
         name: this.activeResource.name + ' data',
         mode: 'markers',
         hoverinfo: 'text',
         text: this.getHoverText(dataset),
+        hoverlabel: {
+          bgcolor: this.unpack(dataset, 'color'),
+        },
         marker: {
           size: size,
           name: this.unpack(dataset, 'acc'),
@@ -624,6 +633,74 @@ export class CubeComponent implements OnInit, OnDestroy {
     });
   }
 
+  applyColorSchema(colorScheme: number, element) {
+    element['color'] = this.defaultColor;
+
+    if (colorScheme === 1) {
+      if (element['v'] > 0) {
+        element['color'] = 'rgb(250, 0, 0)';
+      }
+    } else if (colorScheme === 2) {
+      if (element['v'] > 0) {
+        element['color'] = 'rgb(250, 0, 0)';
+        if (element['v'] > 1) {
+          element['color'] = 'rgb(0, 0, 250)';
+        }
+      }
+    } else if (colorScheme === 3 && this.activeResource.type === 'supfam') {
+      const foldClass = element['classification'];
+      if (foldClass.startsWith('a')) {
+        // red
+        element['color'] = 'rgb(255,0,0)';
+      } else if (foldClass.startsWith('b')) {
+        // green
+        element['color'] = 'rgb(0,255,0)';
+      } else if (foldClass.startsWith('c')) {
+        // blue
+        element['color'] = 'rgb(0,0,255)';
+      } else if (foldClass.startsWith('d')) {
+        // yellow
+        element['color'] = 'rgb(255,255,0)';
+      } else if (foldClass.startsWith('e')) {
+        // cyan
+        element['color'] = 'rgb(0,255,255)';
+      } else if (foldClass.startsWith('f')) {
+        // magenta
+        element['color'] = 'rgb(255,0,255)';
+      } else if (foldClass.startsWith('g')) {
+        // silver
+        element['color'] = 'rgb(192,192,192)';
+      } else if (foldClass.startsWith('h')) {
+        // dark yellow
+        element['color'] = 'rgb(128,128,0)';
+      } else if (foldClass.startsWith('i')) {
+        // dark green
+        element['color'] = 'rgb(0,128,0)';
+      } else if (foldClass.startsWith('j')) {
+        // purple
+        element['color'] = 'rgb(128,0,128)';
+      } else if (foldClass.startsWith('k')) {
+        // navy
+        element['color'] = 'rgb(0,0,128)';
+      }
+    } else if (colorScheme === 3 && this.activeResource.type === 'gene3d') {
+        const foldClass = element['acc'] !== null ? element['acc'] : '';
+        if (foldClass.startsWith('1.')) {
+          // red
+          element['color'] = 'rgb(255,0,0)';
+        } else if (foldClass.startsWith('2.')) {
+          // green
+          element['color'] = 'rgb(0,255,0)';
+        } else if (foldClass.startsWith('3.')) {
+          // blue
+          element['color'] = 'rgb(0,0,255)';
+        } else if (foldClass.startsWith('4.')) {
+          // yellow
+          element['color'] = 'rgb(0,128,0)';
+        }
+      }
+  }
+
   applyParameters(cubeParameters: CubeParameters) {
     this.previousResource = this.activeResource;
 
@@ -648,21 +725,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       }
 
       // Apply color
-      element['color'] = this.defaultColor;
-
-      if (cubeParameters.colorScheme === 1) {
-        if (element['v'] > 0) {
-          element['color'] = 'rgb(250, 0, 0)';
-        }
-      } else if (cubeParameters.colorScheme === 2) {
-        if (element['v'] > 0) {
-          element['color'] = 'rgb(250, 0, 0)';
-          if (element['v'] > 1) {
-            element['color'] = 'rgb(0, 0, 250)';
-          }
-        }
-
-      }
+      this.applyColorSchema(cubeParameters.colorScheme, element);
 
       if (x < cubeParameters.xLowerLimit || x > cubeParameters.xUpperLimit ||
           y < cubeParameters.yLowerLimit || y > cubeParameters.yUpperLimit ||

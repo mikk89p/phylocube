@@ -87,7 +87,7 @@ python ../combine_files.py -a gene3d_domain_count_A.tsv -b gene3d_domain_count_B
 ### Download descriptions form mysql database in format  domain \t	description :
 <code>mkdir supfam</code><br>
 <code>cd supfam</code><br>
-<code>mysql superfamily -e "SELECT id,description from des WHERE level='sf';" > supfam_description.tsv</code>
+<code>mysql superfamily -e "SELECT id,description,classification from des WHERE level='sf';" > supfam_description.tsv</code>
 <br>
 
 

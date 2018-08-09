@@ -142,6 +142,7 @@ export class CubeService {
         v: pointData.data.v[pointData.pointNumber],
         acc: pointData.data.acc[pointData.pointNumber],
         description: pointData.data.description[pointData.pointNumber],
+        classification: pointData.data.classification[pointData.pointNumber],
         highlighted: pointData.data.highlighted[pointData.pointNumber]
       };
 

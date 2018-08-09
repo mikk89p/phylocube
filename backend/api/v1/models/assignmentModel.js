@@ -35,7 +35,7 @@ var Assignment = {
  getDataWithDistributionByResourceTypeAndTaxonomyId: function(type, id, callback) { 
   // First query all taxonomy IDs
   // max_allowed_packet 4194304
-  var columns = "DISTINCT protein_domain.acc, protein_domain.description,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
+  var columns = "DISTINCT protein_domain.acc,protein_domain.description,protein_domain.classification,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
 
   var ids_sub_query = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ? )" +
   " AND (rank = 'species' OR rank = 'no rank')";
@@ -83,7 +83,7 @@ var Assignment = {
 
 
 getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
-   var columns = "protein_domain.acc, protein_domain.description, count(DISTINCT assignment.taxonomy_id) as count";
+   var columns = "protein_domain.acc, protein_domain.description,protein_domain.classification, count(DISTINCT assignment.taxonomy_id) as count";
    var sql = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ? )" +
    " AND (rank = 'species' OR rank = 'no rank')";
    var ids_arr = []
@@ -138,7 +138,7 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
 
  getDataByResourceTypeAndTaxonomyIdold: function(type, id, callback) {
     
-      var columns = "protein_domain.acc, protein_domain.description, count(DISTINCT assignment.taxonomy_id) as count";
+      var columns = "protein_domain.acc, protein_domain.description,protein_domain.classification, count(DISTINCT assignment.taxonomy_id) as count";
       var ids_sub_query = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ? )" +
       " AND (rank = 'species' OR rank = 'no rank')";
 

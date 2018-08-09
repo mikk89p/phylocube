@@ -16,6 +16,7 @@ export interface Point {
   v: number;
   acc: string;
   description: string;
+  classification: string;
   highlighted: boolean;
   size?: number;
 }
@@ -28,8 +29,8 @@ export interface Point {
 
 export class ResourceService {
 
-  private url: String = 'http://localhost:3000/v1/';
-  // private url: String = 'http://bioinfo.ut.ee:3000/v1/';
+  private url: String = 'http://localhost:3000/api/v1/';
+  // private url: String = 'http://bioinfo.ut.ee:3000/api/v1/';
   private activeResource;
   private previousResource;
 
@@ -107,10 +108,7 @@ export class ResourceService {
       this.loadingService.openSnackBar('Taxonomy ID: ' + taxid + ' data acquired (' + ((end - start) / 1000) + 's)', 15000);
       return res;
     });
-
-
   }
-
 
   setAxesByTaxonomyId(taxIdX: number, nameX: string, taxIdY: number, nameY: string, taxIdZ: number, nameZ: string) {
     this.loadingService.setLoading('resource_setAxesByTaxonomyId', 'Getting data');
@@ -139,6 +137,7 @@ export class ResourceService {
           v: 0,
           acc: el.acc,
           description: el.description,
+          classification: el.classification,
           highlighted: false,
 
         };
@@ -165,6 +164,7 @@ export class ResourceService {
             v: 0,
             acc: el.acc,
             description: el.description,
+            classification: el.classification,
             highlighted: false,
           };
           dataset.push(point);
@@ -191,6 +191,7 @@ export class ResourceService {
             v: 0,
             acc: el.acc,
             description: el.description,
+            classification: el.classification,
             highlighted: false,
           };
           dataset.push(point);
@@ -241,6 +242,7 @@ export class ResourceService {
                 v: element.virus,
                 acc: element.acc,
                 description: element.description,
+                classification: element.classification,
                 highlighted: false,
               };
               dataset.push(obj);
@@ -327,6 +329,7 @@ export class ResourceService {
           v: point.virus,
           acc: point.acc,
           description: point.description,
+          classification: point.classification,
           highlighted: false // It will be changed to true
         };
         points.push(obj);

@@ -101,8 +101,9 @@ body{
 }
 
 .mat-card-title {
-  font-size: 120% !important;
+  font-size: 110% !important;
   margin-bottom:10px !important;
+  font-weight: normal !important;
 }
 
 .mat-card {
@@ -112,4 +113,51 @@ body{
 .mat-tooltip {
   font-size: 14px !important;
 }
+
+/* Fold classsification*/
+
+.fold-red {
+  color: rgb(255,0,0) !important;
+}
+
+.fold-green {
+  color: rgb(0,255,0);
+}
+
+.fold-blue {
+  color: rgb(0,0,255);
+}
+
+.fold-yellow {
+  color: rgb(255,255,0) !important;
+}
+
+.fold-cyan {
+  color: rgb(0,255,255);
+}
+
+.fold-magenta {
+  color: rgb(255,0,255);
+}
+
+.fold-silver {
+  color: rgb(192,192,192);
+}
+
+.fold-dark-yellow {
+  color: rgb(128,128,0);
+}
+
+.fold-dark-green {
+  color: rgb(0,128,0);
+}
+
+.fold-purple {
+  color: rgb(128,0,128);
+}
+
+.fold-navy {
+  color: rgb(0,0,128);
+}
+
 

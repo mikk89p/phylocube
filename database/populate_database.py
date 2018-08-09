@@ -62,8 +62,8 @@ def connectDb():
 	
 def insertTaxonomy(db,cursor,resource):
 
-  # Import only taxons which exist in the assignment table
-  # Default ~1,618,192 rows ~2GB
+	# Import only taxons which exist in the assignment table
+	# Default ~1,618,192 rows ~2GB
 	cursor.execute("SELECT DISTINCT taxonomy_id FROM assignment ORDER BY taxonomy_id DESC")
 	rows = cursor.fetchall()
 	taxonomy_set = set()
@@ -72,7 +72,7 @@ def insertTaxonomy(db,cursor,resource):
 	for row in rows:
 		taxonomy_set.add(int(row[0]))
 
-  
+	
 	taxonomy_set.add(1) #root
 	version = resources[resource]['version']
 	taxonomy_file = resources[resource]['taxonomy_file']
@@ -99,8 +99,8 @@ def insertTaxonomy(db,cursor,resource):
 		if (len(arr) > 5):
 			full_taxonomy_id = arr[5]
 
-    # 'no rank' must be added for Vertebrata etc. 
-    # Current settings 273.4 MiB
+		# 'no rank' must be added for Vertebrata etc. 
+		# Current settings 273.4 MiB
 		if ((rank in ['kingdom','superkingdom','phylum','class','order', 'family','genus','no rank']) or taxid in taxonomy_set or parent_id in taxonomy_set):
 			ids = full_taxonomy_id.split(';')
 			for id in ids:
@@ -156,6 +156,12 @@ def insertProteinDomain(db,cursor,resource):
 	description_file = resources[resource]['description_file']
 	description_dict = readFileToDictionary(description_file, "\t", 0,1)
 
+	classification_dict = {}
+	if (resource == "supfam"):
+		classification_dict = readFileToDictionary(description_file, "\t", 0,2)
+	if (resource == "gene3d"):
+		classification_dict = readFileToDictionary(description_file, "\t", 0,0)
+
 	id = resources[resource]['id']
 	domains_file = resources[resource]['domains_file']
 	with open(domains_file, 'r') as f:
@@ -173,7 +179,43 @@ def insertProteinDomain(db,cursor,resource):
 			continue
 		if (acc == "0" or acc == "-"):
 			acc = "None"
-			
+
+		# Gene3D Fold classes
+		'''
+		fold_class_id = 100
+		if (resource == "supfam" or resource == "gene3d"):
+			if (acc.startswith( '1.')):
+				fold_class_id = 1
+			elif (acc.startswith( '2.')):
+				fold_class_id = 2
+			elif (acc.startswith( '3.')):
+				fold_class_id = 3
+			elif (acc.startswith( '4.')):
+				fold_class_id = 4
+			elif(acc.startswith("a")):
+				fold_class_id = 11
+			elif(acc.startswith("b")):
+				fold_class_id = 12
+			elif(acc.startswith("c")):
+				fold_class_id = 13
+			elif(acc.startswith("d")):
+				fold_class_id = 14
+			elif(acc.startswith("e")):
+				fold_class_id = 15
+			elif(acc.startswith("f")):
+				fold_class_id = 16
+			elif(acc.startswith("g")):
+				fold_class_id = 17
+			elif(acc.startswith("h")):
+				fold_class_id = 18
+			elif(acc.startswith("i")):
+				fold_class_id = 19
+			elif(acc.startswith("j")):
+				fold_class_id = 20
+			elif(acc.startswith("k")):
+				fold_class_id = 21
+		'''
+
 		#Insert only unique domains
 		if acc in uniqueAcc:
 			continue
@@ -184,12 +226,16 @@ def insertProteinDomain(db,cursor,resource):
 		if(description  is None):
 			description = "None"
 
+		classification = classification_dict.get(acc)
+		if(classification  is None):
+			classification = None
+
 		resource_id = id
-		value = [acc,description,resource_id]
+		value = [acc,description,resource_id,classification]
 		values.append(value)
 			
 	try:
-		cursor.executemany("INSERT INTO protein_domain (acc, description, resource_id) VALUES (%s,%s,%s)",values)
+		cursor.executemany("INSERT INTO protein_domain (acc, description, resource_id, classification) VALUES (%s,%s,%s,%s)",values)
 		db.commit()
 	except:     
 		print("ERROR in insert Protein Domain")
@@ -263,7 +309,7 @@ def insertAssignments(db,cursor,resource):
 		taxid = arr[0]
 		acc = arr[1]
 		frequency = arr[2]
-    # Lowest e-value
+		# Lowest e-value
 		e_val = False
 		if (len(arr)>3):
 			e_val = arr[3]
@@ -309,26 +355,45 @@ def insertClanMembership(db,cursor,resource):
 		db.rollback()
 
 
+def insertFoldClass(db,cursor,fold_class):
+	id = fold_class['id']
+	description = fold_class['description']
+	values = [id,description]
+
+	try:
+		cursor.execute("INSERT INTO fold_class (id,description) VALUES (%s,%s)",values)
+		db.commit()
+	except:     
+		print("ERROR in insert into fold_class")
+		db.rollback()
+
+
 def addIndex(db,cursor,resource):	
 	cursor.execute("CREATE INDEX assignment_taxid_index ON assignment (taxonomy_id)")
 	cursor.execute("CREATE INDEX taxonomy_rank ON taxonomy (rank)")
 	cursor.execute("CREATE INDEX clan_membership_pfam_acc ON clan_membership (pfam_acc)")
 	cursor.execute("CREATE INDEX acc_index ON protein_domain (acc)")
 	cursor.execute("CREATE INDEX description_index ON protein_domain (description)")
-  
+	
 
 if __name__ == '__main__':
 	# Connect
 	db = connectDb()
 	cursor = db.cursor()
 
+  '''
+	with open('fold_classes.json') as f:
+		fold_classes = json.load(f)
 
+	for fold_class in fold_classes:
+		insertFoldClass(db,cursor,fold_class)
+  '''
 	with open('resources.json') as f:
 		resources = json.load(f)
 
 	#Taxonomy should be last as it uses assignment table
-	initList = ["gene3d","supfam","pfam","clan","clanpfam","taxonomy"]
-
+	#initList = ["gene3d","supfam","pfam","clan","clanpfam","taxonomy"]
+	initList = ["gene3d","supfam"]
 	for resource in initList:
 		if (resource == "taxonomy"):
 			insertTaxonomy(db,cursor,resource)
@@ -349,8 +414,8 @@ if __name__ == '__main__':
 		
 			
 	
-	print("Adding index to assignment and taxonomy table (takes several minutes)")
-	addIndex(db,cursor,resource)
+	#print("Adding index to assignment and taxonomy table (takes several minutes)")
+	#addIndex(db,cursor,resource)
 
 	# Close the connection
 	db.close()

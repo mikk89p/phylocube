@@ -1,0 +1,18 @@
+[
+{"id":1, "description": "Mainly Alpha"},
+{"id":2, "description": "Mainly Beta"},
+{"id":3, "description": "Peptides"},
+{"id":4, "description": "Few Secondary Structures"},
+{"id":11, "description": "All alpha proteins"},
+{"id":12, "description": "All beta proteins"},
+{"id":13, "description": "Alpha and beta proteins (a/b)"},
+{"id":14, "description": "Alpha and beta proteins (a+b)"},
+{"id":15, "description": "Multi-domain proteins (alpha and beta)"},
+{"id":16, "description": "Membrane and cell surface proteins and peptides"},
+{"id":17, "description": "Small proteins"},
+{"id":18, "description": "Coiled coil proteins"},
+{"id":19, "description": "Low resolution protein structures"},
+{"id":20, "description": "Peptides"},
+{"id":21, "description": "Designed proteins"},
+{"id":100, "description": "No fold class available"}
+]
