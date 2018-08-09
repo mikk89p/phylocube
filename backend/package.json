@@ -27,6 +27,7 @@
     "mysql": "^2.16.0",
     "node-exceptions": "^3.0.0",
     "passport": "^0.4.0",
+    "route-cache": "^0.4.4",
     "sqlstring": "^2.3.1",
     "throw": "^1.1.0"
   }

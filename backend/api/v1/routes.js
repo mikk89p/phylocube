@@ -1,5 +1,9 @@
+var routeCache = require('route-cache');
+
+
 module.exports = function(router) {
 
+  var cacheInSeconds = 172800 //48h
   // Resources
 	var resourceController = require('./controllers/resourceController');
 	router.get('/resource/:type?',resourceController.getResource);
@@ -14,17 +18,17 @@ module.exports = function(router) {
   
 	// Protein domain Routes
   var proteinDomainController = require('./controllers/proteindomainController');
-	router.get('/proteindomain/:acc?',proteinDomainController.getProteinDomainByAcc)
-	router.get('/proteindomain/:acc?/distribution',proteinDomainController.getProteinDomainWithDistributionByAcc)
-	router.get('/proteindomain/resource/:type?',proteinDomainController.getDataByResourceType)
-	router.get('/proteindomain/distribution/resource/:type?',proteinDomainController.getDataWithDistributionByResourceType)
+	router.get('/proteindomain/:acc?',routeCache.cacheSeconds(cacheInSeconds),proteinDomainController.getProteinDomainByAcc)
+	router.get('/proteindomain/:acc?/distribution',routeCache.cacheSeconds(cacheInSeconds),proteinDomainController.getProteinDomainWithDistributionByAcc)
+	router.get('/proteindomain/resource/:type?',routeCache.cacheSeconds(cacheInSeconds),proteinDomainController.getDataByResourceType)
+	router.get('/proteindomain/distribution/resource/:type?',routeCache.cacheSeconds(cacheInSeconds),proteinDomainController.getDataWithDistributionByResourceType)
 
  // Assignment routes
 	var assignmentController = require('./controllers/assignmentController');
-  router.get('/assignment/:acc?',assignmentController.getAssignmentByAcc)
-  router.get('/assignment/proteindomain/acc/resource/:type?/taxonomy/:id?',assignmentController.getAccByResourceTypeAndTaxonomyId)
-  router.get('/assignment/proteindomain/distribution/resource/:type?/taxonomy/:id?',assignmentController.getDataWithDistributionByResourceTypeAndTaxonomyId)
-  router.get('/assignment/proteindomain/resource/:type?/taxonomy/:id?',assignmentController.getDataByResourceTypeAndTaxonomyId)
+  router.get('/assignment/:acc?',routeCache.cacheSeconds(cacheInSeconds),assignmentController.getAssignmentByAcc)
+  router.get('/assignment/proteindomain/acc/resource/:type?/taxonomy/:id?',routeCache.cacheSeconds(cacheInSeconds),assignmentController.getAccByResourceTypeAndTaxonomyId)
+  router.get('/assignment/proteindomain/distribution/resource/:type?/taxonomy/:id?',routeCache.cacheSeconds(cacheInSeconds),routeCache.cacheSeconds(cacheInSeconds), assignmentController.getDataWithDistributionByResourceTypeAndTaxonomyId)
+  router.get('/assignment/proteindomain/resource/:type?/taxonomy/:id?',routeCache.cacheSeconds(cacheInSeconds),assignmentController.getDataByResourceTypeAndTaxonomyId)
 
   // Clan membership
   var clanController = require('./controllers/clanController');
