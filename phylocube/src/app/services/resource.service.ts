@@ -29,8 +29,8 @@ export interface Point {
 
 export class ResourceService {
 
-  private url: String = 'http://localhost:3000/api/v1/';
-  // private url: String = 'http://bioinfo.ut.ee:3000/api/v1/';
+  // npprivate url: String = 'http://localhost:3000/api/v1/';
+  private url: String = 'http://bioinfo.ut.ee:3000/api/v1/';
   private activeResource;
   private previousResource;
 

@@ -2,18 +2,17 @@
 <app-loading [style.visibility]="(showLoading)? 'visible' : 'hidden'"></app-loading>
 
 <div 
+  fxFlex
   class="defaultBackground"
-  fxLayout="row"
   fxLayout.lt-lg="column"
   fxLayoutAlign="center"
   fxLayoutGap="5px"
-  fxLayoutGap.xs="0"
   style="padding:8px;"
   >
 
 
-  <!-- left section  -->
-  <div fxFlexOrder.lt-md="2" fxFlex="70" fxFlex.gt-md="75" fxLayout.gt-sm="row" fxLayoutGap="5px" fxLayout="column">
+  <!-- left section -->
+  <div fxFlexOrder.lt-md="2" fxFlex.gt-md="75"  fxLayoutGap="5px" fxLayout.gt-md="row" fxLayout.lt-lg="column" >
     
         <!-- left sidebar -->
         <div fxFlexOrder.lt-md="2" fxFlex="30" fxFlex.lt-lg="35" fxLayoutGap="5px"  fxLayout="column" >
@@ -40,7 +39,7 @@
 
 
   <!-- right section  -->
-  <div fxFlexOrder.lt-md="1" fxFlex="30" fxFlex.gt-md="25" fxLayoutGap="5px" fxLayout="column" >
+  <div fxFlexOrder.lt-md="1" fxFlex.gt-md="25" fxLayoutGap="10px" fxLayout="column" >
       <app-resource></app-resource>
       <app-protein-domain-info></app-protein-domain-info>
       <mat-card>

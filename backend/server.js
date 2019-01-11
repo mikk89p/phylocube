@@ -5,6 +5,7 @@ const cors = require('cors')
 // Config
 const PORT = 3000;
 const HOST = '127.0.0.1'; // TODO
+// const HOST = 'bioinfo.ut.ee';
 const name = process.env.NODE_NAME;
 
 // Init app

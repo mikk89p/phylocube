@@ -31,7 +31,7 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
     },
     {
       id: 3,
-      name: 'By Fold class',
+      name: 'Fold',
       description: ''
     },
 

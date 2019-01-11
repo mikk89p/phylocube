@@ -12,12 +12,12 @@
     </mat-select>
 
     <mat-slide-toggle [formControl]="densityCtrl">
-      Show density ({{densityBins}})
+      Density ({{densityBins}})
    </mat-slide-toggle>
 
 
     <mat-slide-toggle [formControl]="dynamicAxesCtrl"  >
-      Dynamic axes: {{dynamicAxes?'enabled':'disabled'}}
+      Dynamic axes: {{dynamicAxes?'yes':'no'}}
     </mat-slide-toggle>
 
     <mat-slide-toggle [formControl]="plotTypeCtrl" >
@@ -25,7 +25,7 @@
     </mat-slide-toggle>
 
     <mat-slide-toggle [formControl]="tooltipCtrl" >
-      Tooltip: {{tooltipCtrl.value?'enabled':'disabled'}}
+      Tooltip: {{tooltipCtrl.value?'yes':'no'}}
     </mat-slide-toggle>
 
   </div>

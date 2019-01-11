@@ -17,8 +17,8 @@ export interface Taxon {
 })
 export class TaxonomyService {
 
-  private url: String = 'http://localhost:3000/v1/';
-  // private url: String = 'http://bioinfo.ut.ee:3000/v1/';
+  // private url: String = 'http://localhost:3000/api/v1/';
+  private url: String = 'http://bioinfo.ut.ee:3000/api/v1/';
 
   constructor(private http: HttpClient) { }
 

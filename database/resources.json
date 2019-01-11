@@ -1,5 +1,6 @@
-{"taxonomy":{"version":"20.06.2018",
-	"taxonomy_file":"../taxonomy/ncbi_taxonomy_full.tsv"},
+{
+"taxonomy":{"version":"20.06.2018",
+"taxonomy_file":"../taxonomy/ncbi_taxonomy_full.tsv"},
 "gene3d":{"id": 1,
 	"type": "gene3d",
 	"name": "Gene3D",
@@ -82,4 +83,5 @@
   "archaea_genomes" : 213,
   "bacteria_genomes" : 4396,
   "eukaryota_genomes" : 831,
-  "virus_genomes" : 454}}
+  "virus_genomes" : 454}
+}
