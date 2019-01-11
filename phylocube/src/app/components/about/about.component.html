@@ -1,81 +1,81 @@
-<div 
-  fxLayout="column"
-  fxLayoutAlign="center center"
-  fxLayoutGap="10px"
-  style="margin-top:10px;">
+<div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" style="margin-top:10px;">
 
   <div fxFlex="20"></div>
 
   <div fxFlex="80" fxLayout="column" style="padding:20px;">
-      <h1>Introduction</h1>
+    <h1>Introduction</h1>
 
+    <p>
+      Conventionally, a Venn diagram is used to show concurrence of protein domain families between superkingdoms
+      (Archaea, Bacteria, and Eukaryota) in order to research evolutionary relationships.
+      However, Venn diagram has limitations; it is unable to capture the abundance of a protein domain families within
+      a superkingdom.
+      E.g., Venn diagram does not distinguish if a protein domain family is present only in a single species or
+      in all species of kingdom. However, using a three-dimensional representation enables us to visualize and analyse
+      the
+      distribution of protein domain families in greater resolution (Figure 1)
+    </p>
+
+    <br>
+
+    <h1>What is a phyloCube?</h1>
+
+    <p>
+      Proteins are composed of one or more functional regions, known as domains.
+      A lot of databases (e.g., Gene3D, SUPERFAMILY or Pfam) have assigned domains to complete proteomes using HMMs.
+      Therefore, it is possible to gather information about the occurrence of a domain families in different genomes
+      and
+      ultimately in superkingdoms. By plotting the occurrence of protein domain families in three different axes
+      (e.g. three superkingdoms) we will get a phyloCube. In the phyloCube, the location of each point (protein domain
+      family)
+      depends on the occurrence of that domain in different genomes in respective superkingdoms.
+      For example, if a domain family is present in all archaea, bacteria, and eukaryotes it will be on the
+      top-back-right corner (Figure 1).
+      Primary, phyloCube is the visualisation of the global phylogenomic distribution of protein domain families.
+    </p>
+
+
+    <div fxLayoutAlign="center center" fxLayout="column">
+      <img src="assets/figures/figure1.jpg" alt="figure1" style="max-width:900px; width:100%">
       <p>
-          Conventionally, a Venn diagram is used to show concurrence of protein domain families between superkingdoms 
-          (Archaea, Bacteria, and Eukaryota) in order to research evolutionary relationships. 
-          However, Venn diagram has limitations; it is unable to capture the abundance of a protein domain families within a superkingdom. 
-          E.g., Venn diagram does not distinguish if a protein domain family is present only in a single species or 
-          in all species of kingdom. However, using a three-dimensional representation enables us to visualize and analyse the 
-          distribution of protein domain families in greater resolution (Figure 1)
+        <b>Figure 1.</b> Visualisation of exactly the same 778 domains on the phyloCube shared by three superkingdoms
+        as on Venn diagram. Demonstrating quite a different occurrence of shared domains. Every dot corresponds to
+        protein domain family. Venn diagram from Harish et al. publication (Harish A, Tunlid A, Kurland CG. (2013)
+        Rooted phylogeny of the three superkingdoms. Biochimie. Aug;95(8):1593-604. doi: 10.1016/j.biochi.2013.04.016)
       </p>
+    </div>
 
-      <br>
+    <!-- <br><mat-divider></mat-divider><br> -->
+    <h1>Datasets:</h1>
 
-      <h1>What is a phyloCube?</h1>
-
-      <p>
-          Proteins are composed of one or more functional regions, known as domains. 
-          A lot of databases (e.g., Gene3D, SUPERFAMILY or Pfam) have assigned domains to complete proteomes using HMMs. 
-          Therefore, it is possible to gather information about the occurrence of a domain families in different genomes and 
-          ultimately in superkingdoms. By plotting the occurrence of protein domain families in three different axes 
-          (e.g. three superkingdoms) we will get a phyloCube. In the phyloCube, the location of each point (protein domain family) 
-          depends on the occurrence of that domain in different genomes in respective superkingdoms. 
-          For example, if a domain family is present in all archaea, bacteria, and eukaryotes it will be on the top-back-right corner (Figure 1).
-          Primary, phyloCube is the visualisation of the global phylogenomic distribution of protein domain families.
-      </p>
+    <mat-card class="alert">
+      <b>Important!</b> Initial data also includes protein domain accessions that are only found in viruses.
+      Therefore, custom search with Archaea, Bacteria and Eukaryota will give different results.
+    </mat-card>
 
 
-      <div fxLayoutAlign="center center" fxLayout="column">
-          <img src="assets/figures/figure1.jpg" alt="figure1" style="max-width:900px; width:100%">
-          <p>
-              <b>Figure 1.</b> Visualisation of exactly the same 778 domains on the phyloCube shared by three superkingdoms as on Venn diagram. Demonstrating quite a different occurrence of shared domains. Every dot corresponds to protein domain family. Venn diagram from Harish et al. publication (Harish A, Tunlid A, Kurland CG. (2013) Rooted phylogeny of the three superkingdoms. Biochimie. Aug;95(8):1593-604. doi: 10.1016/j.biochi.2013.04.016)
-          </p>
-      </div>
+    <mat-list-item fxFlex *ngFor="let resource of resources | async">
 
-      <!-- <br><mat-divider></mat-divider><br> -->
-      <h1>Datasets:</h1>
-
-      <mat-card class="alert">
-          <b>Important!</b> Initial data also includes protein domain accessions that are only found in viruses. 
-          Therefore, custom search with Archaea, Bacteria and Eukaryota will give different results.
-      </mat-card>
-
-      
-      <mat-list-item  fxFlex *ngFor="let resource of resources | async">
-        
-        <h4 mat-line fxLayoutAlign="start center">{{resource.name}} {{resource.version}}</h4>
-        <p mat-line> {{resource.description}} </p>
-      </mat-list-item>
-      
+      <h4 mat-line fxLayoutAlign="start center">{{resource.name}} {{resource.version}}</h4>
+      <p mat-line> {{resource.description}} </p>
+    </mat-list-item>
 
 
 
 
-      
-      <h1>Developement</h1>
-      <p>
-          The web application development was funded by ELIXIR Eesti, which is a full member of European infrastructure ELIXIR.
-          ELIXIR is a component of the European infrastructure roadmap concerning different life science data and IT infrastructure (http://www.elixir-europe.org/ )
-          The application was developed by Mikk Puustusmaa.
-      </p>
+
+
+    <h1>Developement</h1>
+    <p>
+      The web application development was funded by ELIXIR Eesti, which is a full member of European infrastructure
+      ELIXIR.
+      ELIXIR is a component of the European infrastructure roadmap concerning different life science data and IT
+      infrastructure (http://www.elixir-europe.org/ )
+      The application was developed by Mikk Puustusmaa.
+    </p>
 
   </div>
 
   <div fxFlex="20"></div>
 
 </div>
-
-
-
-
-
-

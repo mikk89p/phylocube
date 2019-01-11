@@ -24,19 +24,19 @@ export class LoadingComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
 
-    this.height = this.getHeight() - 64 +  'px';
+    this.height = this.getHeight() - 56 +  'px';
     this.loadingSubscription = this.loadingService.getLoading().subscribe(
       result => {
 
         // tslint:disable-next-line:triple-equals
         if (result.length != 0) {
           const loadingText = result[0].text;
-          this.height = this.getHeight() - 64 + 'px';
+          this.height = this.getHeight() - 56 + 'px';
           this.setLoadingText(loadingText);
 
         } else {
           this.setLoadingText('Loading');
-          this.height = this.getHeight() - 64 + 'px';
+          this.height = this.getHeight() - 56 + 'px';
         }
       }
     );

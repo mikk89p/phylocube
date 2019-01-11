@@ -12,7 +12,7 @@ export class AboutComponent implements OnInit, OnDestroy {
 
   constructor(
     private resourceService: ResourceService
-  ) {}
+  ) { }
 
   ngOnDestroy() {
 

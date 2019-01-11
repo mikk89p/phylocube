@@ -7,6 +7,10 @@ body{
     height:100%;
 }
 
+.mat-toolbar-row, .mat-toolbar-single-row {
+  height: 56px !important;
+} 
+
 .defaultBackground{
   background-color: $primary_background;
 }
