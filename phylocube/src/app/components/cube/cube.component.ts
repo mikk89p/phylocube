@@ -1,15 +1,24 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ResourceService, Point  } from '../../services/resource.service';
+import { ResourceService, Point } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { CubeParameters } from './cube-parameters';
 import { FormControl } from '../../../../node_modules/@angular/forms';
+
 
 @Component({
   selector: 'app-cube',
   templateUrl: './cube.component.html',
   styleUrls: ['./cube.component.scss']
 })
+
+/*
+npm install plotly.js-dist@1.40.1 plotly.js@1.40.1 -> WORKS
+npm install plotly.js-dist@1.41.2 plotly.js@1.41.2 -> WORKS
+npm install plotly.js-dist@1.41.3 plotly.js@1.41.3 -> WORKS
+npm install plotly.js-dist@1.42.2 plotly.js@1.42.2 -> NOT WORKING IN SERVER
+npm install plotly.js-dist@1.44.3 plotly.js@1.44.3 -> NOT WORKING IN SERVER
+*/
 
 export class CubeComponent implements OnInit, OnDestroy {
   @ViewChild('chart') el: ElementRef;
@@ -54,7 +63,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   constructor(
     private resourceService: ResourceService,
     private cubeService: CubeService,
-  ) {}
+  ) { }
 
   ngOnDestroy() {
     this.resourceSubscription.unsubscribe();
@@ -63,7 +72,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     this.highlightSubscription.unsubscribe();
     this.dynamicAxesSubscription.unsubscribe();
     this.plotTypeSubscription.unsubscribe();
-    if ( this.cubeParametersSubscription ) {this.cubeParametersSubscription.unsubscribe(); }
+    if (this.cubeParametersSubscription) { this.cubeParametersSubscription.unsubscribe(); }
   }
 
   ngOnInit() {
@@ -155,7 +164,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         this.dynamicAxes = value; // Before setDynamic
         this.setDynamic(value);
         //  A control is dirty if the user has changed the value in the UI.
-        if (!this.dynamicAxesCtrl.dirty ) {
+        if (!this.dynamicAxesCtrl.dirty) {
           this.dynamicAxesCtrl.setValue(value);
           this.setDynamic(value);
         }
@@ -167,10 +176,10 @@ export class CubeComponent implements OnInit, OnDestroy {
         this.type = type;
         this.is2Dplot = (type === 'scatter3d') ? false : true;
         if (this.isDensity) {
-          this.densityCtrl.setValue (false);
+          this.densityCtrl.setValue(false);
         }
 
-        if (!this.plotTypeCtrl.dirty ) {
+        if (!this.plotTypeCtrl.dirty) {
           this.plotTypeCtrl.setValue(this.is2Dplot);
         }
 
@@ -184,7 +193,7 @@ export class CubeComponent implements OnInit, OnDestroy {
       value => {
         if (value === true) {
           this.showDensity();
-        // From true to false
+          // From true to false
         } else if (this.isDensity === true && value === false) {
           this.cubeService.setPointsOnCube(this.currentDataSet, true);
         }
@@ -215,7 +224,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   }
 
   unpack(rows, key) {
-    const result = rows.map(function(row) {
+    const result = rows.map(function (row) {
       if (key === 'x') {
         return -1 * row[key];
       }
@@ -227,7 +236,7 @@ export class CubeComponent implements OnInit, OnDestroy {
 
 
   highlightMultiplePoints(points, description) {
-    if (points === undefined || points.length === 0 || JSON.stringify(points) === JSON.stringify({})) {return; }
+    if (points === undefined || points.length === 0 || JSON.stringify(points) === JSON.stringify({})) { return; }
 
     const element = this.el.nativeElement;
     const highlight = {
@@ -245,15 +254,16 @@ export class CubeComponent implements OnInit, OnDestroy {
           color: 'rgba(0, 180, 0,0.1)',
           width: 0.5
         },
-        opacity: 0.7},
-        type: this.type
+        opacity: 0.7
+      },
+      type: this.type
     };
 
     Plotly.plot(element, [highlight]);
   }
 
   highlightPoint(point) {
-    if (point === undefined || JSON.stringify(point) === JSON.stringify({})) {return; }
+    if (point === undefined || JSON.stringify(point) === JSON.stringify({})) { return; }
     const element = this.el.nativeElement;
     if (point.highlighted === undefined || !point.highlighted) {
       const highlight = {
@@ -271,22 +281,23 @@ export class CubeComponent implements OnInit, OnDestroy {
             color: 'rgba(0, 180, 0,0.1)',
             width: 0.5
           },
-          opacity: 0.7},
-          type: this.type
+          opacity: 0.7
+        },
+        type: this.type
       };
 
       Plotly.plot(element, [highlight]);
       point.highlighted = true; // Toggle highlight
 
     } else {
-      setTimeout(function() {
+      setTimeout(function () {
         let index = 0;
         const indexes = [];
         element.data.forEach(trace => {
           if (trace.name === point.acc) {
             indexes.push(index);
           }
-          index ++;
+          index++;
         });
         // Remove highlight
         Plotly.deleteTraces(element, indexes);
@@ -324,10 +335,10 @@ export class CubeComponent implements OnInit, OnDestroy {
     let length = stepSize.toString().length;
 
     if (length === 1) {
-      length = 1 ;
+      length = 1;
       stepSize = 1;
     } else if (length === 2) {
-      length = stepSize.toString().length - 1 ;
+      length = stepSize.toString().length - 1;
       stepSize = Math.round(stepSize / Math.pow(10, length)) * Math.pow(10, length);
     } else {
       length = stepSize.toString().length - 2;
@@ -352,12 +363,12 @@ export class CubeComponent implements OnInit, OnDestroy {
     result.xaxis = {
       title: resource.xTitle,
       autorange: autorange,
-      showspikes : showspikes,
+      showspikes: showspikes,
       ticklen: 5,
       range: [-resource.xMax, 0],  // workaround
-      tickmode : 'array', // workaround
-      tickvals : tickvals,  // workaround
-      ticktext : ticktext,  // workaround
+      tickmode: 'array', // workaround
+      tickvals: tickvals,  // workaround
+      ticktext: ticktext,  // workaround
       titlefont: {
         family: 'Courier New, monospace',
         size: 18,
@@ -367,7 +378,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     result.yaxis = {
       title: resource.yTitle,
       autorange: autorange,
-      showspikes : showspikes,
+      showspikes: showspikes,
       range: [0, resource.yMax],
       titlefont: {
         family: 'Courier New, monospace',
@@ -378,7 +389,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     result.zaxis = {
       title: resource.zTitle,
       autorange: autorange,
-      showspikes : showspikes,
+      showspikes: showspikes,
       range: [0, resource.zMax],
       titlefont: {
         family: 'Courier New, monospace',
@@ -401,11 +412,11 @@ export class CubeComponent implements OnInit, OnDestroy {
     const title = resource.name ? resource.name + ' ' + resource.version : 'Loading...';
     const autosize = true;
     const height = (window.innerHeight * 0.6);
-    const paper_bgcolor  = 'rgba(0,0,0,0)';
-    const plot_bgcolor  = 'rgba(0,0,0,0)';
-    const margin = {l: 0, r: 0, b: 0, t: 0};
+    const paper_bgcolor = 'rgba(0,0,0,0)';
+    const plot_bgcolor = 'rgba(0,0,0,0)';
+    const margin = { l: 0, r: 0, b: 0, t: 0 };
     const showlegend = false;
-    const legend = {'orientation': 'h'};
+    const legend = { 'orientation': 'h' };
     const hovermode = this.tooltipCtrl.value ? 'closest' : false;
 
 
@@ -414,12 +425,12 @@ export class CubeComponent implements OnInit, OnDestroy {
         title: title,
         autosize: autosize,
         height: height,
-        paper_bgcolor : paper_bgcolor,
-        plot_bgcolor : plot_bgcolor,
+        paper_bgcolor: paper_bgcolor,
+        plot_bgcolor: plot_bgcolor,
         margin: margin,
         showlegend: showlegend,
         legend: legend,
-        hovermode : hovermode,
+        hovermode: hovermode,
         xaxis: axes.xaxis,
         yaxis: axes.yaxis,
       };
@@ -429,15 +440,15 @@ export class CubeComponent implements OnInit, OnDestroy {
         title: title,
         autosize: autosize,
         height: height,
-        paper_bgcolor : paper_bgcolor,
-        plot_bgcolor : plot_bgcolor,
+        paper_bgcolor: paper_bgcolor,
+        plot_bgcolor: plot_bgcolor,
         margin: margin,
         showlegend: showlegend,
         legend: legend,
         hovermode: hovermode,
         scene: {
           camera: {
-            eye: {x: 2.1, y: 0.9, z: 0.9}
+            eye: { x: 2.1, y: 0.9, z: 0.9 }
           },
           xaxis: axes.xaxis,
           yaxis: axes.yaxis,
@@ -446,17 +457,17 @@ export class CubeComponent implements OnInit, OnDestroy {
       };
 
     }
-        /*annotations: [{
-          x: -resource.xMax,
-          y: resource.yMax,
-          z: resource.zMax,
-          ax: 0,
-          ay: -75,
-          text: 'Most abundant domains',
-          arrowhead: 1,
-          xanchor: 'top',
-          yanchor: 'bottom'
-        }] */
+    /*annotations: [{
+      x: -resource.xMax,
+      y: resource.yMax,
+      z: resource.zMax,
+      ax: 0,
+      ay: -75,
+      text: 'Most abundant domains',
+      arrowhead: 1,
+      xanchor: 'top',
+      yanchor: 'bottom'
+    }] */
   }
 
 
@@ -471,13 +482,13 @@ export class CubeComponent implements OnInit, OnDestroy {
     const vMax = this.activeResource.vMax;
     const is2Dplot = this.is2Dplot;
 
-    return dataset.map(function(point) {
+    return dataset.map(function (point) {
       let result = point.description + '<br>' +
-      'Acc : ' + point.acc  + '<br>' +
-      xTitle + ' : ' +  point.x + ' (' + ((point.x / xMax) * 100).toFixed(1) + '%)<br>' +
-      yTitle + ' : ' +  point.y + ' (' + ((point.y / yMax) * 100).toFixed(1) + '%)<br>';
-      result = is2Dplot ? result : result + (zTitle + ' : ' +  point.z + ' (' + ((point.z / zMax) * 100).toFixed(1) + '%)<br>');
-      return result + vTitle + ' : ' +  point.v + ' (' + ((point.y / vMax) * 100).toFixed(1) + '%)<br>';
+        'Acc : ' + point.acc + '<br>' +
+        xTitle + ' : ' + point.x + ' (' + ((point.x / xMax) * 100).toFixed(1) + '%)<br>' +
+        yTitle + ' : ' + point.y + ' (' + ((point.y / yMax) * 100).toFixed(1) + '%)<br>';
+      result = is2Dplot ? result : result + (zTitle + ' : ' + point.z + ' (' + ((point.z / zMax) * 100).toFixed(1) + '%)<br>');
+      return result + vTitle + ' : ' + point.v + ' (' + ((point.y / vMax) * 100).toFixed(1) + '%)<br>';
     });
   }
 
@@ -485,14 +496,14 @@ export class CubeComponent implements OnInit, OnDestroy {
     const xTitle = this.activeResource.xTitle;
     const yTitle = this.activeResource.yTitle;
     const is2Dplot = this.is2Dplot;
-    return dataset.map(function(point) {
+    return dataset.map(function (point) {
       if ((point.x + point.y + point.z) === 0) {
-        return 'Count : ' + point.count  + '<br>' +
-        '(0,0,0)';
+        return 'Count : ' + point.count + '<br>' +
+          '(0,0,0)';
       }
-      let result = 'Count : ' + point.count  + '<br>' +
-      xTitle + ' : [' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + ') <br>' +
-      yTitle + ' : [' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + ') <br>';
+      let result = 'Count : ' + point.count + '<br>' +
+        xTitle + ' : [' + (point.x - point.stepX / 2).toFixed(0) + ' ; ' + (point.x + point.stepX / 2).toFixed(0) + ') <br>' +
+        yTitle + ' : [' + (point.y - point.stepY / 2).toFixed(0) + ' ; ' + (point.y + point.stepY / 2).toFixed(0) + ') <br>';
       // tslint:disable-next-line:max-line-length
       result = is2Dplot ? result : result + 'z : [' + (point.z - point.stepZ / 2).toFixed(0) + ' ; ' + (point.z + point.stepZ / 2).toFixed(0) + ')';
       return result;
@@ -538,12 +549,12 @@ export class CubeComponent implements OnInit, OnDestroy {
       },*/
       hoverlabel: {
         bgcolor: this.unpack(dataset, 'color'),
-       },
+      },
       marker: {
         size: size,
         name: this.unpack(dataset, 'acc'),
         color: this.unpack(dataset, 'color'),
-     },
+      },
 
       type: this.type
     };
@@ -576,7 +587,8 @@ export class CubeComponent implements OnInit, OnDestroy {
         marker: {
           size: this.unpack(dataset, 'size'),
           color: this.defaultColor,
-          opacity: opacity},
+          opacity: opacity
+        },
         type: this.type
       };
 
@@ -601,7 +613,8 @@ export class CubeComponent implements OnInit, OnDestroy {
           size: size,
           name: this.unpack(dataset, 'acc'),
           color: this.unpack(dataset, 'color'),
-          opacity: opacity},
+          opacity: opacity
+        },
         type: this.type
       };
 
@@ -615,7 +628,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     element.removeAllListeners('plotly_click');
     const cubeService = this.cubeService;
     if (dataset[0].density === undefined) {
-      element.on('plotly_click', function(point) {
+      element.on('plotly_click', function (point) {
         if (point !== undefined) {
           cubeService.setSelectedPoint(point);
         }
@@ -625,9 +638,9 @@ export class CubeComponent implements OnInit, OnDestroy {
     // Apply copied highlighted points to new data
     dataset.forEach(point => {
       if (point.highlighted) {
-       setTimeout(() => {
-        point.highlighted = false;
-        this.highlightPoint(point);
+        setTimeout(() => {
+          point.highlighted = false;
+          this.highlightPoint(point);
         }, 2);
       }
     });
@@ -684,21 +697,21 @@ export class CubeComponent implements OnInit, OnDestroy {
         element['color'] = 'rgb(0,0,128)';
       }
     } else if (colorScheme === 3 && this.activeResource.type === 'gene3d') {
-        const foldClass = element['acc'] !== null ? element['acc'] : '';
-        if (foldClass.startsWith('1.')) {
-          // red
-          element['color'] = 'rgb(255,0,0)';
-        } else if (foldClass.startsWith('2.')) {
-          // green
-          element['color'] = 'rgb(0,255,0)';
-        } else if (foldClass.startsWith('3.')) {
-          // blue
-          element['color'] = 'rgb(0,0,255)';
-        } else if (foldClass.startsWith('4.')) {
-          // yellow
-          element['color'] = 'rgb(0,128,0)';
-        }
+      const foldClass = element['acc'] !== null ? element['acc'] : '';
+      if (foldClass.startsWith('1.')) {
+        // red
+        element['color'] = 'rgb(255,0,0)';
+      } else if (foldClass.startsWith('2.')) {
+        // green
+        element['color'] = 'rgb(0,255,0)';
+      } else if (foldClass.startsWith('3.')) {
+        // blue
+        element['color'] = 'rgb(0,0,255)';
+      } else if (foldClass.startsWith('4.')) {
+        // yellow
+        element['color'] = 'rgb(0,128,0)';
       }
+    }
   }
 
   applyParameters(cubeParameters: CubeParameters) {
@@ -718,18 +731,18 @@ export class CubeComponent implements OnInit, OnDestroy {
 
     dataset.forEach(element => {
       const x = (element['x'] / xMax) * 100;
-      const y = (element['y']  / yMax) * 100;
-      const z = (element['z']  / zMax) * 100;
+      const y = (element['y'] / yMax) * 100;
+      const z = (element['z'] / zMax) * 100;
       if (vMax !== undefined) {
-        const v = (element['v']  / vMax) * 100;
+        const v = (element['v'] / vMax) * 100;
       }
 
       // Apply color
       this.applyColorSchema(cubeParameters.colorScheme, element);
 
       if (x < cubeParameters.xLowerLimit || x > cubeParameters.xUpperLimit ||
-          y < cubeParameters.yLowerLimit || y > cubeParameters.yUpperLimit ||
-          z < cubeParameters.zLowerLimit || z > cubeParameters.zUpperLimit) {
+        y < cubeParameters.yLowerLimit || y > cubeParameters.yUpperLimit ||
+        z < cubeParameters.zLowerLimit || z > cubeParameters.zUpperLimit) {
         const index = dataset.indexOf(element);
         indexes.push(index);
       }
@@ -740,7 +753,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     if (indexes.length > 0) {
       indexes.reverse();
       indexes.forEach(index => {
-        if (index !== -1) {dataset.splice(index, 1); }
+        if (index !== -1) { dataset.splice(index, 1); }
       });
     }
     return dataset;
@@ -752,7 +765,7 @@ export class CubeComponent implements OnInit, OnDestroy {
     const indexes = [];
     for (let i = 1; i < length; i++) {
       indexes.push(i);
-      const point = this.currentDataSet.filter(function( obj ) {
+      const point = this.currentDataSet.filter(function (obj) {
         return obj.acc === element.data[i].name;
       });
       if (point[0] !== undefined) {
@@ -764,194 +777,194 @@ export class CubeComponent implements OnInit, OnDestroy {
   }
 
 
-getMin (arg1, arg2) {
-  if (arg1 <= arg2) {
-    return arg1;
-  } else {
-    return arg2;
-  }
-}
-
-getMax (arg1, arg2) {
-  if (arg1 >= arg2) {
-    return arg1;
-  } else {
-    return arg2;
-  }
-}
-
-getDensityRadius (rawVal) {
-  return Math.log2(rawVal) + Math.log2(rawVal) + 2;
-}
-
-getMinMaxXYZ (dataset) {
-  const array = [];
-  // Default values
-  const result = {
-    minX: 99999,
-    minY: 99999,
-    minZ: 99999,
-    maxX: 0,
-    maxY: 0,
-    maxZ: 0
-  };
-
-  dataset.forEach(point => {
-    result.minX = this.getMin(point.x, result.minX);
-    result.minY = this.getMin(point.y, result.minY);
-    result.minZ = this.getMin(point.z, result.minZ);
-    result.maxX = this.getMax(point.x, result.maxX);
-    result.maxY = this.getMax(point.y, result.maxY);
-    result.maxZ = this.getMax(point.z, result.maxZ);
-  });
-
-  return result;
-}
-
-isInt(n) {
-  return Number(n) === n && n % 1 === 0;
-}
-
-showDensity() {
-  const bins = this.densityBins;
-
-  const minMaxXYZ = this.getMinMaxXYZ(this.currentDataSet);
-  const minX = minMaxXYZ.minX;
-  const maxX = minMaxXYZ.maxX;
-  const minY = minMaxXYZ.minY;
-  const maxY = minMaxXYZ.maxY;
-  const minZ = minMaxXYZ.minZ;
-  const maxZ = minMaxXYZ.maxZ;
-
-  const stepX = (maxX - minX) / bins;
-  const stepY = (maxY - minY) / bins;
-  const stepZ = (maxZ - minZ) / bins;
-
-  const dict = {};
-  // let test = '';
-  this.currentDataSet.forEach(point => {
-    let key = '';
-
-
-    // Each density point includes lower [...) e.g. [0:10%), [10%:20%) etc.
-    // Last density point must include both [...] e.g., [90%:100%]
-    let x = point.x / stepX;
-    x = (point.x === maxX) ? x - 1 : Math.trunc(x);
-
-    let y = point.y / stepY;
-    y = (point.y === maxY) ? y - 1 : Math.trunc(y);
-
-    let z = this.is2Dplot ? 0 : point.z / stepZ;
-    z = (point.z === maxZ) ? z - 1 : Math.trunc(z);
-
-    let densityPointX;
-    let densityPointY;
-    let densityPointZ;
-    if ((point.x + point.y + point.z) === 0) {
-      key = 'zero_corner';
-      densityPointX = 0;
-      densityPointY = 0;
-      densityPointZ = 0;
+  getMin(arg1, arg2) {
+    if (arg1 <= arg2) {
+      return arg1;
     } else {
-      key = x + '' + y + '' + z;
-      densityPointX = x * stepX + stepX / 2;
-      densityPointY = y * stepY + stepY / 2;
-      densityPointZ = this.is2Dplot ? 0 : (z * stepZ + stepZ / 2);
-    }
-
-    if (key in dict) {
-      dict[key].points.push(point);
-      dict[key].size = this.getDensityRadius (dict[key].points.length);
-      dict[key].count = dict[key].count + 1;
-    } else {
-
-      let densityPoint: DensityPoint;
-      densityPoint = {
-        x: densityPointX,
-        y: densityPointY,
-        z: densityPointZ,
-        stepX: stepX,
-        stepY: stepY,
-        stepZ: this.is2Dplot ? 0 : stepZ,
-        size: this.getDensityRadius (1),
-        count: 1,
-        points: [point],
-        density: true // DO NOT REMOVE. IT IS USED TO CHECK IF DATA IS DENSITY
-      };
-      dict[key] = densityPoint;
-    }
-
-    /*if (key === '999') {
-      test += point.acc + ',';
-    }*/
-
-  });
-
-  // console.log(test);
-
-  const array = [];
-  Object.keys(dict).forEach(function(key) {
-    const value = dict[key];
-    array.push(value);
-});
-  this.cubeService.setPointsOnCube(array, true);
-}
-
-setDynamic(value: boolean) {
-  const element = this.el.nativeElement;
-  if (value === true) {
-    if (this.is2Dplot) {
-      Plotly.relayout(element, 'xaxis.autorange', true);
-      Plotly.relayout(element, 'yaxis.autorange', true);
-    } else {
-      Plotly.relayout(element, 'scene.xaxis.autorange', true);
-      Plotly.relayout(element, 'scene.yaxis.autorange', true);
-      Plotly.relayout(element, 'scene.zaxis.autorange', true);
-    }
-  } else {
-    if (this.is2Dplot) {
-      Plotly.relayout(element, 'xaxis.autorange', false);
-      Plotly.relayout(element, 'yaxis.autorange', false);
-      this.drawChart(this.currentDataSet);
-    } else {
-      Plotly.relayout(element, 'scene.xaxis.autorange', false);
-      Plotly.relayout(element, 'scene.yaxis.autorange', false);
-      Plotly.relayout(element, 'scene.zaxis.autorange', false);
+      return arg2;
     }
   }
-}
 
-togglePlotType(value: boolean) {
-
-  if (value === true) {
-    this.cubeService.setPlotType('scatter');
-  } else {
-    this.cubeService.setPlotType('scatter3d');
-  }
-}
-
-toggleTooltip(value: boolean) {
-  const element = this.el.nativeElement;
-  if (value === true) {
-    Plotly.relayout(element, 'hovermode', 'closest');
-    /*Plotly.relayout(element, 'scene.xaxis.showspikes', true);
-    Plotly.relayout(element, 'scene.yaxis.showspikes', true);
-    Plotly.relayout(element, 'scene.zaxis.showspikes', true);*/
-  } else {
-    Plotly.relayout(element, 'hovermode', false);
-    /*Plotly.relayout(element, 'scene.xaxis.showspikes', false);
-    Plotly.relayout(element, 'scene.yaxis.showspikes', false);
-    Plotly.relayout(element, 'scene.zaxis.showspikes', false);*/
+  getMax(arg1, arg2) {
+    if (arg1 >= arg2) {
+      return arg1;
+    } else {
+      return arg2;
+    }
   }
 
-}
-
-
-setDensityOption(event, densityOption) {
-  if (event.isUserInput) {
-    this.densityBins = densityOption;
+  getDensityRadius(rawVal) {
+    return Math.log2(rawVal) + Math.log2(rawVal) + 2;
   }
-}
+
+  getMinMaxXYZ(dataset) {
+    const array = [];
+    // Default values
+    const result = {
+      minX: 99999,
+      minY: 99999,
+      minZ: 99999,
+      maxX: 0,
+      maxY: 0,
+      maxZ: 0
+    };
+
+    dataset.forEach(point => {
+      result.minX = this.getMin(point.x, result.minX);
+      result.minY = this.getMin(point.y, result.minY);
+      result.minZ = this.getMin(point.z, result.minZ);
+      result.maxX = this.getMax(point.x, result.maxX);
+      result.maxY = this.getMax(point.y, result.maxY);
+      result.maxZ = this.getMax(point.z, result.maxZ);
+    });
+
+    return result;
+  }
+
+  isInt(n) {
+    return Number(n) === n && n % 1 === 0;
+  }
+
+  showDensity() {
+    const bins = this.densityBins;
+
+    const minMaxXYZ = this.getMinMaxXYZ(this.currentDataSet);
+    const minX = minMaxXYZ.minX;
+    const maxX = minMaxXYZ.maxX;
+    const minY = minMaxXYZ.minY;
+    const maxY = minMaxXYZ.maxY;
+    const minZ = minMaxXYZ.minZ;
+    const maxZ = minMaxXYZ.maxZ;
+
+    const stepX = (maxX - minX) / bins;
+    const stepY = (maxY - minY) / bins;
+    const stepZ = (maxZ - minZ) / bins;
+
+    const dict = {};
+    // let test = '';
+    this.currentDataSet.forEach(point => {
+      let key = '';
+
+
+      // Each density point includes lower [...) e.g. [0:10%), [10%:20%) etc.
+      // Last density point must include both [...] e.g., [90%:100%]
+      let x = point.x / stepX;
+      x = (point.x === maxX) ? x - 1 : Math.trunc(x);
+
+      let y = point.y / stepY;
+      y = (point.y === maxY) ? y - 1 : Math.trunc(y);
+
+      let z = this.is2Dplot ? 0 : point.z / stepZ;
+      z = (point.z === maxZ) ? z - 1 : Math.trunc(z);
+
+      let densityPointX;
+      let densityPointY;
+      let densityPointZ;
+      if ((point.x + point.y + point.z) === 0) {
+        key = 'zero_corner';
+        densityPointX = 0;
+        densityPointY = 0;
+        densityPointZ = 0;
+      } else {
+        key = x + '' + y + '' + z;
+        densityPointX = x * stepX + stepX / 2;
+        densityPointY = y * stepY + stepY / 2;
+        densityPointZ = this.is2Dplot ? 0 : (z * stepZ + stepZ / 2);
+      }
+
+      if (key in dict) {
+        dict[key].points.push(point);
+        dict[key].size = this.getDensityRadius(dict[key].points.length);
+        dict[key].count = dict[key].count + 1;
+      } else {
+
+        let densityPoint: DensityPoint;
+        densityPoint = {
+          x: densityPointX,
+          y: densityPointY,
+          z: densityPointZ,
+          stepX: stepX,
+          stepY: stepY,
+          stepZ: this.is2Dplot ? 0 : stepZ,
+          size: this.getDensityRadius(1),
+          count: 1,
+          points: [point],
+          density: true // DO NOT REMOVE. IT IS USED TO CHECK IF DATA IS DENSITY
+        };
+        dict[key] = densityPoint;
+      }
+
+      /*if (key === '999') {
+        test += point.acc + ',';
+      }*/
+
+    });
+
+    // console.log(test);
+
+    const array = [];
+    Object.keys(dict).forEach(function (key) {
+      const value = dict[key];
+      array.push(value);
+    });
+    this.cubeService.setPointsOnCube(array, true);
+  }
+
+  setDynamic(value: boolean) {
+    const element = this.el.nativeElement;
+    if (value === true) {
+      if (this.is2Dplot) {
+        Plotly.relayout(element, 'xaxis.autorange', true);
+        Plotly.relayout(element, 'yaxis.autorange', true);
+      } else {
+        Plotly.relayout(element, 'scene.xaxis.autorange', true);
+        Plotly.relayout(element, 'scene.yaxis.autorange', true);
+        Plotly.relayout(element, 'scene.zaxis.autorange', true);
+      }
+    } else {
+      if (this.is2Dplot) {
+        Plotly.relayout(element, 'xaxis.autorange', false);
+        Plotly.relayout(element, 'yaxis.autorange', false);
+        this.drawChart(this.currentDataSet);
+      } else {
+        Plotly.relayout(element, 'scene.xaxis.autorange', false);
+        Plotly.relayout(element, 'scene.yaxis.autorange', false);
+        Plotly.relayout(element, 'scene.zaxis.autorange', false);
+      }
+    }
+  }
+
+  togglePlotType(value: boolean) {
+
+    if (value === true) {
+      this.cubeService.setPlotType('scatter');
+    } else {
+      this.cubeService.setPlotType('scatter3d');
+    }
+  }
+
+  toggleTooltip(value: boolean) {
+    const element = this.el.nativeElement;
+    if (value === true) {
+      Plotly.relayout(element, 'hovermode', 'closest');
+      /*Plotly.relayout(element, 'scene.xaxis.showspikes', true);
+      Plotly.relayout(element, 'scene.yaxis.showspikes', true);
+      Plotly.relayout(element, 'scene.zaxis.showspikes', true);*/
+    } else {
+      Plotly.relayout(element, 'hovermode', false);
+      /*Plotly.relayout(element, 'scene.xaxis.showspikes', false);
+      Plotly.relayout(element, 'scene.yaxis.showspikes', false);
+      Plotly.relayout(element, 'scene.zaxis.showspikes', false);*/
+    }
+
+  }
+
+
+  setDensityOption(event, densityOption) {
+    if (event.isUserInput) {
+      this.densityBins = densityOption;
+    }
+  }
 
 }
 

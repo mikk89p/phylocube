@@ -7,8 +7,10 @@
       "plotly.js"
     ],"paths": {
       "plotly.js": [
-        "../node_modules/plotly.js/dist/plotly-basic.js",
-        "../node_modules/plotly.js/dist/gl3d.js"
+        "../node_modules/plotly.js/dist/plotly-basic.min.js",
+        "../node_modules/plotly.js/dist/plotly.min.js",
+        "../node_modules/plotly.js/dist/gl3d.min.js",
+        
       ]
     }
   },

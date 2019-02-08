@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { environment } from './../../environments/environment';
+
 
 export interface Taxon {
   id: number;
@@ -17,15 +19,14 @@ export interface Taxon {
 })
 export class TaxonomyService {
 
-  // private url: String = 'http://localhost:3000/api/v1/';
-  private url: String = 'http://bioinfo.ut.ee:3000/api/v1/';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
 
 
   public getTaxons(value: string): Observable<Taxon[]> {
-    const url = this.url + 'taxonomy/namelikeorid/' + value;
+    const url = this.apiUrl + 'taxonomy/namelikeorid/' + value;
     return this.http.get<Taxon[]>(url);
   }
 

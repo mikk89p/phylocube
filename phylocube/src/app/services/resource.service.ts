@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import { BehaviorSubject, forkJoin, ReplaySubject } from 'rxjs';
 import { LoadingService } from './loading.service';
 
-
+import { environment } from './../../environments/environment';
 
 
 
@@ -29,8 +29,7 @@ export interface Point {
 
 export class ResourceService {
 
-  // npprivate url: String = 'http://localhost:3000/api/v1/';
-  private url: String = 'http://bioinfo.ut.ee:3000/api/v1/';
+  private apiUrl = environment.apiUrl;
   private activeResource;
   private previousResource;
 
@@ -101,7 +100,7 @@ export class ResourceService {
 
   getDataWithCountsByTaxonomyId (taxid: number) {
     // console.log(taxid);
-    const uri = this.url + 'assignment/proteindomain/resource/' + this.activeResourceSubject.value.type + '/taxonomy/' + taxid;
+    const uri = this.apiUrl + 'assignment/proteindomain/resource/' + this.activeResourceSubject.value.type + '/taxonomy/' + taxid;
     const start = new Date().getTime();
     return this.http.get(uri).map(res => {
       const end = new Date().getTime();
@@ -266,13 +265,13 @@ export class ResourceService {
   // Get all available resources
   getResources() {
     // console.log ('getResources()');
-    const uri = this.url + 'resource';
+    const uri = this.apiUrl + 'resource';
     return this.http.get(uri);
   }
 
   getResourceByType(type: string) {
     // console.log ('getResourceByType()');
-    const uri = this.url + 'resource/' + type;
+    const uri = this.apiUrl + 'resource/' + type;
     return this.http.get(uri).map(res => {
       return res[0];
     });
@@ -280,14 +279,14 @@ export class ResourceService {
 
   getDataByResourceType(type: string) {
     // console.log ('getDataByResourceType()');
-    const uri = this.url + 'proteindomain/distribution/resource/' + type;
+    const uri = this.apiUrl + 'proteindomain/distribution/resource/' + type;
     return this.http.get(uri);
 
   }
 
   getDataByAcc(acc: string) {
     // console.log ('getDataByAcc(' + acc + ')');
-    const uri = this.url + 'proteindomain/' + acc + '/distribution/' ;
+    const uri = this.apiUrl + 'proteindomain/' + acc + '/distribution/' ;
     return this.http.get(uri).map(res => {
         return res[0];
       });
@@ -295,7 +294,7 @@ export class ResourceService {
 
   getClanByPfamAcc(acc: string) {
     // console.log ('getDataByAcc(' + acc + ')');
-    const uri = this.url + 'clanmembership/' + acc;
+    const uri = this.apiUrl + 'clanmembership/' + acc;
     return this.http.get(uri).map(res => {
         return res[0];
       });
@@ -303,7 +302,7 @@ export class ResourceService {
 
   /* Test - Papillomaviridae | Taxonomy ID: 151340 */
   getAccByTaxonomyId(type: string, taxid: number) {
-    const uri = this.url + 'assignment/proteindomain/acc/resource/' + type + '/taxonomy/' + taxid;
+    const uri = this.apiUrl + 'assignment/proteindomain/acc/resource/' + type + '/taxonomy/' + taxid;
     return this.http.get(uri).map(res => {
       const arr = [];
       Object.keys(res).forEach(function(key) {
@@ -317,7 +316,7 @@ export class ResourceService {
 
   getDataByTaxonomyId(type: string, taxid: number) {
     // console.log ('getDataByResourceType()');
-    const uri = this.url + 'assignment/proteindomain/distribution/resource/' + type + '/taxonomy/' + taxid;
+    const uri = this.apiUrl + 'assignment/proteindomain/distribution/resource/' + type + '/taxonomy/' + taxid;
     return this.http.get(uri).map(res => {
       const points = [];
       Object.keys(res).forEach(function(key) {
