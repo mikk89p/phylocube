@@ -18,4 +18,9 @@ Phylocube uses custom SQL database combined from different sources (incl. Gene3D
 4. helper_add_taxonomy.py - a script for adding taxonomy to a tsv file. It is needed for Pfam data.<br>
 5. combine_files.py - a script for creating a file for summary table<br>
 6. resources.json - information about Gene3D, SUPERFAMILY, Pfam and NCBI taxonomy resources<br>
-7. populate_database.py - a script to populate database tables<br
+7. populate_database.py - a script to populate database tables<br>
+
+# TODO
+1. Include Pfam 32.0
+2. Include new supfam
+3. Customize Axes speed
