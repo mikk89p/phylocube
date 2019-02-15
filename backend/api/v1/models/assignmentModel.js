@@ -41,7 +41,7 @@ var Assignment = {
   " AND (rank = 'species' OR rank = 'no rank')";
   var ids_arr = []
   db.sqlQuery(ids_sub_query, [id, '%;' +id+ ';%', id+ ';%'], function (err, rows, dbConnection) {
-    console.log('Release connection threadId:', dbConnection.threadId);
+    // console.log('Release connection threadId:', dbConnection.threadId);
     dbConnection.release(); // release subquery connection to the pool
     if (err) {
       throw err;
@@ -89,7 +89,7 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
    var ids_arr = []
    db.sqlQuery(sql, [id, '%;' +id+ ';%', id+ ';%'], function (err, rows, dbConnection) {
 
-    console.log('Release connection threadId:', dbConnection.threadId);
+    // console.log('Release connection threadId:', dbConnection.threadId);
     dbConnection.release(); // release subquery connection to the pool
 
      if (err) {
@@ -169,7 +169,7 @@ getDataByResourceTypeAndTaxonomyId: function(type, id, callback) {
           var ids_arr = []
           db.sqlQuery(sql, [id, '%;' +id+ ';%', id + ';%'], function (err, rows, dbConnection) {
             
-            console.log('Release connection threadId:', dbConnection.threadId);
+            // console.log('Release connection threadId:', dbConnection.threadId);
             dbConnection.release(); // release subquery connection to the pool
             if (err) {
               throw err;

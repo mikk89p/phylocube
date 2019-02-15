@@ -16,7 +16,7 @@ var pool  = mysql.createPool({
 
 var getDbConnection = function(callback) {
   pool.getConnection(function(err, connection) {
-      console.log('Get connection threadId:', connection.threadId);
+      // console.log('Get connection threadId:', connection.threadId);
       callback(err, connection); // If connetion is aquired -> function call 
   });
 };
@@ -26,7 +26,7 @@ var sqlQuery = function (sql, params, callback) {
   var result;
   getDbConnection(function(err, dbConnection) {
     if (err) {
-      console.log('No Connection');
+      // console.log('No Connection');
     } else if (params && params.length > 0) {
       //console.log(sql);
       dbConnection.query(sql, params, (err, res) => {

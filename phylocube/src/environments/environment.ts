@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://bioinfo.ut.ee:8080/api/v1/'
+  apiUrl: 'http://docker.cs.ut.ee:8080/api/v1/'
 };
 
 /*

@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors')
 
 // Config
-const PORT = 8080;
-//const HOST = 'localhost'; // TODO
-const HOST = 'bioinfo.ut.ee';
+const PORT = 80;
+const HOST = '0.0.0.0';
+//const HOST = 'bioinfo.ut.ee';
 const name = process.env.NODE_NAME;
 
 // Init app

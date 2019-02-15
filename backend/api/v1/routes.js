@@ -3,7 +3,7 @@ var routeCache = require('route-cache');
 
 module.exports = function(router) {
 
-  var cacheInSeconds = 172800 //48h
+  var cacheInSeconds = 7200 //2h
   // Resources
 	var resourceController = require('./controllers/resourceController');
 	router.get('/resource/:type?',resourceController.getResource);
