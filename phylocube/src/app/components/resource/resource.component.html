@@ -12,7 +12,7 @@
           [value]="resource.id"
           (onSelectionChange)="setActiveResource($event, resource)"
         >
-          {{resource.name}}
+          {{resource.name}}_{{resource.version}}
         </mat-option>
       </mat-select>
 </mat-form-field>
