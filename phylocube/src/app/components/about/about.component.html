@@ -49,14 +49,16 @@
     <h1>Datasets:</h1>
 
     <mat-card class="alert">
-      <b>Important!</b> Initial data also includes protein domain accessions that are only found in viruses.
-      Therefore, custom search with Archaea, Bacteria and Eukaryota will give different results.
+      <b>Important!</b> Data in all resources also include protein domain accessions found only in viruses.
+      However, custom search e.g. with Archaea, Bacteria, and Eukaryota will only return protein domains present in these superkingdoms. 
+      Therefore, the total number of domains is differnet.
+ 
     </mat-card>
 
 
     <mat-list-item fxFlex *ngFor="let resource of resources | async">
 
-      <h4 mat-line fxLayoutAlign="start center">{{resource.name}} {{resource.version}}</h4>
+      <h4 mat-line fxLayoutAlign="start center">{{resource.name}}</h4>
       <p mat-line> {{resource.description}} </p>
     </mat-list-item>
 
