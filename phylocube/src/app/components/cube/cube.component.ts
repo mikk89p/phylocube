@@ -418,6 +418,8 @@ export class CubeComponent implements OnInit, OnDestroy {
     const showlegend = false;
     const legend = { 'orientation': 'h' };
     const hovermode = this.tooltipCtrl.value ? 'closest' : false;
+    const aspectmode = 'cube';
+
 
 
     if (this.is2Dplot) {
@@ -447,6 +449,7 @@ export class CubeComponent implements OnInit, OnDestroy {
         legend: legend,
         hovermode: hovermode,
         scene: {
+          aspectmode: aspectmode,
           camera: {
             eye: { x: 2.1, y: 0.9, z: 0.9 }
           },
@@ -589,7 +592,7 @@ export class CubeComponent implements OnInit, OnDestroy {
           color: this.defaultColor,
           opacity: opacity
         },
-        type: this.type
+        type: this.type,
       };
 
     } else {
