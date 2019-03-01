@@ -58,7 +58,7 @@
 
     <mat-list-item fxFlex *ngFor="let resource of resources | async">
 
-      <h4 mat-line fxLayoutAlign="start center">{{resource.name}}</h4>
+      <h4 mat-line fxLayoutAlign="start center">{{resource.name}} {{resource.version}}</h4>
       <p mat-line> {{resource.description}} </p>
     </mat-list-item>
 
