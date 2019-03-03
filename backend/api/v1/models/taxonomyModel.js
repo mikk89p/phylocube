@@ -13,15 +13,15 @@ var Taxonomy = {
   },
 
   getByNameLike: function(name, callback) {  
-		db.sqlQuery("SELECT * FROM taxonomy WHERE name LIKE ? LIMIT 100", ['%'+name+'%'], callback);  
+		db.sqlQuery("SELECT * FROM taxonomy WHERE UPPER(name) LIKE UPPER(?) LIMIT 100", ['%'+name+'%'], callback);  
   },
 
   getByNameLikeOrId: function(query, callback) {  
-		db.sqlQuery("SELECT id, name FROM taxonomy WHERE name LIKE ? OR id LIKE ? LIMIT 100", ['%'+query+'%',query], callback);  
+		db.sqlQuery("SELECT id, name FROM taxonomy WHERE UPPER(name) LIKE UPPER(?) OR id LIKE ? LIMIT 100", ['%'+query+'%',query], callback);  
 	},
   
   getByNameOrIdLike: function(query, callback) {  
-		db.sqlQuery("SELECT id, name FROM taxonomy WHERE name LIKE ? OR id LIKE ? LIMIT 100", ['%'+query+'%','%'+query+'%'], callback);  
+		db.sqlQuery("SELECT id, name FROM taxonomy WHERE UPPER(name) LIKE UPPER(?) OR id LIKE ? LIMIT 100", ['%'+query+'%','%'+query+'%'], callback);  
 	}
 };  
 module.exports = Taxonomy;
