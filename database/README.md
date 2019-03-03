@@ -87,7 +87,7 @@ python ../combine_files.py -a gene3d_domain_count_A.tsv -b gene3d_domain_count_B
 ### Download descriptions form mysql database in format  domain \t	description :
 <code>mkdir supfam</code><br>
 <code>cd supfam</code><br>
-<code>mysql superfamily -e "SELECT id,description,classification from des WHERE level='sf';" > supfam_description.tsv</code>
+<code>mysql superfamily -e "SELECT id,description,classification FROM des WHERE level='sf';" > supfam_description.tsv</code>
 <br>
 
 
@@ -137,13 +137,16 @@ python combine_files.py -a supfam_domain_count_A.tsv -b supfam_domain_count_B.ts
 <code>awk -F '\t' '{print $1"\t"$2}'  supfam_data_raw.tsv > supfam_assignments_raw.tsv</code><br>
 <code>python ../helper_create_assignment_file.py -i supfam_assignments_raw.tsv > supfam_assignments.tsv</code>
 
-# Pfam 31.0 assignments
+# Pfam 31.0 and 32.0 assignments
+Info about seq coverage res coverage and Source ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam32.0/relnotes.txt<br>
+It may take several minutes to run some of the following commands!<br>
 ### Create folder
-<code>mkdir pfam</code><br>
+<code>mkdir pfam</code> or <code>mkdir pfam32</code><br>
 <code>cd pfam</code><br>
 
 ### Download descriptions:
-<code>wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/Pfam-A.clans.tsv.gz</code>
+<code>wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/Pfam-A.clans.tsv.gz</code><br>
+<code>wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam32.0/Pfam-A.clans.tsv.gz</code><br>
 <code>gunzip Pfam-A.clans.tsv.gz</code><br>
 ### Clan descriptions:
 <code>awk -F '\t' '{if ($2 != "") print $2"\t"$3}' Pfam-A.clans.tsv > clan_description.tsv</code><br>
@@ -157,10 +160,16 @@ python combine_files.py -a supfam_domain_count_A.tsv -b supfam_domain_count_B.ts
 ### Download protein domain assignments:
 <code>wget --recursive --no-parent ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/proteomes/</code><br>
 <code>gunzip ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/proteomes/*.gz</code><br>
-<code>rm ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/proteomes/0.tsv</code><br>
+<code>rm ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/proteomes/0.tsv</code><br><br>
+
+<code>wget --recursive --no-parent ftp://ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam32.0/proteomes/</code><br>
+<code>gunzip ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam32.0/proteomes/*.gz</code><br>
+<code>rm ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam32.0/proteomes/0.tsv</code><br><br>
 
 ### Select necessary columns (taxid, pfam_acc, clan_acc, E-value):
 <code>for file in ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam31.0/proteomes/*.tsv; do NAME=$(basename $file | cut -f 1 -d '.');  awk -F '\t' '($6 != "") {print "'"$NAME"'""\t"$6"\t"$14"\t"$13}' "$file"; done > pfam_clan_data_raw.tsv</code><br>
+
+<code>for file in ftp.ebi.ac.uk/pub/databases/Pfam/releases/Pfam32.0/proteomes/*.tsv; do NAME=$(basename $file | cut -f 1 -d '.');  awk -F '\t' '($6 != "") {print "'"$NAME"'""\t"$6"\t"$14"\t"$13}' "$file"; done > pfam_clan_data_raw.tsv</code><br>
 
 ### Set cut-off e-value (By default, same as gene3d 0.001):
 <code> awk -F '\t'  '{if ($4 <= 0.001) print $0}' pfam_clan_data_raw.tsv > pfam_clan_data_cutoff_applied.tsv</code><br>
