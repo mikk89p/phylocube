@@ -43,9 +43,9 @@ export class ResourceService {
     private http: HttpClient,
     private loadingService: LoadingService
   ) {
-    this.activeDatasetSubject =  new ReplaySubject(1); // new BehaviorSubject<Object[]>([]);
-    this.activeResourceSubject =  new BehaviorSubject<Object>({xTitle: '', yTitle: '', zTitle: '' , vTitle: ''});
-    this.searchResultSubject =  new ReplaySubject(1); // new BehaviorSubject<string[]>(undefined);
+    this.activeDatasetSubject = new ReplaySubject(1); // new BehaviorSubject<Object[]>([]);
+    this.activeResourceSubject = new BehaviorSubject<Object>({ xTitle: '', yTitle: '', zTitle: '', vTitle: '' });
+    this.searchResultSubject = new ReplaySubject(1); // new BehaviorSubject<string[]>(undefined);
   }
 
 
@@ -54,11 +54,11 @@ export class ResourceService {
     return this.activeResourceSubject;
   }
 
-  setActiveResource(type: string) {
-    // tslint:disable-next-line:triple-equals
-    if (type == undefined || type == '' || (this.activeResource && this.activeResource.type == type)) {return; }
+  setActiveResource(type: string, version: string) {
+    // tslint:disable-next-line:max-line-length
+    if (type === undefined || type === '' || (this.activeResource && this.activeResource.type == type && this.activeResource.version == version)) { return; }
     this.loadingService.setLoading('resource_setActiveResource', 'Getting resource');
-    this.getResourceByType(type).subscribe(
+    this.getResourceByTypeAndVersion(type, version).subscribe(
       resource => {
         // tslint:disable-next-line:max-line-length
         resource = this.addCubeMaxValuesToResource(resource, resource.eukaryota_genomes, resource.archaea_genomes, resource.bacteria_genomes, resource.virus_genomes);
@@ -98,9 +98,10 @@ export class ResourceService {
     return resource;
   }
 
-  getDataWithCountsByTaxonomyId (taxid: number) {
+  getDataWithCountsByTaxonomyId(taxid: number) {
     // console.log(taxid);
-    const uri = this.apiUrl + 'assignment/proteindomain/resource/' + this.activeResourceSubject.value.type + '/taxonomy/' + taxid;
+    // tslint:disable-next-line:max-line-length
+    const uri = this.apiUrl + 'assignment/proteindomain/resource/' + this.activeResourceSubject.value.type + '/version/' + this.activeResourceSubject.value.version + '/taxonomy/' + taxid;
     const start = new Date().getTime();
     return this.http.get(uri).map(res => {
       const end = new Date().getTime();
@@ -124,7 +125,7 @@ export class ResourceService {
       let zMax = 0;
       let vMax = 0;
       let point: Point;
-      Object.keys(results[0]).forEach(function(key) {
+      Object.keys(results[0]).forEach(function (key) {
         const el = results[0][key];
         const count = Number(el.count);
         xMax = (count > xMax) ? count : xMax;
@@ -143,12 +144,12 @@ export class ResourceService {
         dataset.push(point);
       });
 
-      Object.keys(results[1]).forEach(function(key) {
+      Object.keys(results[1]).forEach(function (key) {
         const el = results[1][key];
         const count = Number(el.count);
         yMax = (count > yMax) ? count : yMax;
 
-        const found = dataset.find(function(element) {
+        const found = dataset.find(function (element) {
           if (element.acc === el.acc) {
             element.y = count;
           }
@@ -170,12 +171,12 @@ export class ResourceService {
         }
       });
 
-      Object.keys(results[2]).forEach(function(key) {
+      Object.keys(results[2]).forEach(function (key) {
         const el = results[2][key];
         const count = Number(el.count);
         zMax = (count > zMax) ? count : zMax;
 
-        const found = dataset.find(function(element) {
+        const found = dataset.find(function (element) {
           if (element.acc === el.acc) {
             element.z = el.count;
           }
@@ -197,12 +198,12 @@ export class ResourceService {
         }
       });
 
-      Object.keys(results[3]).forEach(function(key) {
+      Object.keys(results[3]).forEach(function (key) {
         const el = results[3][key];
         const count = Number(el.count);
         vMax = (count > vMax) ? count : vMax;
 
-        dataset.find(function(element) {
+        dataset.find(function (element) {
           if (element.acc === el.acc) {
             element.v = el.count;
           }
@@ -229,10 +230,10 @@ export class ResourceService {
         if (resource.type == undefined || JSON.stringify(resource) == JSON.stringify(this.previousResource)) { return; }
         this.loadingService.setLoading('resource_getData', 'Getting data');
         this.previousResource = resource;
-        this.getDataByResourceType(resource.type).subscribe(
+        this.getDataByResourceTypeAndVersion(resource.type, resource.version).subscribe(
           response => {
             const dataset: Point[] = [];
-            Object.keys(response).forEach(function(key) {
+            Object.keys(response).forEach(function (key) {
               const element = response[key];
               const obj: Point = {
                 x: element.eukaryota,
@@ -269,43 +270,44 @@ export class ResourceService {
     return this.http.get(uri);
   }
 
-  getResourceByType(type: string) {
+  getResourceByTypeAndVersion(type: string, version: string) {
     // console.log ('getResourceByType()');
-    const uri = this.apiUrl + 'resource/' + type;
+    const uri = this.apiUrl + 'resource/' + type + '/version/' + version;
     return this.http.get(uri).map(res => {
       return res[0];
     });
   }
 
-  getDataByResourceType(type: string) {
+  getDataByResourceTypeAndVersion(type: string, version: string) {
     // console.log ('getDataByResourceType()');
-    const uri = this.apiUrl + 'proteindomain/distribution/resource/' + type;
+    const uri = this.apiUrl + 'proteindomain/distribution/resource/' + type + '/version/' + version;
     return this.http.get(uri);
 
   }
 
-  getDataByAcc(acc: string) {
+  getDataByAcc(acc: string, version: string) {
+    // TODO add version
     // console.log ('getDataByAcc(' + acc + ')');
-    const uri = this.apiUrl + 'proteindomain/' + acc + '/distribution/' ;
+    const uri = this.apiUrl + 'proteindomain/' + acc + '/version/' + version + '/distribution';
     return this.http.get(uri).map(res => {
-        return res[0];
-      });
+      return res[0];
+    });
   }
 
-  getClanByPfamAcc(acc: string) {
+  getClanByPfamAcc(acc: string, version: string) {
     // console.log ('getDataByAcc(' + acc + ')');
-    const uri = this.apiUrl + 'clanmembership/' + acc;
+    const uri = this.apiUrl + 'clanmembership/' + acc + '/version/' + version;
     return this.http.get(uri).map(res => {
-        return res[0];
-      });
+      return res[0];
+    });
   }
 
   /* Test - Papillomaviridae | Taxonomy ID: 151340 */
-  getAccByTaxonomyId(type: string, taxid: number) {
-    const uri = this.apiUrl + 'assignment/proteindomain/acc/resource/' + type + '/taxonomy/' + taxid;
+  getAccByTaxonomyId(type: string, version: string, taxid: number) {
+    const uri = this.apiUrl + 'assignment/proteindomain/acc/resource/' + type + '/version/' + version + '/taxonomy/' + taxid;
     return this.http.get(uri).map(res => {
       const arr = [];
-      Object.keys(res).forEach(function(key) {
+      Object.keys(res).forEach(function (key) {
         const row = res[key];
         arr.push(row.acc);
       });
@@ -314,12 +316,12 @@ export class ResourceService {
 
   }
 
-  getDataByTaxonomyId(type: string, taxid: number) {
+  getDataByTaxonomyId(type: string, version: string, taxid: number) {
     // console.log ('getDataByResourceType()');
-    const uri = this.apiUrl + 'assignment/proteindomain/distribution/resource/' + type + '/taxonomy/' + taxid;
+    const uri = this.apiUrl + 'assignment/proteindomain/distribution/resource/' + type + '/version/' + version + '/taxonomy/' + taxid;
     return this.http.get(uri).map(res => {
       const points = [];
-      Object.keys(res).forEach(function(key) {
+      Object.keys(res).forEach(function (key) {
         const point = res[key];
         const obj: Point = {
           x: point.eukaryota,
@@ -345,8 +347,10 @@ export class ResourceService {
     const headers = new Headers();
     headers.append('Accept', 'application/xml');
     const requestOptions = Object.assign(
-      { responseType: 'text',
-        headers: headers }
+      {
+        responseType: 'text',
+        headers: headers
+      }
     );
 
     return this.http.get(uri, requestOptions).map(res => {
@@ -372,13 +376,13 @@ export class ResourceService {
     if (xml.nodeType === 1) { // element
       // do attributes
       if (xml.attributes.length > 0) {
-      obj['@attributes'] = {};
+        obj['@attributes'] = {};
         for (let j = 0; j < xml.attributes.length; j++) {
           const attribute = xml.attributes.item(j);
           obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
         }
       }
-    // tslint:disable-next-line:triple-equals
+      // tslint:disable-next-line:triple-equals
     } else if (xml.nodeType == 3) { // text
       obj = xml.nodeValue;
     }
@@ -388,13 +392,13 @@ export class ResourceService {
     if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
       obj = xml.childNodes[0].nodeValue;
     } else if (xml.hasChildNodes()) {
-      for ( let i = 0; i < xml.childNodes.length; i++) {
+      for (let i = 0; i < xml.childNodes.length; i++) {
         const item = xml.childNodes.item(i);
         const nodeName = item.nodeName;
-        if (typeof(obj[nodeName]) === 'undefined') {
+        if (typeof (obj[nodeName]) === 'undefined') {
           obj[nodeName] = this.xmlToJson(item);
         } else {
-          if (typeof(obj[nodeName].push) === 'undefined') {
+          if (typeof (obj[nodeName].push) === 'undefined') {
             const old = obj[nodeName];
             obj[nodeName] = [];
             obj[nodeName].push(old);

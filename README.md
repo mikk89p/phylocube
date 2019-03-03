@@ -22,5 +22,8 @@ Phylocube uses custom SQL database combined from different sources (incl. Gene3D
 
 # TODO
 1. Include Pfam 32.0
-2. Include new supfam
+2. Include new SUPERFAMILY 2
 3. Customize Axes speed
+4. Support for new plotly versions
+5. Custom Axes supfam (Viridiplantae | Taxonomy ID: 33090; Vertebrata | Taxonomy ID: 7742; Fungi | Taxonomy ID: 4751)
+  - The shape of the phlyocube is cuboid not cube   

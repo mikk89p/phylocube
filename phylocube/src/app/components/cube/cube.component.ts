@@ -420,8 +420,6 @@ export class CubeComponent implements OnInit, OnDestroy {
     const hovermode = this.tooltipCtrl.value ? 'closest' : false;
     const aspectmode = 'cube';
 
-
-
     if (this.is2Dplot) {
       return {
         title: title,

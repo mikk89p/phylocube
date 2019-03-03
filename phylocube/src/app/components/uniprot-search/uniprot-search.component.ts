@@ -93,7 +93,7 @@ export class UniprotSearchComponent implements OnInit, OnDestroy {
               result.push(acc);
             } else {
               // clan and clanpfam
-              this.clanSubscription = this.resourceService.getClanByPfamAcc(acc).subscribe(
+              this.clanSubscription = this.resourceService.getClanByPfamAcc(acc, this.activeResource.version).subscribe(
                 clan_acc => {
                   if (clan_acc) {
                     result.push(clan_acc['clan_acc']);

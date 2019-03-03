@@ -11,7 +11,8 @@ export class ResourceComponent implements OnInit, OnDestroy {
   resources = {};
   activeResource;
   selectedValue: string;
-  defaultResourceType = 'gene3d';
+  defaultResourceType = 'clanpfam';
+  defaultResourceVersion = '32.0';
 
 
   // Subscriptions
@@ -21,7 +22,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
 
   constructor(
     private resourceService: ResourceService
-  ) {}
+  ) { }
 
   ngOnDestroy() {
     this.resourceSubscription.unsubscribe();
@@ -30,13 +31,12 @@ export class ResourceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Get all available resources. async pipe unsubscribes automatically
     this.resources = this.resourceService.getResources();
-  
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         if (JSON.stringify(resource.id) !== undefined) {
           this.activeResource = resource;
         } else {
-          this.resourceService.setActiveResource(this.defaultResourceType);
+          this.resourceService.setActiveResource(this.defaultResourceType, this.defaultResourceVersion);
           this.activeResource = this.defaultResourceType;
         }
       },
@@ -47,7 +47,8 @@ export class ResourceComponent implements OnInit, OnDestroy {
   setActiveResource(event, resource) {
     if (event.isUserInput) {
       this.activeResource = resource;
-      this.resourceService.setActiveResource(resource.type);
+      console.log(resource);
+      this.resourceService.setActiveResource(resource.type, resource.version);
     }
   }
 

@@ -36,13 +36,13 @@ export class CubeService {
     private loadingService: LoadingService
   ) {
     // ReplaySubject
-    this.pointsOnCubeSubject =   new ReplaySubject(1); // new BehaviorSubject([]);
-    this.highlightedPointSubject =  new ReplaySubject(1); // new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
-    this.selectedPointSubject =  new ReplaySubject(1); // new BehaviorSubject<Object>({});
-    this.cubeParametersSubject =  new BehaviorSubject<Object>(this.cubeParameters);
+    this.pointsOnCubeSubject = new ReplaySubject(1); // new BehaviorSubject([]);
+    this.highlightedPointSubject = new ReplaySubject(1); // new BehaviorSubject<Object>({'data': [], 'description' : 'NULL'});
+    this.selectedPointSubject = new ReplaySubject(1); // new BehaviorSubject<Object>({});
+    this.cubeParametersSubject = new BehaviorSubject<Object>(this.cubeParameters);
     this.dynamicAxesSubject = new ReplaySubject(1);
-    this.fullDataSubject =   new ReplaySubject(1); // new BehaviorSubject([]);
-    this.plotTypeSubject =  new ReplaySubject(1);
+    this.fullDataSubject = new ReplaySubject(1); // new BehaviorSubject([]);
+    this.plotTypeSubject = new ReplaySubject(1);
 
 
     this.resourceService.getData().subscribe(
@@ -51,7 +51,7 @@ export class CubeService {
       }
     );
 
-   }
+  }
 
 
 
@@ -69,23 +69,23 @@ export class CubeService {
 
   setPointsOnCube(data, redraw = false) {
     if (data.length > 0) {
-       if (this.previousData) {
-          // Copy highlighted points to new data
-          this.previousData.forEach(oldPoint => {
-              // Set highlight from current currentDataset
-              if (oldPoint.highlighted) {
-                const acc = oldPoint.acc;
-                data.forEach(point => {
-                  if (acc === point.acc) {
-                    point.highlighted = true;
-                  }
-                });
+      if (this.previousData) {
+        // Copy highlighted points to new data
+        this.previousData.forEach(oldPoint => {
+          // Set highlight from current currentDataset
+          if (oldPoint.highlighted) {
+            const acc = oldPoint.acc;
+            data.forEach(point => {
+              if (acc === point.acc) {
+                point.highlighted = true;
               }
-          });
-        }
-        this.previousData = data;
-        this.pointsOnCubeSubject.next([data, redraw]);
+            });
+          }
+        });
       }
+      this.previousData = data;
+      this.pointsOnCubeSubject.next([data, redraw]);
+    }
   }
 
   getHighlightedPoints() {
@@ -93,15 +93,15 @@ export class CubeService {
   }
 
   setHighlightedPoints(points, description?) {
-    description = description ?  description : 'Null';
-    this.highlightedPointSubject.next({'data': points, 'description' : description});
+    description = description ? description : 'Null';
+    this.highlightedPointSubject.next({ 'data': points, 'description': description });
   }
 
 
-  highlightPointsByTaxonomyId(type: string, taxid: number, description: string) {
+  highlightPointsByTaxonomyId(type: string, version: string, taxid: number, description: string) {
     this.loadingService.setLoading('resource_highlightPointsByTaxonomyId',
-    'Getting ' + description + ' data' );
-    this.resourceService.getDataByTaxonomyId(type, taxid).subscribe(
+      'Getting ' + description + ' data');
+    this.resourceService.getDataByTaxonomyId(type, version, taxid).subscribe(
       points => {
         this.loadingService.removeLoading('resource_highlightPointsByTaxonomyId');
         this.setHighlightedPoints(points, description);
@@ -114,10 +114,10 @@ export class CubeService {
     );
   }
 
-  setPointsByTaxonomyId(type: string, taxid: number, description: string) {
+  setPointsByTaxonomyId(type: string, version: string, taxid: number, description: string) {
     this.loadingService.setLoading('resource_setPointsByTaxonomyId',
-    'Getting ' + description + ' data' );
-    this.resourceService.getDataByTaxonomyId(type, taxid).subscribe(
+      'Getting ' + description + ' data');
+    this.resourceService.getDataByTaxonomyId(type, version, taxid).subscribe(
       points => {
         this.loadingService.removeLoading('resource_setPointsByTaxonomyId');
         this.setFullData(points);
@@ -163,20 +163,20 @@ export class CubeService {
     vUpperLimit?: number) {
 
 
-      const oldParams = JSON.parse(JSON.stringify(this.cubeParametersSubject.value)); // Deep copy
-      const params = this.cubeParametersSubject.value;
-      params.xLowerLimit = xLowerLimit;
-      params.xUpperLimit = xUpperLimit;
-      params.yLowerLimit = yLowerLimit;
-      params.yUpperLimit = yUpperLimit;
-      params.zLowerLimit = zLowerLimit;
-      params.zUpperLimit = zUpperLimit;
-      params.vLowerLimit = vLowerLimit;
-      params.vUpperLimit = vUpperLimit;
+    const oldParams = JSON.parse(JSON.stringify(this.cubeParametersSubject.value)); // Deep copy
+    const params = this.cubeParametersSubject.value;
+    params.xLowerLimit = xLowerLimit;
+    params.xUpperLimit = xUpperLimit;
+    params.yLowerLimit = yLowerLimit;
+    params.yUpperLimit = yUpperLimit;
+    params.zLowerLimit = zLowerLimit;
+    params.zUpperLimit = zUpperLimit;
+    params.vLowerLimit = vLowerLimit;
+    params.vUpperLimit = vUpperLimit;
 
-      if (JSON.stringify(params) !== JSON.stringify(oldParams)) {
-        this.setCubeParameters(params);
-      }
+    if (JSON.stringify(params) !== JSON.stringify(oldParams)) {
+      this.setCubeParameters(params);
+    }
   }
 
   setCubeParameters(cubeParameters) {

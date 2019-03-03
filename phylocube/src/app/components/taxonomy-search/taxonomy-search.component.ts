@@ -81,7 +81,8 @@ export class TaxonomySearchComponent implements OnInit, OnDestroy {
     taxid = Number((taxid.split(':')[1]).trim());
 
     if (this.taxonomySubscription) { this.taxonomySubscription.unsubscribe(); }
-    this.taxonomySubscription = this.resourceService.getAccByTaxonomyId(this.activeResource.type, taxid).subscribe(
+    // tslint:disable-next-line:max-line-length
+    this.taxonomySubscription = this.resourceService.getAccByTaxonomyId(this.activeResource.type, this.activeResource.version, taxid).subscribe(
       data => {
         if (data.length > 0) {
           this.resourceService.setSearchResult(data);

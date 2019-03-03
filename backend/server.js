@@ -4,8 +4,9 @@ const cors = require('cors')
 
 // Config
 const PORT = 80;
+//const HOST = 'localhost';
+//in docker use 0.0.0.0
 const HOST = '0.0.0.0';
-//const HOST = 'bioinfo.ut.ee';
 const name = process.env.NODE_NAME;
 
 // Init app

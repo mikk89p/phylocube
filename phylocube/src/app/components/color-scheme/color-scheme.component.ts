@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef  } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ResourceService } from './../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 
@@ -20,13 +20,13 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
     {
       id: 1,
       name: 'Binary',
-      description: 'Domain is present in at least one virus genome<i class="material-icons fold-red">color_lens</i><br>'
+      description: 'Protein domain is found in at least one virus genome<i class="material-icons fold-red">color_lens</i><br>'
     },
     {
       id: 2,
       name: 'Multiple',
-      description: `In only one virus genome<i class="material-icons fold-red">color_lens</i><br>
-      In more than 1 virus genome<i class="material-icons fold-blue" >color_lens</i><br>
+      description: `Found only in 1 virus genome<i class="material-icons fold-red">color_lens</i><br>
+      Found In more than 1 virus genome<i class="material-icons fold-blue" >color_lens</i><br>
       `
     },
     {
@@ -50,7 +50,7 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
   constructor(
     private resourceService: ResourceService,
     private cubeService: CubeService
-  ) {}
+  ) { }
 
   ngOnDestroy() {
     this.resourceSubscription.unsubscribe();
@@ -61,13 +61,13 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
     this.resourceSubscription = this.resourceService.getActiveResource().subscribe(
       resource => {
         this.activeResource = resource;
-        if ( resource.type === 'gene3d') {
+        if (resource.type === 'gene3d') {
           this.isDisabled = false;
           this.colorSchemes[3].description = `Mainly Alpha<i class="material-icons fold-red" >color_lens</i><br>
             Mainly Beta<i class="material-icons fold-green">color_lens</i><br>
             Alpha and Beta<i class="material-icons fold-blue">color_lens</i><br>
             Few Secondary structures<i class="material-icons fold-dark-green">color_lens</i><br>`;
-        } else if ( resource.type === 'supfam') {
+        } else if (resource.type === 'supfam') {
           this.isDisabled = false;
           this.colorSchemes[3].description = `
           All alpha proteins<i class="material-icons fold-red" >color_lens</i><br>
@@ -81,25 +81,25 @@ export class ColorSchemeComponent implements OnInit, OnDestroy {
           Low resolution protein structures<i class="material-icons fold-dark-green">color_lens</i><br>
           Peptides<i class="material-icons fold-purple">color_lens</i><br>
           esigned proteins<i class="material-icons fold-navy">color_lens</i><br>`;
-       } else {
-         this.colorSchemes[3].description = 'Unavailable';
-         this.isDisabled = true;
-       }
+        } else {
+          this.colorSchemes[3].description = 'Unavailable';
+          this.isDisabled = true;
+        }
       },
     );
 
     // If user comes back from about page
     this.cubeParametersSubscription = this.cubeService.getCubeParameters().subscribe(
-        cubeParameters => {
-          if (cubeParameters && Object.keys(cubeParameters).length !== 0) {
-            this.activeColorScheme = cubeParameters.colorScheme;
-          }
+      cubeParameters => {
+        if (cubeParameters && Object.keys(cubeParameters).length !== 0) {
+          this.activeColorScheme = cubeParameters.colorScheme;
         }
-      );
+      }
+    );
   }
 
   radioChange(event) {
     this.cubeService.setColorScheme(event.value);
-}
+  }
 
 }
