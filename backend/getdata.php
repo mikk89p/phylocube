@@ -60,6 +60,7 @@ function CallAPI($method, $url, $data = false)
 }
 
 function sanitiseURL($url, $encode = false) {
+    $url = urlencode($url); 
     $url = filter_var(urldecode($url), FILTER_SANITIZE_SPECIAL_CHARS);
     if (! filter_var($url, FILTER_VALIDATE_URL))
         return false;
@@ -71,6 +72,6 @@ cors();
 $urlArr = explode('getdata.php',$_SERVER['PHP_SELF']);
 $api = $urlArr[1];
 $apiUrl = 'http://docker.cs.ut.ee:8080'.$api;
-$apiUrl = filter_var($apiUrl, FILTER_VALIDATE_URL);
+$apiUrl = str_replace(' ', '%20', $apiUrl);
 $response = CallAPI('GET', sanitiseURL($apiUrl));
 echo $response;
