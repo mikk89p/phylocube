@@ -39,7 +39,7 @@ var Assignment = {
     https://www.postgresql.org/docs/9.6/static/queries-with.html
   */
 
- getDataWithDistributionByResourceTypeAndTaxonomyId: function (type, id, version, callback) {
+ getDataWithDistributionByResourceTypeAndTaxonomyId2: function (type, id, version, callback) {
 
   type = clearString(type);
   var columns = "DISTINCT protein_domain.acc,protein_domain.description,protein_domain.classification,archaea,bacteria,eukaryota,virus,archaea_genomes,bacteria_genomes,eukaryota_genomes,virus_genomes";
@@ -77,7 +77,7 @@ var Assignment = {
 },
 
   // Working method but complex
-  getDataWithDistributionByResourceTypeAndTaxonomyId2: function (type, id, version, callback) {
+  getDataWithDistributionByResourceTypeAndTaxonomyId: function (type, id, version, callback) {
     // First query all taxonomy IDs
     // max_allowed_packet 4194304
     type = clearString(type);
@@ -148,7 +148,7 @@ var Assignment = {
     });
   },
 
-  getDataByResourceTypeAndTaxonomyId: function (type, id, version, callback) {
+  getDataByResourceTypeAndTaxonomyId2: function (type, id, version, callback) {
 
     type = clearString(type);
     var columns = "protein_domain.acc, protein_domain.description,protein_domain.classification, count(DISTINCT taxonomy_id) as count";
@@ -184,7 +184,7 @@ var Assignment = {
   },
 
   // Working method but complex
-  getDataByResourceTypeAndTaxonomyId2: function (type, id, version, callback) {
+  getDataByResourceTypeAndTaxonomyId: function (type, id, version, callback) {
     type = clearString(type);
     var columns = "protein_domain.acc, protein_domain.description,protein_domain.classification, count(DISTINCT taxonomy_id) as count";
     var sql = "SELECT DISTINCT id FROM taxonomy WHERE (id = ?  OR parent_id=? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ? )" +
@@ -243,7 +243,7 @@ var Assignment = {
     });
   },
 
-  getAccByResourceTypeAndTaxonomyId: function (type, id, version, callback) {
+  getAccByResourceTypeAndTaxonomyId2: function (type, id, version, callback) {
 
     type = clearString(type);
     var subquery = "SELECT DISTINCT id FROM taxonomy WHERE (id = ? OR parent_id=? OR full_taxonomy_id LIKE ? OR full_taxonomy_id LIKE ?)" +
@@ -274,7 +274,7 @@ var Assignment = {
     }
   },
 
-  /* Slow with Fungi | Taxonomy ID: 4751
+  // Slow with Fungi | Taxonomy ID: 4751
   getAccByResourceTypeAndTaxonomyId: function (type, id, version, callback) {
     type = clearString(type);
     var columns = "DISTINCT protein_domain.acc";
@@ -327,6 +327,6 @@ var Assignment = {
       }
 
     });
-  }*/
+  }
 };
 module.exports = Assignment;
