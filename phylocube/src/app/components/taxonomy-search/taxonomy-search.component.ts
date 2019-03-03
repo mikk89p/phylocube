@@ -91,7 +91,7 @@ export class TaxonomySearchComponent implements OnInit, OnDestroy {
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
         this.submitted = false;
         this.loadingService.openDialog('Error', err.statusText);
       },

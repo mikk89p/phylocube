@@ -23,7 +23,7 @@ export class AxesSelectionComponent implements OnInit {
   taxonY = new FormControl('Vertebrata | Taxonomy ID: 7742', [Validators.required, Validators.minLength(5)]);
   filteredTaxonsY$: Observable<Taxon[]>;
 
-  taxonZ = new FormControl('Fungi | Taxonomy ID: 4751', [Validators.required, Validators.minLength(5)]);
+  taxonZ = new FormControl('Saccharomycetales | Taxonomy ID: 4892', [Validators.required, Validators.minLength(5)]);
   filteredTaxonsZ$: Observable<Taxon[]>;
 
   form;

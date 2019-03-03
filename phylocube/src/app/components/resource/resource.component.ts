@@ -11,8 +11,8 @@ export class ResourceComponent implements OnInit, OnDestroy {
   resources = {};
   activeResource;
   selectedValue: string;
-  defaultResourceType = 'clanpfam';
-  defaultResourceVersion = '32.0';
+  defaultResourceType = 'gene3d';
+  defaultResourceVersion = '16.0';
 
 
   // Subscriptions
@@ -47,7 +47,7 @@ export class ResourceComponent implements OnInit, OnDestroy {
   setActiveResource(event, resource) {
     if (event.isUserInput) {
       this.activeResource = resource;
-      console.log(resource);
+      // console.log(resource);
       this.resourceService.setActiveResource(resource.type, resource.version);
     }
   }
