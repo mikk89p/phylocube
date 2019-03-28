@@ -795,7 +795,7 @@ export class CubeComponent implements OnInit, OnDestroy {
   }
 
   getDensityRadius(rawVal) {
-    return Math.log2(rawVal) + Math.log2(rawVal) + 2;
+    return Math.log2(rawVal) + Math.log2(rawVal) + Math.log2(rawVal) + 3;
   }
 
   getMinMaxXYZ(dataset) {
@@ -948,11 +948,13 @@ export class CubeComponent implements OnInit, OnDestroy {
     const element = this.el.nativeElement;
     if (value === true) {
       Plotly.relayout(element, 'hovermode', 'closest');
-      /*Plotly.relayout(element, 'scene.xaxis.showspikes', true);
+      Plotly.relayout(element, 'dragmode', 'turntable');
+     /* Plotly.relayout(element, 'scene.xaxis.showspikes', true);
       Plotly.relayout(element, 'scene.yaxis.showspikes', true);
       Plotly.relayout(element, 'scene.zaxis.showspikes', true);*/
     } else {
       Plotly.relayout(element, 'hovermode', false);
+      Plotly.relayout(element, 'dragmode', 'turntable');
       /*Plotly.relayout(element, 'scene.xaxis.showspikes', false);
       Plotly.relayout(element, 'scene.yaxis.showspikes', false);
       Plotly.relayout(element, 'scene.zaxis.showspikes', false);*/
