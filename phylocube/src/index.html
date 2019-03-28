@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Phylocube</title>
@@ -11,6 +12,7 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1976d2">
 </head>
+
 <body>
   <app-root>
     <style>
@@ -31,39 +33,53 @@
           Helvetica,
           sans-serif;
         font-size: 2.5em;
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
       }
 
       .loading {
         background: #3f51b5;
         display: flex;
-        position:absolute;
+        position: absolute;
         z-index: 1000;
         height: 100%;
         width: 100%;
         margin: 0px;
-        }
+      }
 
-        @keyframes dots {
+      @keyframes dots {
         50% {
           transform: translateY(-.4rem);
         }
+
         100% {
           transform: translateY(0);
         }
-        }
+      }
 
-        .d {
+      .d {
         animation: dots 1.5s ease-out infinite;
-        }
-        .d-2 {
+      }
+
+      .d-2 {
         animation-delay: .5s;
-        }
-        .d-3 {
+      }
+
+      .d-3 {
         animation-delay: 1s;
-        }
+      }
     </style>
-    <div class="loading loadingText">Loading<span class="d">.</span><span class="d d-2">.</span><span class="d d-3">.</span></div>
+    <div class="loading loadingText">Loading<span class="d">.</span><span class="d d-2">.</span><span
+        class="d d-3">.</span></div>
   </app-root>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-58327225-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-58327225-2');
+  </script>
 </body>
+
 </html>
