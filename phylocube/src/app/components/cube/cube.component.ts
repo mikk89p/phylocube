@@ -4,6 +4,7 @@ import { ResourceService, Point } from '../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { CubeParameters } from './cube-parameters';
 import { FormControl } from '../../../../node_modules/@angular/forms';
+import * as Plotly from 'plotly.js-dist/plotly.js';
 
 
 @Component({
