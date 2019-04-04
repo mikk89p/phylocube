@@ -73,16 +73,29 @@ export class TaxonomySearchComponent implements OnInit, OnDestroy {
     );
   }
 
+  getTaxId (value: string) {
+    const arr = value.split('|');
+    if (arr.length > 1) {
+      const name = arr[0].trim();
+      const taxid = arr[1].trim();
+      return {id: Number((taxid.split(':')[1]).trim()), name: name};
+    } else {
+      return false;
+    }
+  }
   onSubmit() {
+    const tax = this.getTaxId (this.form.value.taxon);
+
+    if (!tax) {
+      this.loadingService.openDialog('Error', 'Incorrect input in one of the fields. Please use format [Name | Taxonomy ID: ????]');
+      return;
+    }
+
     this.submitted = true;
-    const arr = this.form.value.taxon.split('|');
-    const name = arr[0].trim();
-    let taxid = arr[1].trim();
-    taxid = Number((taxid.split(':')[1]).trim());
 
     if (this.taxonomySubscription) { this.taxonomySubscription.unsubscribe(); }
     // tslint:disable-next-line:max-line-length
-    this.taxonomySubscription = this.resourceService.getAccByTaxonomyId(this.activeResource.type, this.activeResource.version, taxid).subscribe(
+    this.taxonomySubscription = this.resourceService.getAccByTaxonomyId(this.activeResource.type, this.activeResource.version, tax.id).subscribe(
       data => {
         if (data.length > 0) {
           this.resourceService.setSearchResult(data);

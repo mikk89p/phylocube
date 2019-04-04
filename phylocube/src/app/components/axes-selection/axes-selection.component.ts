@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {map, startWith, debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import { TaxonomyService } from '../../services/taxonomy.service';
 import { Taxon } from '../../services/taxonomy.service';
+import { LoadingService } from '../../services/loading.service';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class AxesSelectionComponent implements OnInit {
   constructor(
     private resourceService: ResourceService,
     private taxonomyService: TaxonomyService,
+    private loadingService: LoadingService,
     private fb: FormBuilder) {
 
     // FormBuilder makes form development and maintenance easier.
@@ -76,16 +78,24 @@ export class AxesSelectionComponent implements OnInit {
 
   getTaxId (value: string) {
     const arr = value.split('|');
-    const name = arr[0].trim();
-    const taxid = arr[1].trim();
-    return {id: Number((taxid.split(':')[1]).trim()), name: name};
+    if (arr.length > 1) {
+      const name = arr[0].trim();
+      const taxid = arr[1].trim();
+      return {id: Number((taxid.split(':')[1]).trim()), name: name};
+    } else {
+      return false;
+    }
   }
 
   onSubmit() {
     const taxX = this.getTaxId (this.form.controls.taxonX.value);
     const taxY = this.getTaxId (this.form.controls.taxonY.value);
     const taxZ = this.getTaxId (this.form.controls.taxonZ.value);
-    this.resourceService.setAxesByTaxonomyId(taxX.id, taxX.name, taxY.id, taxY.name, taxZ.id, taxZ.name);
+    if (taxX && taxY && taxZ) {
+      this.resourceService.setAxesByTaxonomyId(taxX.id, taxX.name, taxY.id, taxY.name, taxZ.id, taxZ.name);
+    } else {
+      this.loadingService.openDialog('Error', 'Incorrect input in one of the fields. Please use format [Name | Taxonomy ID: ????]');
+    }
   }
 
   filter(value: string): Observable<Taxon[]> {

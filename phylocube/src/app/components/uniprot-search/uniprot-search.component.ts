@@ -60,14 +60,14 @@ export class UniprotSearchComponent implements OnInit, OnDestroy {
     if (this.uniprotSubscription) { this.uniprotSubscription.unsubscribe(); }
     if (this.clanSubscription) { this.clanSubscription.unsubscribe(); }
 
-    this.uniprotSubscription = this.resourceService.getAccByUniprotId( uniprotID).subscribe(
+    this.uniprotSubscription = this.resourceService.getAccByUniprotId(uniprotID).subscribe(
       data => {
         const result = [];
         const arr = data['uniprot']['entry']['dbReference'];
 
         // Uniprot types
         let activeResourceType = '';
-        if (this.activeResource.type == 'pfam' || this.activeResource.type == 'clan' || this.activeResource.type == 'clanpfam'){
+        if (this.activeResource.type == 'pfam' || this.activeResource.type == 'clan' || this.activeResource.type == 'clanpfam') {
           activeResourceType = 'Pfam';
         } else if (this.activeResource.type == 'supfam') {
           activeResourceType = 'SUPFAM';
@@ -86,9 +86,9 @@ export class UniprotSearchComponent implements OnInit, OnDestroy {
           if (activeResourceType == 'Gene3D') {
             result.push(acc);
           } else if (activeResourceType == 'SUPFAM') {
-              acc = acc.replace('SSF', '');
-              result.push(acc);
-          } else if (activeResourceType == 'Pfam' ) {
+            acc = acc.replace('SSF', '');
+            result.push(acc);
+          } else if (activeResourceType == 'Pfam') {
             if (this.activeResource.type == 'pfam') {
               result.push(acc);
             } else {
@@ -103,7 +103,7 @@ export class UniprotSearchComponent implements OnInit, OnDestroy {
                   this.resourceService.setSearchResult(result);
                 },
                 err => {
-                  console.log(err);
+                  // console.log(err);
                 },
               );
             }
@@ -117,14 +117,20 @@ export class UniprotSearchComponent implements OnInit, OnDestroy {
         });
 
         this.submitted = false;
+        if (result.length === 0) {
+          this.loadingService.openDialog('Error', 'No domains found from ' + uniprotID);
+        }
+        
       },
       err => {
-        console.log(err);
         this.submitted = false;
+        if (err.statusText === 'OK') {
+          err.statusText = 'Entry not found in UniProt';
+        }
         this.loadingService.openDialog('Error', err.statusText);
       },
 
-      //() => { this.submitted = false; }
+      // () => { this.submitted = false; }
     );
   }
 

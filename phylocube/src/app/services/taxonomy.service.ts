@@ -48,7 +48,6 @@ export class TaxonomyService {
   }
 
   private formatText(itemText, text) {
-    console.log(itemText);
     const textMatcher = new RegExp(text, 'ig');
     if (typeof (itemText) === 'number') { itemText = String(itemText); }
     return itemText.replace(textMatcher, function (match) {
