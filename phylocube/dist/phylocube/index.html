@@ -1,15 +1,18 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Phylocube</title>
   <base href="">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1976d2">
-<link rel="stylesheet" href="styles.3a51223ed7ebd73231c8.css"></head>
+<link rel="stylesheet" href="styles.cb1e05e283656051f8cf.css"></head>
+
 <body>
   <app-root>
     <style>
@@ -30,39 +33,53 @@
           Helvetica,
           sans-serif;
         font-size: 2.5em;
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
       }
 
       .loading {
         background: #3f51b5;
         display: flex;
-        position:absolute;
+        position: absolute;
         z-index: 1000;
         height: 100%;
         width: 100%;
         margin: 0px;
-        }
+      }
 
-        @keyframes dots {
+      @keyframes dots {
         50% {
           transform: translateY(-.4rem);
         }
+
         100% {
           transform: translateY(0);
         }
-        }
+      }
 
-        .d {
+      .d {
         animation: dots 1.5s ease-out infinite;
-        }
-        .d-2 {
+      }
+
+      .d-2 {
         animation-delay: .5s;
-        }
-        .d-3 {
+      }
+
+      .d-3 {
         animation-delay: 1s;
-        }
+      }
     </style>
-    <div class="loading loadingText">Loading<span class="d">.</span><span class="d d-2">.</span><span class="d d-3">.</span></div>
+    <div class="loading loadingText">Loading<span class="d">.</span><span class="d d-2">.</span><span
+        class="d d-3">.</span></div>
   </app-root>
-<script type="text/javascript" src="runtime.a5dd35324ddfd942bef1.js"></script><script type="text/javascript" src="polyfills.114e1c28132c3ac6768b.js"></script><script type="text/javascript" src="scripts.9fce3df2843964b1adc5.js"></script><script type="text/javascript" src="main.7a5d8ff6ee1baf9f0ecf.js"></script></body>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-58327225-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-58327225-2');
+  </script>
+<script src="runtime.741402d1d47331ce975c.js"></script><script src="polyfills-es5.7f9896f05667ed1b2b2b.js" nomodule></script><script src="polyfills.c0c8eff7122302117842.js"></script><script src="scripts.bf04e4f24a85e9b7baee.js"></script><script src="main.1ecb36fc609713627b9a.js"></script></body>
+
 </html>

@@ -23,7 +23,7 @@ npm install plotly.js-dist@1.44.3 plotly.js@1.44.3 -> NOT WORKING IN SERVER
 */
 
 export class CubeComponent implements OnInit, OnDestroy {
-  @ViewChild('chart') el: ElementRef;
+  @ViewChild('chart', { static: true }) el: ElementRef;
 
   // chart options
   type = 'scatter3d';

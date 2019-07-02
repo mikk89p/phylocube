@@ -33,3 +33,17 @@
 <code>/api/v1/assignment/proteindomain/acc/resource/:type?/version/:version?/taxonomy/:id?</code>
 ### Get clan by pfam and version
 <code>/api/v1/clanmembership/:acc_pfam?/version/:version?</code>
+
+# Deploy Docker
+1. Create a folder
+2. Copy all your files there (including DockerFile), excluding modules
+3. Build image <code>sudo docker build --tag=phylocube .</code>
+4. Run image <code>sudo docker run -d -p 8080:80 --restart=always --name phylocube_backend phylocube</code>
+
+# Stop container
+<code>sudo docker container ls</code>
+<code>sudo docker container stop 5239e....</code>
+<code>sudo docker container stop phylocube_backend</code>
+
+# Remove
+<code>sudo docker rm phylocube_backend</code>
