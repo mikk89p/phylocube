@@ -1,10 +1,8 @@
-<app-browser-compatibility></app-browser-compatibility>
+
 <app-loading [style.visibility]="(showLoading)? 'visible' : 'hidden'"></app-loading>
 
 <div fxFlex class="defaultBackground" fxLayout.gt-md="row" fxLayout.lt-md="column" fxLayoutAlign="center" fxLayoutGap="5px"
   style="padding:8px;">
-
-
   <div fxFlex.gt-lg="10"></div>
 
   <div fxFlex.gt-md="30" fxFlex.gt-lg="20" fxLayoutGap="5px" fxLayout="column">
@@ -33,6 +31,7 @@
   <!-- left sidebar -->
 
   <div fxFlex.gt-md="70" fxFlex.gt-lg="60" fxLayoutGap="5px" fxLayout="column">
+    <app-browser-compatibility></app-browser-compatibility>
     <app-protein-domain-info></app-protein-domain-info>
     <!-- cube -->
     <app-cube></app-cube>

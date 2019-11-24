@@ -1,38 +1,20 @@
 @import url(https://fonts.googleapis.com/css?family=Fira+Mono|Fira+Sans:300);
 
 .browser-compatibility-style {
-
-  color: black;
+  color: red;
+  text-align: center;
   background-color: white;
   font-family: "Fira Sans", sans-serif;
   font-weight: 300;
   margin: 0;
   z-index: 9999;
-  height:140vh;
-	width: 100%;
-	position:absolute;
-
-}
-
-
-h1 {
-  color: darkgrey;
-  text-align: center;
-  font-weight: 300;
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
-
-h2 {
-  text-align: center;
-  font-weight: 300;
-  font-size: 4rem;
 }
 
 p {
-  color: darkgrey;
+  color: red;
   text-align: center;
   font-family: "Fira Mono", monospace;
   font-size: 1rem;
   line-height: 1.5rem;
+  padding:20px;
 }

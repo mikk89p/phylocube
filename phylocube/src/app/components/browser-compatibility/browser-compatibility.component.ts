@@ -11,7 +11,6 @@ export class BrowserCompatibilityComponent implements OnInit {
   result = 'Detecting..';
   details = 'n/a';
   visible = true;
-  
   constructor() { }
 
   ngOnInit() {
@@ -27,6 +26,7 @@ export class BrowserCompatibilityComponent implements OnInit {
       this.details = window.navigator.userAgent;
       this.visible = false;
     } else {
+      // TODO
       this.result = 'IE ' + version + ' not supported';
       this.details = 'Try Google Chrome';
       this.visible = true;
