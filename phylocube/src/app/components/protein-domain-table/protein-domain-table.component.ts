@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MatPaginator, MatTableDataSource, MatSort} from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort} from '@angular/material/sort';
 import { ResourceService } from './../../services/resource.service';
 import { CubeService } from '../../services/cube.service';
 import { SelectionModel } from '@angular/cdk/collections';

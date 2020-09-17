@@ -31,7 +31,7 @@
   <!-- left sidebar -->
 
   <div fxFlex.gt-md="70" fxFlex.gt-lg="60" fxLayoutGap="5px" fxLayout="column">
-    <app-browser-compatibility></app-browser-compatibility>
+    <app-browser-compatibility *ngIf="browserCompatibilityComponent" (onBrowserCompatibilityVisibilityChanged)="onBrowserCompatibilityVisibilityChanged($event)"></app-browser-compatibility>
     <app-protein-domain-info></app-protein-domain-info>
     <!-- cube -->
     <app-cube></app-cube>

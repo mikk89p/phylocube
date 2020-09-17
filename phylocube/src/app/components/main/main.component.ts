@@ -12,6 +12,7 @@ import { LoadingService } from '../../services/loading.service';
 export class MainComponent implements OnInit, OnDestroy {
   @Input()
   showLoading = false;
+  browserCompatibilityComponent = false;
   loadingSubscription;
 
   constructor(
@@ -37,6 +38,10 @@ export class MainComponent implements OnInit, OnDestroy {
       }
     );
 
+  }
+
+  public onBrowserCompatibilityVisibilityChanged(visibility) {
+    this.browserCompatibilityComponent = visibility;
   }
 
 }

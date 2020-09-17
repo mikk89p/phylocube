@@ -1,21 +1,24 @@
 {
   "configVersion": 1,
-  "timestamp": 1600375432708,
+  "timestamp": 1600380572594,
   "index": "/index.html",
   "assetGroups": [
     {
       "name": "app",
       "installMode": "prefetch",
       "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
       "urls": [
         "/favicon.ico",
         "/index.html",
-        "/main.f73dbb29ffaa65b70b27.js",
-        "/polyfills-es5.7f72e6c8e929309a2c62.js",
-        "/polyfills.66237e15e80e6f580b96.js",
-        "/runtime.7d9d4678f9511567f211.js",
-        "/scripts.4d9d11f9c5751371b94e.js",
-        "/styles.ed2f1207e432ca5a1b29.css"
+        "/main.151ed8b4bf4fb07bc07d.js",
+        "/polyfills-es5.067a56ac015f00f3a551.js",
+        "/polyfills.5abda241e2a1d470ece4.js",
+        "/runtime.acf0dec4155e77772545.js",
+        "/scripts.b3141a1127febc80442e.js",
+        "/styles.69ddf838e55d3add4a2d.css"
       ],
       "patterns": []
     },
@@ -23,6 +26,9 @@
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
       "urls": [
         "/assets/figures/figure1.jpg",
         "/assets/icons/3daxes.png",
@@ -67,13 +73,13 @@
     "/assets/logos/elixir.png": "7f252fcb98dbff55d3a134bcabbd8aac5611e853",
     "/assets/logos/white-elixir.png": "f6f2f0b818666875ab3acf95dc0fbf4308e6c1f0",
     "/favicon.ico": "2cbfd3facc979e5cbfef90eee1f77b8e0531505f",
-    "/index.html": "0b5050a562be03879d2a661b682cc836ae8bbb7d",
-    "/main.f73dbb29ffaa65b70b27.js": "d712f4c624a9ba5d88af81df372e5fa4e3e06783",
-    "/polyfills-es5.7f72e6c8e929309a2c62.js": "026c6a4a631b8250caa7415dfeeb282c96841132",
-    "/polyfills.66237e15e80e6f580b96.js": "32cb7cb7028061de30a81d569093b7d9317ae41a",
-    "/runtime.7d9d4678f9511567f211.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/scripts.4d9d11f9c5751371b94e.js": "c0ec876c876c5caf1c2088a0234feabb5a23ef41",
-    "/styles.ed2f1207e432ca5a1b29.css": "c411eaa9924e008214208aae9a6732b112716cb6"
+    "/index.html": "cde1c3f5b24ad9078285c0c0f2d5afb27957226f",
+    "/main.151ed8b4bf4fb07bc07d.js": "d8c45ac530e35658f2a338482599cbd443b7b07c",
+    "/polyfills-es5.067a56ac015f00f3a551.js": "fad153c60abec524f520bd038b0370d45945fd94",
+    "/polyfills.5abda241e2a1d470ece4.js": "9daaae1f9a80585f8c850a9304430efc7bf6db4f",
+    "/runtime.acf0dec4155e77772545.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/scripts.b3141a1127febc80442e.js": "7e65643afa427a2fe95df3db19ec5c01c95cb547",
+    "/styles.69ddf838e55d3add4a2d.css": "321c95054db70dd5446df73cf73e0b99870e849f"
   },
   "navigationUrls": [
     {

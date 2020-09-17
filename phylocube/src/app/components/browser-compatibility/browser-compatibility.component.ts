@@ -1,3 +1,5 @@
+import { EventEmitter } from '@angular/core';
+import { Output } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,11 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BrowserCompatibilityComponent implements OnInit {
 
+  @Output() onBrowserCompatibilityVisibilityChanged: EventEmitter<any> = new EventEmitter<any>();
+  
   // Get IE or Edge browser version
   result = 'Detecting..';
   details = 'n/a';
   visible = true;
   constructor() { }
+  
 
   ngOnInit() {
 
@@ -31,6 +36,8 @@ export class BrowserCompatibilityComponent implements OnInit {
       this.details = 'Try Google Chrome';
       this.visible = true;
     }
+
+    this.onBrowserCompatibilityVisibilityChanged.emit(this.visible);
   }
 
 

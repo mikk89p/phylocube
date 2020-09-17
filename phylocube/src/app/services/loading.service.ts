@@ -1,9 +1,9 @@
 import { Injectable, NgZone } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { MatDialog, MatDialogConfig} from '@angular/material';
+import { MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { ErrorDialogComponent } from '../components/error-dialog/error-dialog.component';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'

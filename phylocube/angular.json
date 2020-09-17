@@ -144,5 +144,8 @@
       }
     }
   },
-  "defaultProject": "phylocube"
+  "defaultProject": "phylocube",
+  "cli": {
+    "analytics": "55d2eaa2-bb88-421b-af36-02e6a2a3636f"
+  }
 }
